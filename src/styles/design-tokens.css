@@ -1,85 +1,85 @@
 :root {
-    /* Typography */
-    --font-display: 'Clash Display', sans-serif;
-    --font-body: 'Satoshi', sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
+  /* Typography */
+  --font-display: "Clash Display", sans-serif;
+  --font-body: "Satoshi", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
 
-    --weight-reading: 400;
-    --weight-medium: 500;
-    --weight-bold: 700;
-    --weight-display-bold: 600;
+  --weight-reading: 400;
+  --weight-medium: 500;
+  --weight-bold: 700;
+  --weight-display-bold: 600;
 
-    /* Radius */
-    --radius-xs: 6px;
-    --radius-sm: 10px;
-    --radius-md: 14px;
-    --radius-lg: 20px;
-    --radius-xl: 28px;
-    --radius-pill: 999px;
+  /* Radius */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-pill: 999px;
 
-    /* Motion */
-    --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
-    --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  /* Motion */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
 
-    --duration-tap: 150ms;
-    --duration-hover: 150ms;
-    --duration-expand: 250ms;
-    --duration-nav: 300ms;
-    --duration-hero: 600ms;
+  --duration-tap: 150ms;
+  --duration-hover: 150ms;
+  --duration-expand: 250ms;
+  --duration-nav: 300ms;
+  --duration-hero: 600ms;
 }
 
 /* Dark Mode (Default) */
-[data-theme='dark'],
+[data-theme="dark"],
 :root {
-    --bg-background: #0A0812;
-    --bg-surface: #14111C;
-    --bg-floating: #1B1826;
+  --bg-background: #0a0812;
+  --bg-surface: #14111c;
+  --bg-floating: #1b1826;
 
-    --color-primary: #7342f5;
-    --color-accent: #E64A00;
+  --color-primary: #7342f5;
+  --color-accent: #e64a00;
 
-    /* Strict Semantic Opacities */
-    --op-primary-5: rgba(115, 66, 245, 0.05);
-    --op-primary-10: rgba(115, 66, 245, 0.10);
-    --op-primary-20: rgba(115, 66, 245, 0.20);
-    --op-primary-40: rgba(115, 66, 245, 0.40);
+  /* Strict Semantic Opacities */
+  --op-primary-5: rgba(115, 66, 245, 0.05);
+  --op-primary-10: rgba(115, 66, 245, 0.1);
+  --op-primary-20: rgba(115, 66, 245, 0.2);
+  --op-primary-40: rgba(115, 66, 245, 0.4);
 
-    --op-accent-5: rgba(230, 74, 0, 0.05);
-    --op-accent-10: rgba(230, 74, 0, 0.10);
-    --op-accent-20: rgba(230, 74, 0, 0.20);
+  --op-accent-5: rgba(230, 74, 0, 0.05);
+  --op-accent-10: rgba(230, 74, 0, 0.1);
+  --op-accent-20: rgba(230, 74, 0, 0.2);
 
-    --op-white-4: rgba(255, 255, 255, 0.04);
-    --op-white-8: rgba(255, 255, 255, 0.08);
-    --op-white-12: rgba(255, 255, 255, 0.12);
-    --op-white-20: rgba(255, 255, 255, 0.20);
+  --op-white-4: rgba(255, 255, 255, 0.04);
+  --op-white-8: rgba(255, 255, 255, 0.08);
+  --op-white-12: rgba(255, 255, 255, 0.12);
+  --op-white-20: rgba(255, 255, 255, 0.2);
 
-    /* Elevation & Glow */
-    --glow-primary: 0 0 20px var(--op-primary-40);
-    --glow-accent: 0 0 20px var(--op-accent-20);
-    --border-surface: var(--op-white-8);
+  /* Elevation & Glow */
+  --glow-primary: 0 0 20px var(--op-primary-40);
+  --glow-accent: 0 0 20px var(--op-accent-20);
+  --border-surface: var(--op-white-8);
 
-    --text-main: #FFFFFF;
-    --text-muted: var(--op-white-20);
+  --text-main: #ffffff;
+  --text-muted: var(--op-white-20);
 }
 
 /* Light Mode */
-[data-theme='light'] {
-    --bg-background: #F5F2FB;
-    --bg-surface: #FFFFFF;
-    --bg-floating: #FFFFFF;
+[data-theme="light"] {
+  --bg-background: #f5f2fb;
+  --bg-surface: #ffffff;
+  --bg-floating: #ffffff;
 
-    --color-primary: #803DFF;
-    --color-accent: #D94B26;
+  --color-primary: #803dff;
+  --color-accent: #d94b26;
 
-    --op-white-4: rgba(0, 0, 0, 0.02);
-    --op-white-8: rgba(0, 0, 0, 0.05);
-    --op-white-12: rgba(0, 0, 0, 0.08);
-    --op-white-20: rgba(0, 0, 0, 0.15);
+  --op-white-4: rgba(0, 0, 0, 0.02);
+  --op-white-8: rgba(0, 0, 0, 0.05);
+  --op-white-12: rgba(0, 0, 0, 0.08);
+  --op-white-20: rgba(0, 0, 0, 0.15);
 
-    --glow-primary: 0 0 20px rgba(128, 61, 255, 0.20);
-    --glow-accent: 0 0 20px rgba(217, 75, 38, 0.15);
-    --border-surface: #D4C7ED;
+  --glow-primary: 0 0 20px rgba(128, 61, 255, 0.2);
+  --glow-accent: 0 0 20px rgba(217, 75, 38, 0.15);
+  --border-surface: #d4c7ed;
 
-    --text-main: #0A0812;
-    --text-muted: rgba(10, 8, 18, 0.4);
+  --text-main: #0a0812;
+  --text-muted: rgba(10, 8, 18, 0.4);
 }
