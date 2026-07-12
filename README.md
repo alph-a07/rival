@@ -2,7 +2,7 @@
 
 # Rival
 
-**Compete only against yesterday's self.**
+**Your only rival is yesterday.**
 
 _A duel lit by starlight — you, and the rival-glow of who you were yesterday._
 
