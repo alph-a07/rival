@@ -1,0 +1,28 @@
+{
+  // one extension (oxc.oxc-vscode) covers BOTH oxlint and oxfmt -- this is
+  // not the ESLint or Prettier extension, don't install those alongside it
+  "editor.defaultFormatter": "oxc.oxc-vscode",
+
+  // run formatting and lint auto-fixes as explicit ordered actions on save,
+  // instead of the blunter "editor.formatOnSave: true" -- this guarantees
+  // formatting happens BEFORE lint fixes are applied, not in a racy order
+  "editor.formatOnSave": false,
+  "editor.codeActionsOnSave": {
+    "source.format.oxc": "always",
+    "source.fixAll.oxc": "always"
+  },
+
+  // make sure no other formatter extension is quietly claiming these
+  // languages if you have older global settings from a previous project
+  "[javascript]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+  "[javascriptreact]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+  "[typescript]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+  "[typescriptreact]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+  "[json]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+  "[css]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+  "[html]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+
+  // point the extension at your tsconfig so the TypeScript/import-resolution
+  // lint rules work correctly (adjust path if you rename/move it)
+  "oxc.tsConfigPath": "./tsconfig.app.json"
+}
