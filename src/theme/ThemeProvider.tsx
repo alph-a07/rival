@@ -28,10 +28,13 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     () => ({
       theme,
       setTheme: setThemeState,
-      toggleTheme: () => setThemeState((prev) => (prev === "dark" ? "light" : "dark")),
+      toggleTheme: () =>
+        setThemeState((prev) => (prev === "dark" ? "light" : "dark")),
     }),
     [theme],
   );
 
-  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+  return (
+    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
+  );
 }
