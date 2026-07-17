@@ -1,0 +1,22 @@
+.navBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid var(--border-surface);
+  background-color: var(--bg-surface);
+}
+
+.brand {
+  font-family: var(--font-display);
+  font-weight: var(--weight-display-bold);
+  font-size: 1.5rem;
+  color: var(--color-primary);
+  text-shadow: var(--glow-primary);
+}
+
+.links {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}

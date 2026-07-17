@@ -1,0 +1,22 @@
+.navRail {
+  width: 250px;
+  padding: 1rem;
+  background-color: var(--bg-surface);
+  border-right: 1px solid var(--border-surface);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-weight: var(--weight-display-bold);
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  color: var(--color-accent);
+}
+
+.bottomLink {
+  margin-top: auto;
+  padding-top: 2rem;
+}
