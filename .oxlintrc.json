@@ -1,10 +1,21 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript"],
+  "plugins": ["react", "typescript", "import"],
   "categories": {
     "correctness": "error"
   },
   "rules": {
-    "curly": ["error", "all"]
+    "curly": ["error", "all"],
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          {
+            "group": ["../*", "../**/*"],
+            "message": "Relative imports outside the current directory are forbidden. Please use your defined path alias (e.g., @/*)."
+          }
+        ]
+      }
+    ]
   }
 }
