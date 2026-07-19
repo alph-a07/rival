@@ -19,6 +19,8 @@
   },
   "dependencies": {
     "@fontsource/jetbrains-mono": "^5.2.8",
+    "dexie": "^4.4.4",
+    "dexie-react-hooks": "^4.4.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-router-dom": "^7.18.1",
