@@ -1,0 +1,24 @@
+{
+  "extends": ["stylelint-config-standard"],
+  "rules": {
+    "selector-class-pattern": [
+      "^([a-z][a-z0-9]*)(-[a-z0-9]+)*$",
+      {
+        "message": "Expected global selectors (e.g., in design-system) to be kebab-case"
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["src/**/*.module.css"],
+      "rules": {
+        "selector-class-pattern": [
+          "^[a-z][a-zA-Z0-9]+$",
+          {
+            "message": "Expected CSS Module class selectors to be camelCase for clean JavaScript/TypeScript style object bindings"
+          }
+        ]
+      }
+    }
+  ]
+}

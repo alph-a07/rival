@@ -1,26 +1,19 @@
 :root {
-  /* Typography */
   --font-display: "Clash Display", sans-serif;
   --font-body: "Satoshi", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
-
   --weight-reading: 400;
   --weight-medium: 500;
   --weight-bold: 700;
   --weight-display-bold: 600;
-
-  /* Radius */
   --radius-xs: 6px;
   --radius-sm: 10px;
   --radius-md: 14px;
   --radius-lg: 20px;
   --radius-xl: 28px;
   --radius-pill: 999px;
-
-  /* Motion */
   --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
-
   --duration-tap: 150ms;
   --duration-hover: 150ms;
   --duration-expand: 250ms;
@@ -34,68 +27,52 @@
   --bg-background: #0a0812;
   --bg-surface: #14111c;
   --bg-floating: #1b1826;
-
   --color-primary: #7342f5;
   --color-accent: #e64a00;
-
-  /* Domain Colors */
   --color-building: #f2a93b;
   --color-learning: #3b82f6;
   --color-exploring: #14b8a6;
   --color-practicing: #22c55e;
   --color-habit: #ec4899;
   --color-maintaining: #94a3b8;
-
-  /* Strict Semantic Opacities */
-  --op-primary-5: rgba(115, 66, 245, 0.05);
-  --op-primary-10: rgba(115, 66, 245, 0.1);
-  --op-primary-20: rgba(115, 66, 245, 0.2);
-  --op-primary-40: rgba(115, 66, 245, 0.4);
-
-  --op-accent-5: rgba(230, 74, 0, 0.05);
-  --op-accent-10: rgba(230, 74, 0, 0.1);
-  --op-accent-20: rgba(230, 74, 0, 0.2);
-
-  --op-white-4: rgba(255, 255, 255, 0.04);
-  --op-white-8: rgba(255, 255, 255, 0.08);
-  --op-white-12: rgba(255, 255, 255, 0.12);
-  --op-white-20: rgba(255, 255, 255, 0.2);
-
-  /* Elevation & Glow */
+  --op-primary-5: rgb(115 66 245 / 5%);
+  --op-primary-10: rgb(115 66 245 / 10%);
+  --op-primary-20: rgb(115 66 245 / 20%);
+  --op-primary-40: rgb(115 66 245 / 40%);
+  --op-accent-5: rgb(230 74 0 / 5%);
+  --op-accent-10: rgb(230 74 0 / 10%);
+  --op-accent-20: rgb(230 74 0 / 20%);
+  --op-white-4: rgb(255 255 255 / 4%);
+  --op-white-8: rgb(255 255 255 / 8%);
+  --op-white-12: rgb(255 255 255 / 12%);
+  --op-white-20: rgb(255 255 255 / 20%);
   --glow-primary: 0 0 20px var(--op-primary-40);
   --glow-accent: 0 0 20px var(--op-accent-20);
   --border-surface: var(--op-white-8);
-
-  --text-main: #ffffff;
+  --text-main: #fff;
   --text-muted: var(--op-white-20);
 }
 
 /* Light Mode */
 [data-theme="light"] {
   --bg-background: #f5f2fb;
-  --bg-surface: #ffffff;
-  --bg-floating: #ffffff;
-
+  --bg-surface: #fff;
+  --bg-floating: #fff;
   --color-primary: #803dff;
   --color-accent: #d94b26;
-
-  /** Domain Colors */
   --color-building: #b8790f;
   --color-learning: #2563eb;
   --color-exploring: #0d9488;
   --color-practicing: #16a34a;
   --color-habit: #db2777;
   --color-maintaining: #64748b;
-
-  --op-white-4: rgba(0, 0, 0, 0.02);
-  --op-white-8: rgba(0, 0, 0, 0.05);
-  --op-white-12: rgba(0, 0, 0, 0.08);
-  --op-white-20: rgba(0, 0, 0, 0.15);
-
-  --glow-primary: 0 0 20px rgba(128, 61, 255, 0.2);
-  --glow-accent: 0 0 20px rgba(217, 75, 38, 0.15);
+  --op-white-4: rgb(0 0 0 / 2%);
+  --op-white-8: rgb(0 0 0 / 5%);
+  --op-white-12: rgb(0 0 0 / 8%);
+  --op-white-20: rgb(0 0 0 / 15%);
+  --glow-primary: 0 0 20px rgb(128 61 255 / 20%);
+  --glow-accent: 0 0 20px rgb(217 75 38 / 15%);
   --border-surface: #d4c7ed;
-
   --text-main: #0a0812;
-  --text-muted: rgba(10, 8, 18, 0.4);
+  --text-muted: rgb(10 8 18 / 40%);
 }
