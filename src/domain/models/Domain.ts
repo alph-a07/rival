@@ -16,5 +16,5 @@ export interface Domain {
   definition: string;
   icon?: IconName;
   colorToken: DomainColorToken;
-  gisMap: Map<string, GisTier>; // gisId -> tier (mandatory/recommended/optional)
+  gisMap: Record<string, GisTier>; // gisId -> tier (mandatory/recommended/optional)
 }
