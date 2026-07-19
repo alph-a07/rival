@@ -130,9 +130,7 @@ describe("GisEngine", () => {
     // If a GIS is trimmed from today's check-in due to budget, it's excluded
     // from activeGis entirely, so it never touches the denominator.
     const activeGis: Map<Gis, GisTier> = new Map([[mockGisB, "optional"]]);
-    const responses: Response[] = [
-      { gisId: "gis_b", questionId: "q2", optionIds: ["b1"] },
-    ];
+    const responses: Response[] = [{ gisId: "gis_b", questionId: "q2", optionIds: ["b1"] }];
 
     const score = GisEngine.calculateRawScore(activeGis, responses);
     expect(score).toBe(100);
@@ -159,9 +157,7 @@ describe("GisEngine", () => {
 
   test("applies hybrid modifiers and caps at 100", () => {
     const activeGis: Map<Gis, GisTier> = new Map([[mockGisA, "mandatory"]]);
-    const responses: Response[] = [
-      { gisId: "gis_a", questionId: "q1", optionIds: ["a1"] },
-    ];
+    const responses: Response[] = [{ gisId: "gis_a", questionId: "q1", optionIds: ["a1"] }];
 
     // Modifier of 1.2 boosts it to 120, but it should cap at 100
     const score = GisEngine.calculateRawScore(activeGis, responses, 1.2);
@@ -297,9 +293,7 @@ describe("GisEngine", () => {
 
   test("clamps the score at the floor of 0", () => {
     const activeGis = new Map<Gis, GisTier>([[mockGisA, "mandatory"]]);
-    const responses: Response[] = [
-      { gisId: "gis_a", questionId: "q1", optionIds: ["a1"] },
-    ];
+    const responses: Response[] = [{ gisId: "gis_a", questionId: "q1", optionIds: ["a1"] }];
 
     // User gets a perfect 100, but a hypothetical extreme friction modifier zeroes it out
     const score = GisEngine.calculateRawScore(activeGis, responses, 0);

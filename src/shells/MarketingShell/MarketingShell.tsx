@@ -9,9 +9,7 @@ export const MarketingShell = () => {
       <main className={styles.mainContent}>
         <Outlet />
       </main>
-      <footer className={styles.footer}>
-        © {new Date().getFullYear()} Cosmic Rival
-      </footer>
+      <footer className={styles.footer}>© {new Date().getFullYear()} Cosmic Rival</footer>
     </div>
   );
 };

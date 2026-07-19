@@ -61,8 +61,7 @@ export class GisEngine {
       return 0;
     }
 
-    const normalizedScore =
-      (sessionEarnedWeight / sessionPotentialWeight) * 100;
+    const normalizedScore = (sessionEarnedWeight / sessionPotentialWeight) * 100;
     const scoreWithSynergy = normalizedScore * modifier;
 
     return Math.min(Math.max(scoreWithSynergy, 0), 100);
@@ -72,10 +71,7 @@ export class GisEngine {
    * Resolves a single Response into a fractional value (0.0-1.0). Multi-select
    * questions sum the values of all selected options and cap at 1.0.
    */
-  private static resolveAnswerValue(
-    gis: Gis,
-    response: Response,
-  ): number | undefined {
+  private static resolveAnswerValue(gis: Gis, response: Response): number | undefined {
     const question = gis.questions.find((q) => q.id === response.questionId);
     if (!question) {
       return undefined;

@@ -1,10 +1,53 @@
 {
-  "$schema": "./node_modules/oxfmt/configuration_schema.json",
-  "semi": true,
-  "singleQuote": false,
-  "printWidth": 80,
-  "trailingComma": "all",
-  "jsdoc": {
-    "commentLineStrategy": "singleLine"
-  }
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "typescript", "import", "unicorn"],
+  "categories": {
+    "correctness": "error"
+  },
+  "rules": {
+    "curly": ["error", "all"],
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          {
+            "group": ["../*", "../**/*"],
+            "message": "Relative imports outside the current directory are forbidden. Please use your defined path alias (e.g., @/*)."
+          }
+        ]
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": [
+        "src/components/**/*.tsx",
+        "src/shells/**/*.tsx",
+        "src/theme/**/*.tsx",
+        "src/domain/models/**/*.ts",
+        "src/domain/trajectory/**/*.ts",
+        "src/domain/gis/**/*.ts"
+      ],
+      "rules": {
+        "unicorn/filename-case": [
+          "error",
+          {
+            "case": "pascalCase",
+            "ignore": ["\\.test\\.ts$"]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/domain/config/**/*.ts", "src/design-system/**/*.ts"],
+      "rules": {
+        "unicorn/filename-case": [
+          "error",
+          {
+            "case": "camelCase"
+          }
+        ]
+      }
+    }
+  ]
 }
