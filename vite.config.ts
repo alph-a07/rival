@@ -34,28 +34,14 @@ export default defineConfig({
         "brand/dark/icons/icon-512-maskable.png",
         "brand/light/icons/icon-192-maskable.png",
         "brand/light/icons/icon-512-maskable.png",
+        "fonts/ClashDisplay-Variable.woff2",
+        "fonts/Satoshi-Variable.woff2",
+        "fonts/JetBrainsMono-Regular.woff2",
+        "fonts/JetBrainsMono-Medium.woff2",
       ],
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2,webmanifest}"],
         navigateFallback: "/index.html",
-        runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/api\.fontshare\.com\/.*/,
-            handler: "CacheFirst",
-            options: {
-              cacheName: "fontshare-css",
-              expiration: { maxEntries: 5, maxAgeSeconds: 60 * 60 * 24 * 365 },
-            },
-          },
-          {
-            urlPattern: /^https:\/\/cdn\.fontshare\.com\/.*/,
-            handler: "CacheFirst",
-            options: {
-              cacheName: "fontshare-files",
-              expiration: { maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 * 365 },
-            },
-          },
-        ],
       },
     }),
   ],
