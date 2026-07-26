@@ -1,0 +1,39 @@
+.foundationContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.groupTitle {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
+}
+
+.typeRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-surface);
+  border-radius: var(--radius-lg);
+  margin-bottom: 0.5rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.typeSpecimen {
+  font-size: 1.5rem;
+  color: var(--text-main);
+  overflow-wrap: break-word;
+}
+
+.typeLabel {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}

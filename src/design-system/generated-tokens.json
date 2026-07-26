@@ -1,14 +1,14 @@
 {
   "brandRoles": [
-    "--color-primary",
-    "--color-accent",
-    "--color-danger",
     "--color-primary-hover",
     "--color-primary-active",
     "--color-accent-hover",
     "--color-accent-active",
     "--color-danger-hover",
-    "--color-danger-active"
+    "--color-danger-active",
+    "--color-primary",
+    "--color-accent",
+    "--color-danger"
   ],
   "domainRoles": [
     "--color-building",
@@ -50,9 +50,23 @@
     "--border-card",
     "--border-disabled"
   ],
-  "scrims": ["--scrim-1", "--scrim-2", "--scrim-3", "--scrim-4"],
-  "fonts": ["--font-display", "--font-body", "--font-mono"],
-  "weights": ["--weight-reading", "--weight-medium", "--weight-600", "--weight-bold"],
+  "scrims": [
+    "--scrim-1",
+    "--scrim-2",
+    "--scrim-3",
+    "--scrim-4"
+  ],
+  "fonts": [
+    "--font-display",
+    "--font-body",
+    "--font-mono"
+  ],
+  "weights": [
+    "--weight-reading",
+    "--weight-medium",
+    "--weight-600",
+    "--weight-bold"
+  ],
   "radii": [
     "--radius-xs",
     "--radius-sm",
@@ -68,17 +82,20 @@
     "--duration-nav",
     "--duration-hero"
   ],
-  "easings": ["--ease-standard", "--ease-emphasized"],
+  "easings": [
+    "--ease-standard",
+    "--ease-emphasized"
+  ],
   "shadowsGlows": [
-    "--shadow-elevation-sm",
-    "--shadow-elevation-md",
-    "--shadow-card",
     "--glow-primary",
     "--glow-primary-strong",
     "--glow-accent",
     "--glow-accent-strong",
     "--glow-danger",
     "--glow-danger-strong",
-    "--ring-focus"
+    "--ring-focus",
+    "--shadow-elevation-sm",
+    "--shadow-elevation-md",
+    "--shadow-card"
   ]
 }

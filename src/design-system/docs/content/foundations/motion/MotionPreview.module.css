@@ -1,0 +1,107 @@
+.foundationContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.groupTitle {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
+}
+
+.motionList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.motionRow {
+  display: flex;
+  align-items: center;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-surface);
+  border-radius: var(--radius-pill);
+  padding: 0.625rem 1rem;
+  gap: 1.5rem;
+}
+
+.motionInfo {
+  display: flex;
+  width: 10.625rem;
+  flex-shrink: 0;
+}
+
+.motionTrack {
+  flex: 1;
+  min-width: 3.75rem;
+  height: 4px;
+  background: var(--scrim-2);
+  border-radius: var(--radius-pill);
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.motionDot {
+  position: absolute;
+  left: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  background: var(--color-primary);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-elevation-sm);
+  animation-timing-function: var(--ease-emphasized);
+}
+
+@keyframes slide-dot {
+  0% {
+    left: 0;
+  }
+
+  100% {
+    left: calc(100% - 24px);
+  }
+}
+
+.animateDot {
+  animation-name: slide-dot;
+}
+
+.playBtn {
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--text-main);
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  padding: 0.375rem 1rem;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.playBtn:hover {
+  background: var(--scrim-2);
+}
+
+@media (--bp-sm) {
+  .motionRow {
+    flex-wrap: wrap;
+    border-radius: var(--radius-md);
+  }
+
+  .motionInfo {
+    width: 100%;
+  }
+
+  .motionTrack {
+    order: 1;
+  }
+
+  .playBtn {
+    order: 2;
+  }
+}

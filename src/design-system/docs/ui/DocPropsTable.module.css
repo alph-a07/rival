@@ -1,0 +1,95 @@
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.propsTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.propsTable th {
+  text-align: left;
+  padding: 0 0 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.propsTable td {
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border-surface);
+  font-size: 0.875rem;
+}
+
+.propName {
+  color: var(--color-primary);
+  font-family: var(--font-mono);
+}
+
+.propType {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.typeChip {
+  background: var(--bg-floating);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-xs);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+
+/** Responsive: On smaller screens, hide the table header and display each row as a block with labels. */
+
+@media (--bp-md) {
+  .propsTable thead {
+    display: none;
+  }
+
+  .propsTable,
+  .propsTable tbody,
+  .propsTable tr,
+  .propsTable td {
+    display: block;
+    width: 100%;
+  }
+
+  .propsTable tr {
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-surface);
+  }
+
+  .propsTable td {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 0.375rem 0;
+    border-bottom: none;
+    text-align: right;
+  }
+
+  .propsTable td::before {
+    content: attr(data-label);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-align: left;
+    flex-shrink: 0;
+  }
+
+  .propsTable td.propType {
+    justify-content: flex-start;
+    align-items: center;
+    text-align: left;
+    gap: 0.5rem;
+  }
+}

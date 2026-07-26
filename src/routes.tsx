@@ -1,7 +1,9 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import { MarketingShell } from "@/shells/MarketingShell/MarketingShell";
 import { AppShell } from "@/shells/AppShell/AppShell";
 import { FlowShell } from "@/shells/AppShell/FlowShell";
+import { DocLayout } from "./design-system/docs/ui/DocLayout";
+import { DocPage } from "./design-system/docs/ui/DocPage";
 
 // Temporary placeholder components
 const MarketingHome = () => <h1>Marketing Home</h1>;
@@ -17,6 +19,15 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <MarketingHome /> },
       // other marketing routes (about, pricing, etc.) go here
+    ],
+  },
+  {
+    path: "/design-system",
+    element: <DocLayout />,
+    errorElement: <NotFound />,
+    children: [
+      { index: true, element: <Navigate to="color-system" replace /> },
+      { path: ":componentId", element: <DocPage /> },
     ],
   },
   {
