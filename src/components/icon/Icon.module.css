@@ -1,0 +1,51 @@
+.iconWrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition:
+    color var(--duration-hover) var(--ease-standard),
+    background-color var(--duration-hover) var(--ease-standard);
+}
+
+.variantStandard {
+  background: transparent;
+}
+
+.variantSecondaryFilled {
+  background: var(--bg-floating);
+  padding: 0.5rem;
+  border-radius: var(--radius-sm);
+}
+
+.tintMain {
+  color: var(--text-main);
+}
+
+.tintMuted {
+  color: var(--text-muted);
+}
+
+.tintPrimary {
+  color: var(--text-brand-primary);
+}
+
+.tintAccent {
+  color: var(--text-brand-accent);
+}
+
+.tintDanger {
+  color: var(--text-brand-danger);
+}
+
+.tintBuilding {
+  color: var(--text-domain-building);
+}
+
+.tintExploring {
+  color: var(--text-domain-exploring);
+}
+
+.tintPracticing {
+  color: var(--text-domain-practicing);
+}
