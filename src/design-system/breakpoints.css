@@ -1,0 +1,8 @@
+/**
+ * Shared breakpoint tokens for the design system.
+ * Consumed via postcss-custom-media (see postcss.config.js).
+ */
+
+@custom-media --bp-sm (max-width: 37.5em); /* ~600px  — tight grids, dense controls */
+@custom-media --bp-md (max-width: 50em); /* ~800px  — mobile layout / nav collapse */
+@custom-media --bp-lg (max-width: 64em); /* ~1024px — two-column -> stacked layouts */
