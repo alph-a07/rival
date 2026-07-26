@@ -1,0 +1,84 @@
+{
+  "brandRoles": [
+    "--color-primary",
+    "--color-accent",
+    "--color-danger",
+    "--color-primary-hover",
+    "--color-primary-active",
+    "--color-accent-hover",
+    "--color-accent-active",
+    "--color-danger-hover",
+    "--color-danger-active"
+  ],
+  "domainRoles": [
+    "--color-building",
+    "--color-learning",
+    "--color-exploring",
+    "--color-practicing",
+    "--color-habit",
+    "--color-maintaining"
+  ],
+  "surfaces": [
+    "--bg-background",
+    "--bg-surface",
+    "--bg-floating",
+    "--bg-card",
+    "--bg-disabled",
+    "--surface-primary",
+    "--surface-primary-glow"
+  ],
+  "text": [
+    "--text-main",
+    "--text-muted",
+    "--text-on-brand",
+    "--text-disabled",
+    "--text-brand-primary",
+    "--text-brand-accent",
+    "--text-brand-danger",
+    "--text-domain-building",
+    "--text-domain-exploring",
+    "--text-domain-practicing",
+    "--text-syntax-component",
+    "--text-syntax-prop",
+    "--text-syntax-string"
+  ],
+  "borders": [
+    "--border-surface",
+    "--border-strong",
+    "--border-interactive",
+    "--border-focus",
+    "--border-card",
+    "--border-disabled"
+  ],
+  "scrims": ["--scrim-1", "--scrim-2", "--scrim-3", "--scrim-4"],
+  "fonts": ["--font-display", "--font-body", "--font-mono"],
+  "weights": ["--weight-reading", "--weight-medium", "--weight-600", "--weight-bold"],
+  "radii": [
+    "--radius-xs",
+    "--radius-sm",
+    "--radius-md",
+    "--radius-lg",
+    "--radius-xl",
+    "--radius-pill"
+  ],
+  "durations": [
+    "--duration-tap",
+    "--duration-hover",
+    "--duration-expand",
+    "--duration-nav",
+    "--duration-hero"
+  ],
+  "easings": ["--ease-standard", "--ease-emphasized"],
+  "shadowsGlows": [
+    "--shadow-elevation-sm",
+    "--shadow-elevation-md",
+    "--shadow-card",
+    "--glow-primary",
+    "--glow-primary-strong",
+    "--glow-accent",
+    "--glow-accent-strong",
+    "--glow-danger",
+    "--glow-danger-strong",
+    "--ring-focus"
+  ]
+}
