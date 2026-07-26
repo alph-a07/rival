@@ -1,0 +1,168 @@
+/** Base Styles */
+
+.btn {
+  display: inline flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--font-body);
+  font-weight: var(--weight-medium);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+  transition:
+    background-color var(--duration-hover) var(--ease-standard),
+    box-shadow var(--duration-hover) var(--ease-standard),
+    transform var(--duration-tap) var(--ease-standard),
+    color var(--duration-hover) var(--ease-standard);
+}
+
+.btnContent {
+  position: relative;
+  z-index: 1;
+  display: inline flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn:focus-visible {
+  outline: none;
+  box-shadow: var(--ring-focus);
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+}
+
+.btnPill {
+  border-radius: var(--radius-pill);
+}
+
+/** Primary Variant */
+
+.btnPrimary {
+  background-color: var(--color-accent);
+  color: var(--text-on-brand);
+  box-shadow:
+    inset 0 0 0 1px var(--border-interactive),
+    var(--shadow-elevation-sm);
+}
+
+.btnPrimary:disabled {
+  background: var(--bg-disabled);
+  color: var(--text-disabled);
+  box-shadow: none;
+}
+
+.btnPrimary:hover:not(:disabled) {
+  background-color: var(--color-accent-hover);
+  box-shadow:
+    inset 0 0 0 1px var(--border-interactive),
+    var(--glow-accent);
+}
+
+.btnPrimary:active:not(:disabled) {
+  background-color: var(--color-accent-active);
+}
+
+.btnSecondary {
+  background: var(--op-primary-5);
+  color: var(--text-main);
+  box-shadow: inset 0 0 0 1px var(--border-interactive);
+}
+
+.btnSecondary:disabled {
+  background: var(--bg-disabled);
+  color: var(--text-disabled);
+  box-shadow: none;
+}
+
+.btnSecondary:hover:not(:disabled) {
+  background: var(--op-primary-10);
+  box-shadow: inset 0 0 0 1.5px var(--border-interactive);
+}
+
+.btnSecondary:active:not(:disabled) {
+  background: var(--op-primary-20);
+}
+
+/* Ghost — minimal, neutral, truly flat until touched */
+
+.btnGhost {
+  background: transparent;
+  color: var(--text-main);
+  box-shadow: none;
+}
+
+.btnGhost:disabled {
+  background: var(--bg-disabled);
+  color: var(--text-disabled);
+  box-shadow: none;
+}
+
+.btnGhost:hover:not(:disabled) {
+  background: var(--scrim-2);
+}
+
+.btnGhost:active:not(:disabled) {
+  background: var(--scrim-3);
+}
+
+/** Danger Variant */
+
+.btnDanger {
+  background-color: var(--color-danger);
+  color: var(--text-on-brand);
+  box-shadow:
+    inset 0 0 0 1px var(--border-interactive),
+    var(--shadow-elevation-sm);
+}
+
+.btnDanger:disabled {
+  background: var(--bg-disabled);
+  color: var(--text-disabled);
+  box-shadow: none;
+}
+
+.btnDanger:hover:not(:disabled) {
+  background-color: var(--color-danger-hover);
+  box-shadow:
+    inset 0 0 0 1px var(--border-interactive),
+    var(--glow-danger);
+}
+
+.btnDanger:active:not(:disabled) {
+  background-color: var(--color-danger-active);
+}
+
+/* Utility Animations */
+
+.btnSpinner {
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  border: 2px solid currentcolor;
+  border-top-color: transparent;
+  animation: rv-btn-spin 700ms linear infinite;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes rv-btn-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn,
+  .btn::before,
+  .btn::after {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
+}
