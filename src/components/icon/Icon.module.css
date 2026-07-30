@@ -18,6 +18,10 @@
   border-radius: var(--radius-sm);
 }
 
+.tintInherit {
+  color: currentColor;
+}
+
 .tintMain {
   color: var(--text-main);
 }
@@ -38,8 +42,24 @@
   color: var(--text-brand-danger);
 }
 
+.tintSuccess {
+  color: var(--text-brand-success);
+}
+
+.tintWarning {
+  color: var(--text-brand-warning);
+}
+
+.tintInfo {
+  color: var(--text-brand-info);
+}
+
 .tintBuilding {
   color: var(--text-domain-building);
+}
+
+.tintLearning {
+  color: var(--text-domain-learning);
 }
 
 .tintExploring {
@@ -48,4 +68,12 @@
 
 .tintPracticing {
   color: var(--text-domain-practicing);
+}
+
+.tintHabit {
+  color: var(--text-domain-habit);
+}
+
+.tintMaintaining {
+  color: var(--text-domain-maintaining);
 }

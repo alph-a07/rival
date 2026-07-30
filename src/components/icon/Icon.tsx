@@ -5,14 +5,21 @@ import styles from "./Icon.module.css";
 
 export type IconWeight = "thin" | "regular" | "bold";
 export type IconTint =
+  | "inherit"
   | "main"
   | "muted"
   | "primary"
   | "accent"
   | "danger"
+  | "success"
+  | "warning"
+  | "info"
   | "building"
   | "exploring"
-  | "practicing";
+  | "practicing"
+  | "learning"
+  | "habit"
+  | "maintaining";
 
 export type IconVariant = "standard" | "secondary-filled";
 
@@ -23,14 +30,21 @@ const strokeWidthByWeight: Record<IconWeight, number> = {
 };
 
 const tintClass: Record<IconTint, string> = {
+  inherit: styles.tintInherit,
   main: styles.tintMain,
   muted: styles.tintMuted,
   primary: styles.tintPrimary,
   accent: styles.tintAccent,
   danger: styles.tintDanger,
+  success: styles.tintSuccess,
+  warning: styles.tintWarning,
+  info: styles.tintInfo,
   building: styles.tintBuilding,
+  learning: styles.tintLearning,
   exploring: styles.tintExploring,
   practicing: styles.tintPracticing,
+  habit: styles.tintHabit,
+  maintaining: styles.tintMaintaining,
 };
 
 const variantClass: Record<IconVariant, string> = {
@@ -50,7 +64,7 @@ export const Icon = ({
   name,
   size = "1.25rem",
   weight = "regular",
-  tint = "main",
+  tint = "inherit",
   variant = "standard",
   className,
   ...props
