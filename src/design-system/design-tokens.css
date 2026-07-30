@@ -190,6 +190,10 @@
   --scrim-3: rgb(0 0 0 / 8%);
   --scrim-4: rgb(0 0 0 / 15%);
 
+  --text-main: var(--raw-black);
+  --text-muted: #5b5567;
+  --text-on-brand: var(--raw-white);
+  --text-disabled: rgb(10 8 18 / 35%);
   --text-brand-primary: color-mix(in srgb, var(--raw-primary-light) 85%, black);
   --text-brand-accent: color-mix(in srgb, var(--raw-accent-light) 85%, black);
   --text-brand-danger: color-mix(in srgb, var(--raw-danger-light) 85%, black);
