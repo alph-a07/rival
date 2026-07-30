@@ -72,7 +72,13 @@ export const iconButtonDoc: RegistryEntry = {
       type: "props",
       title: "Props",
       propsList: [
-        { name: "icon", type: "IconName", default: "—", notes: "Required" },
+        {
+          name: "icon",
+          type: "IconName",
+          default: "—",
+          notes:
+            "Required. Check available icons in the [Icon Library](/design-system/icon-library)",
+        },
         {
           name: "aria-label",
           type: "string",
