@@ -1,12 +1,29 @@
-import { useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { useParams, useLocation } from "react-router-dom";
 import { DocPlayground } from "./DocPlayground";
 import { DocPropsTable } from "./DocPropsTable";
+import { DocTypesList } from "./DocTypesList";
 import styles from "./DocPage.module.css";
 import { designSystemRegistry } from "@/design-system/docs/registry";
 
 export const DocPage = () => {
   const { componentId } = useParams<{ componentId: string }>();
+  const { hash } = useLocation();
   const componentData = designSystemRegistry.find((c) => c.id === componentId);
+
+  // Scroll to the section if a hash is present in the URL
+  useEffect(() => {
+    if (hash) {
+      setTimeout(() => {
+        const element = document.querySelector(hash);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 100);
+    } else {
+      window.scrollTo(0, 0);
+    }
+  }, [hash, componentId]);
 
   if (!componentData) {
     return (
@@ -30,12 +47,19 @@ export const DocPage = () => {
         {componentData.sections.map((section, idx) => (
           <section key={`${componentData.id}-${idx}`} className={styles.sectionBlock}>
             {section.title && <h2 className={styles.sectionTitle}>{section.title}</h2>}
+
             {section.type === "custom" && section.customRender && section.customRender()}
+
             {section.type === "playground" && section.playground && (
               <DocPlayground config={section.playground} />
             )}
+
             {section.type === "props" && section.propsList && (
               <DocPropsTable propsList={section.propsList} />
+            )}
+
+            {section.type === "types" && section.typesList && (
+              <DocTypesList typesList={section.typesList} />
             )}
           </section>
         ))}
