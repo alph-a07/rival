@@ -7,7 +7,7 @@ interface TypographyState {
   weight:
     | "var(--weight-reading)"
     | "var(--weight-medium)"
-    | "var(--weight-display-bold)"
+    | "var(--weight-bold-display)"
     | "var(--weight-bold)";
   size: number;
 }
@@ -37,10 +37,10 @@ export const typographyDoc: RegistryEntry = {
             options: [
               "var(--weight-reading)",
               "var(--weight-medium)",
-              "var(--weight-display-bold)",
+              "var(--weight-bold-display)",
               "var(--weight-bold)",
             ],
-            defaultValue: "var(--weight-display-bold)",
+            defaultValue: "var(--weight-bold-display)",
           },
           { name: "size", type: "range", min: 12, max: 120, step: 2, defaultValue: 48 },
         ] as DocControl<TypographyState>[],
