@@ -8,7 +8,11 @@
     "--color-danger-active",
     "--color-primary",
     "--color-accent",
-    "--color-danger"
+    "--color-danger",
+    "--color-success",
+    "--color-warning",
+    "--color-info",
+    "--color-error"
   ],
   "domainRoles": [
     "--color-building",
@@ -35,9 +39,15 @@
     "--text-brand-primary",
     "--text-brand-accent",
     "--text-brand-danger",
+    "--text-brand-success",
+    "--text-brand-warning",
+    "--text-brand-info",
+    "--text-domain-learning",
     "--text-domain-building",
     "--text-domain-exploring",
     "--text-domain-practicing",
+    "--text-domain-habit",
+    "--text-domain-maintaining",
     "--text-syntax-component",
     "--text-syntax-prop",
     "--text-syntax-string"
@@ -64,7 +74,7 @@
   "weights": [
     "--weight-reading",
     "--weight-medium",
-    "--weight-600",
+    "--weight-bold-display",
     "--weight-bold"
   ],
   "radii": [

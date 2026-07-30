@@ -5,7 +5,7 @@
   --font-mono: "JetBrains Mono", monospace;
   --weight-reading: 400;
   --weight-medium: 500;
-  --weight-600: 600;
+  --weight-bold-display: 600;
   --weight-bold: 700;
 
   /* Shape & motion */
@@ -35,15 +35,21 @@
   --raw-floating-dark: #1b1826;
   --raw-floating-light: #fff;
 
-  /* Base Brand (Fills Only) */
+  /* Base Brand */
   --raw-primary-dark: #9061f9;
   --raw-primary-light: #803dff;
   --raw-accent-dark: #e64a00;
   --raw-accent-light: #d94b26;
   --raw-danger-dark: #ef4444;
   --raw-danger-light: #dc2626;
+  --raw-success-dark: #10b981;
+  --raw-success-light: #059669;
+  --raw-warning-dark: #f59e0b;
+  --raw-warning-light: #d97706;
+  --raw-info-dark: #3b82f6;
+  --raw-info-light: #2563eb;
 
-  /* Base Domain Palette (Fills Only) */
+  /* Base Domain Palette */
   --raw-building-dark: #f2a93b;
   --raw-building-light: #b8790f;
   --raw-learning-dark: #3b82f6;
@@ -74,6 +80,12 @@
   --op-accent-20: color-mix(in srgb, var(--color-accent) 20%, transparent);
   --op-danger-10: color-mix(in srgb, var(--color-danger) 10%, transparent);
   --op-danger-20: color-mix(in srgb, var(--color-danger) 20%, transparent);
+  --op-success-10: color-mix(in srgb, var(--color-success) 10%, transparent);
+  --op-success-20: color-mix(in srgb, var(--color-success) 20%, transparent);
+  --op-warning-10: color-mix(in srgb, var(--color-warning) 10%, transparent);
+  --op-warning-20: color-mix(in srgb, var(--color-warning) 20%, transparent);
+  --op-info-10: color-mix(in srgb, var(--color-info) 10%, transparent);
+  --op-info-20: color-mix(in srgb, var(--color-info) 20%, transparent);
 
   /* Glows */
   --glow-primary: 0 0 20px var(--op-primary-40);
@@ -89,16 +101,18 @@
 
 [data-theme="dark"],
 :root {
-  /* Surfaces */
   --bg-background: var(--raw-bg-dark);
   --bg-surface: var(--raw-surface-dark);
   --bg-floating: var(--raw-floating-dark);
   --bg-card: var(--raw-surface-dark);
 
-  /* Brand & Domain Fills (Large structural shapes only) */
   --color-primary: var(--raw-primary-dark);
   --color-accent: var(--raw-accent-dark);
   --color-danger: var(--raw-danger-dark);
+  --color-success: var(--raw-success-dark);
+  --color-warning: var(--raw-warning-dark);
+  --color-info: var(--raw-info-dark);
+  --color-error: var(--color-danger);
   --color-building: var(--raw-building-dark);
   --color-learning: var(--raw-learning-dark);
   --color-exploring: var(--raw-exploring-dark);
@@ -106,46 +120,45 @@
   --color-habit: var(--raw-habit-dark);
   --color-maintaining: var(--raw-maintaining-dark);
 
-  /* Scrims */
   --scrim-1: rgb(255 255 255 / 4%);
   --scrim-2: rgb(255 255 255 / 8%);
   --scrim-3: rgb(255 255 255 / 12%);
   --scrim-4: rgb(255 255 255 / 20%);
 
-  /* Typography */
   --text-main: var(--raw-white);
   --text-muted: #9b96a8;
   --text-on-brand: var(--raw-white);
   --text-disabled: rgb(255 255 255 / 35%);
-  --text-brand-primary: color-mix(in srgb, var(--raw-primary-dark) 20%, white);
-  --text-brand-accent: color-mix(in srgb, var(--raw-accent-dark) 20%, white);
-  --text-brand-danger: color-mix(in srgb, var(--raw-danger-dark) 20%, white);
-  --text-domain-building: color-mix(in srgb, var(--raw-building-dark) 20%, white);
-  --text-domain-exploring: color-mix(in srgb, var(--raw-exploring-dark) 20%, white);
-  --text-domain-practicing: color-mix(in srgb, var(--raw-practicing-dark) 20%, white);
+  --text-brand-primary: color-mix(in srgb, var(--raw-primary-dark) 60%, white);
+  --text-brand-accent: color-mix(in srgb, var(--raw-accent-dark) 60%, white);
+  --text-brand-danger: color-mix(in srgb, var(--raw-danger-dark) 60%, white);
+  --text-brand-success: color-mix(in srgb, var(--raw-success-dark) 60%, white);
+  --text-brand-warning: color-mix(in srgb, var(--raw-warning-dark) 60%, white);
+  --text-brand-info: color-mix(in srgb, var(--raw-info-dark) 60%, white);
+  --text-domain-learning: color-mix(in srgb, var(--raw-learning-dark) 60%, white);
+  --text-domain-building: color-mix(in srgb, var(--raw-building-dark) 60%, white);
+  --text-domain-exploring: color-mix(in srgb, var(--raw-exploring-dark) 60%, white);
+  --text-domain-practicing: color-mix(in srgb, var(--raw-practicing-dark) 60%, white);
+  --text-domain-habit: color-mix(in srgb, var(--raw-habit-dark) 60%, white);
+  --text-domain-maintaining: color-mix(in srgb, var(--raw-maintaining-dark) 60%, white);
 
-  /* Syntax Highlighting */
   --text-syntax-component: #f472b6;
   --text-syntax-prop: #38bdf8;
   --text-syntax-string: #a3e635;
 
-  /* Borders & Boundaries */
   --border-surface: var(--scrim-2);
   --border-strong: var(--scrim-4); /* Thin decorative dividers */
   --border-interactive: rgb(255 255 255 / 25%); /* UI boundaries (buttons, inputs) */
   --border-focus: var(--color-primary); /* Solid, high-contrast outline */
   --border-card: var(--border-surface);
 
-  /* States */
   --bg-disabled: var(--scrim-2);
   --border-disabled: var(--scrim-3);
 
-  /* Shadows & Elevations */
   --shadow-elevation-sm: 0 1px 2px rgb(0 0 0 / 40%);
   --shadow-elevation-md: 0 12px 32px rgb(0 0 0 / 50%);
   --shadow-card: var(--shadow-elevation-sm);
 
-  /* Primary Button Canvas */
   --surface-primary: var(--raw-floating-dark);
   --surface-primary-glow: var(--raw-primary-dark);
   --sheen-soft: rgb(255 255 255 / 12%);
@@ -153,16 +166,18 @@
 }
 
 [data-theme="light"] {
-  /* Surfaces */
   --bg-background: var(--raw-bg-light);
   --bg-surface: var(--raw-surface-light);
   --bg-floating: var(--raw-floating-light);
   --bg-card: var(--raw-surface-light);
 
-  /* Brand & Domain Fills (Large structural shapes only) */
   --color-primary: var(--raw-primary-light);
   --color-accent: var(--raw-accent-light);
   --color-danger: var(--raw-danger-light);
+  --color-success: var(--raw-success-light);
+  --color-warning: var(--raw-warning-light);
+  --color-info: var(--raw-info-light);
+  --color-error: var(--color-danger);
   --color-building: var(--raw-building-light);
   --color-learning: var(--raw-learning-light);
   --color-exploring: var(--raw-exploring-light);
@@ -170,46 +185,40 @@
   --color-habit: var(--raw-habit-light);
   --color-maintaining: var(--raw-maintaining-light);
 
-  /* Scrims */
   --scrim-1: rgb(0 0 0 / 2%);
   --scrim-2: rgb(0 0 0 / 5%);
   --scrim-3: rgb(0 0 0 / 8%);
   --scrim-4: rgb(0 0 0 / 15%);
 
-  /* Typography */
-  --text-main: var(--raw-black);
-  --text-muted: #5b5567;
-  --text-on-brand: var(--raw-white);
-  --text-disabled: rgb(10 8 18 / 35%);
-  --text-brand-primary: color-mix(in srgb, var(--raw-primary-light) 75%, black);
-  --text-brand-accent: color-mix(in srgb, var(--raw-accent-light) 75%, black);
-  --text-brand-danger: color-mix(in srgb, var(--raw-danger-light) 75%, black);
-  --text-domain-building: color-mix(in srgb, var(--raw-building-light) 75%, black);
-  --text-domain-exploring: color-mix(in srgb, var(--raw-exploring-light) 75%, black);
-  --text-domain-practicing: color-mix(in srgb, var(--raw-practicing-light) 75%, black);
-
-  /* Syntax Highlighting */
+  --text-brand-primary: color-mix(in srgb, var(--raw-primary-light) 85%, black);
+  --text-brand-accent: color-mix(in srgb, var(--raw-accent-light) 85%, black);
+  --text-brand-danger: color-mix(in srgb, var(--raw-danger-light) 85%, black);
+  --text-brand-success: color-mix(in srgb, var(--raw-success-light) 85%, black);
+  --text-brand-warning: color-mix(in srgb, var(--raw-warning-light) 85%, black);
+  --text-brand-info: color-mix(in srgb, var(--raw-info-light) 85%, black);
+  --text-domain-learning: color-mix(in srgb, var(--raw-learning-light) 85%, black);
+  --text-domain-building: color-mix(in srgb, var(--raw-building-light) 85%, black);
+  --text-domain-exploring: color-mix(in srgb, var(--raw-exploring-light) 85%, black);
+  --text-domain-practicing: color-mix(in srgb, var(--raw-practicing-light) 85%, black);
+  --text-domain-habit: color-mix(in srgb, var(--raw-habit-light) 85%, black);
+  --text-domain-maintaining: color-mix(in srgb, var(--raw-maintaining-light) 85%, black);
   --text-syntax-component: #be185d;
   --text-syntax-prop: #0284c7;
   --text-syntax-string: #4d7c0f;
 
-  /* Borders & Boundaries */
   --border-surface: #d4c7ed;
   --border-strong: #b7a3dd;
   --border-interactive: rgb(10 8 18 / 25%);
   --border-focus: var(--color-primary);
   --border-card: var(--border-surface);
 
-  /* States */
   --bg-disabled: var(--scrim-2);
   --border-disabled: var(--scrim-3);
 
-  /* Shadows & Elevations */
   --shadow-elevation-sm: 0 1px 2px rgb(10 8 18 / 6%);
   --shadow-elevation-md: 0 16px 32px rgb(10 8 18 / 14%);
   --shadow-card: var(--shadow-elevation-sm);
 
-  /* Primary Button Canvas */
   --surface-primary: var(--raw-primary-light);
   --surface-primary-glow: color-mix(in srgb, var(--raw-primary-light) 35%, white);
 }
