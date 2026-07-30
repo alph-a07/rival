@@ -20,12 +20,14 @@ export const DocPropsTable = ({ propsList }: { propsList: any[] }) => (
               <td className={styles.propName} data-label="Prop">
                 {prop.name}
               </td>
-              <td className={styles.propType} data-label="Type">
-                {typeOptions.map((opt: string) => (
-                  <code key={opt} className={styles.typeChip}>
-                    {opt}
-                  </code>
-                ))}
+              <td data-label="Type">
+                <div className={styles.propType}>
+                  {typeOptions.map((opt: string) => (
+                    <code key={opt} className={styles.typeChip}>
+                      {opt}
+                    </code>
+                  ))}
+                </div>
               </td>
               <td className={styles.propDefault} data-label="Default">
                 {prop.default}
