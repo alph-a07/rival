@@ -1,0 +1,151 @@
+.base {
+  margin: 0;
+  padding: 0;
+}
+
+.colorMain {
+  color: var(--text-main);
+}
+
+.colorMuted {
+  color: var(--text-muted);
+}
+
+.colorPrimary {
+  color: var(--text-brand-primary);
+}
+
+.colorDanger {
+  color: var(--text-brand-danger);
+}
+
+.colorSuccess {
+  color: var(--text-brand-success);
+}
+
+.colorInfo {
+  color: var(--text-brand-info);
+}
+
+.colorWarning {
+  color: var(--text-brand-warning);
+}
+
+/* Headings (Clash Display) */
+
+.heading {
+  font-family: var(--font-display);
+  color: var(--text-main);
+}
+
+.h1 {
+  font-size: 2.5rem;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.h2 {
+  font-size: 2rem;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.h3 {
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+.h4 {
+  font-size: 1.25rem;
+  line-height: 1.3;
+}
+
+.h5 {
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.weightClashReading {
+  font-weight: var(--weight-reading);
+}
+
+.weightClashBold {
+  font-weight: var(--weight-bold-display);
+}
+
+@media (--bp-sm) {
+  .h1 {
+    font-size: 2rem;
+  }
+  .h2 {
+    font-size: 1.75rem;
+  }
+  .h3 {
+    font-size: 1.25rem;
+  }
+}
+
+/* Text (Satoshi) */
+
+.text {
+  font-family: var(--font-body);
+}
+
+.textLg {
+  font-size: 1.125rem;
+  line-height: 1.6;
+}
+.textMd {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+.textSm {
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+.textXs {
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.weightSatoshiReading {
+  font-weight: var(--weight-reading);
+}
+
+.weightSatoshiMedium {
+  font-weight: var(--weight-medium);
+}
+
+.weightSatoshiBold {
+  font-weight: var(--weight-bold);
+}
+
+/** Mono (JetBrains Mono) */
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+.weightMonoReading {
+  font-weight: var(--weight-reading);
+}
+
+.weightMonoMedium {
+  font-weight: var(--weight-medium);
+}
+
+/* Label */
+
+.label {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: var(--weight-medium);
+  display: inline-block;
+}
+
+.labelMain {
+  color: var(--text-main);
+}
+
+.labelMuted {
+  color: var(--text-muted);
+}
