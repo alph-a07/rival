@@ -10,7 +10,7 @@
 
 .propsTable th {
   text-align: left;
-  padding: 0 0 0.75rem;
+  padding: 0 1.5rem 0.75rem 0;
   font-family: var(--font-mono);
   font-size: 0.75rem;
   color: var(--text-muted);
@@ -19,14 +19,21 @@
 }
 
 .propsTable td {
-  padding: 1rem 0;
+  padding: 1rem 1.5rem 1rem 0;
   border-bottom: 1px solid var(--border-surface);
   font-size: 0.875rem;
+  vertical-align: top;
+}
+
+.propsTable th:last-child,
+.propsTable td:last-child {
+  padding-right: 0;
 }
 
 .propName {
   color: var(--color-primary);
   font-family: var(--font-mono);
+  white-space: nowrap;
 }
 
 .propType {
