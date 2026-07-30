@@ -215,7 +215,7 @@
 
 .codeSnippet {
   grid-column: 1 / -1;
-  background: var(--bg-surface);
+  background: var(--bg-background);
   color: var(--text-main);
   padding: 1.5rem;
   border-radius: var(--radius-md);
@@ -287,5 +287,10 @@
 
 :global(.token.plain-text) {
   color: var(--text-main);
+}
+
+:global(.token.string),
+:global(.token.attr-value) {
+  color: var(--text-syntax-string);
 }
 /* stylelint-enable selector-pseudo-class-no-unknown, selector-class-pattern */
