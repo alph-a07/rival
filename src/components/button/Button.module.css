@@ -1,4 +1,4 @@
-/** Size Styles */
+/* Size Styles */
 
 .btnSm {
   padding: 0.375rem 0.75rem;
@@ -15,7 +15,7 @@
   font-size: 1rem;
 }
 
-/** Hero Variant */
+/* Hero Variant */
 
 .btnHero {
   background-color: var(--surface-primary);
@@ -35,10 +35,6 @@
   box-shadow:
     var(--glow-primary-strong),
     inset 0 0 0 1px var(--border-interactive);
-}
-
-.btnHero:active:not(:disabled) {
-  transform: translateY(1px) scale(0.985);
 }
 
 .btnHero::before {
@@ -194,6 +190,35 @@
 
   100% {
     transform: translate(-2px, -20%) rotate(200deg);
+  }
+}
+
+/* Sticky Hover Safeguards */
+
+@media (hover: hover) and (pointer: fine) {
+  .btnHero:hover:not(:disabled) {
+    box-shadow:
+      var(--glow-primary-strong),
+      inset 0 0 0 1px var(--border-interactive);
+  }
+
+  .btnHero:hover:not(:disabled)::before {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+
+  .btnHero:hover:not(:disabled)::after {
+    opacity: 1;
+    animation-play-state: running;
+  }
+
+  .btnHero:hover:not(:disabled) .btnHeroStars {
+    opacity: 1;
+  }
+
+  .btnHero:hover:not(:disabled) .btnHeroStars::before,
+  .btnHero:hover:not(:disabled) .btnHeroStars::after {
+    animation-play-state: running;
   }
 }
 

@@ -1,4 +1,4 @@
-/** Base Styles */
+/* Base Styles */
 
 .btn {
   display: inline flex;
@@ -41,7 +41,7 @@
   border-radius: var(--radius-pill);
 }
 
-/** Primary Variant */
+/* Primary Variant */
 
 .btnPrimary {
   background-color: var(--color-accent);
@@ -57,16 +57,7 @@
   box-shadow: none;
 }
 
-.btnPrimary:hover:not(:disabled) {
-  background-color: var(--color-accent-hover);
-  box-shadow:
-    inset 0 0 0 1px var(--border-interactive),
-    var(--glow-accent);
-}
-
-.btnPrimary:active:not(:disabled) {
-  background-color: var(--color-accent-active);
-}
+/* Secondary Variant */
 
 .btnSecondary {
   background: var(--op-primary-5);
@@ -80,16 +71,7 @@
   box-shadow: none;
 }
 
-.btnSecondary:hover:not(:disabled) {
-  background: var(--op-primary-10);
-  box-shadow: inset 0 0 0 1.5px var(--border-interactive);
-}
-
-.btnSecondary:active:not(:disabled) {
-  background: var(--op-primary-20);
-}
-
-/* Ghost — minimal, neutral, truly flat until touched */
+/* Ghost Variant */
 
 .btnGhost {
   background: transparent;
@@ -103,15 +85,7 @@
   box-shadow: none;
 }
 
-.btnGhost:hover:not(:disabled) {
-  background: var(--scrim-2);
-}
-
-.btnGhost:active:not(:disabled) {
-  background: var(--scrim-3);
-}
-
-/** Danger Variant */
+/* Danger Variant */
 
 .btnDanger {
   background-color: var(--color-danger);
@@ -127,15 +101,53 @@
   box-shadow: none;
 }
 
-.btnDanger:hover:not(:disabled) {
-  background-color: var(--color-danger-hover);
-  box-shadow:
-    inset 0 0 0 1px var(--border-interactive),
-    var(--glow-danger);
+/* Sticky Hover Safeguards */
+
+@media (hover: hover) and (pointer: fine) {
+  .btnPrimary:hover:not(:disabled) {
+    background-color: var(--color-accent-hover);
+    box-shadow:
+      inset 0 0 0 1px var(--border-interactive),
+      var(--glow-accent);
+  }
+
+  .btnSecondary:hover:not(:disabled) {
+    background: var(--op-primary-10);
+    box-shadow: inset 0 0 0 1.5px var(--border-interactive);
+  }
+
+  .btnGhost:hover:not(:disabled) {
+    background: var(--scrim-2);
+  }
+
+  .btnDanger:hover:not(:disabled) {
+    background-color: var(--color-danger-hover);
+    box-shadow:
+      inset 0 0 0 1px var(--border-interactive),
+      var(--glow-danger);
+  }
+}
+
+/* Active States */
+
+.btnPrimary:active:not(:disabled) {
+  background-color: var(--color-accent-active);
+}
+
+.btnSecondary:active:not(:disabled) {
+  background: var(--op-primary-20);
+}
+
+.btnGhost:active:not(:disabled) {
+  background: var(--scrim-3);
 }
 
 .btnDanger:active:not(:disabled) {
   background-color: var(--color-danger-active);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(1px) scale(0.985);
 }
 
 /* Utility Animations */
