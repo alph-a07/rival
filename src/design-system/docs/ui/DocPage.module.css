@@ -16,7 +16,7 @@
 .pageTitle {
   font-family: var(--font-display);
   font-size: 2rem;
-  font-weight: var(--weight-display-bold);
+  font-weight: var(--weight-bold-display);
   margin: 0 0 0.75rem;
 }
 

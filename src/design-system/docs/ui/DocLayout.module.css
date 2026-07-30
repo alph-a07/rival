@@ -25,7 +25,7 @@
 .brand {
   font-family: var(--font-display);
   font-size: 1.25rem;
-  font-weight: var(--weight-display-bold);
+  font-weight: var(--weight-bold-display);
   color: var(--text-main);
   margin: 0;
 }
@@ -159,7 +159,7 @@
 
   .sidebarOpen {
     transform: translateX(0);
-    box-shadow: var(--shadow-elevation-lg);
+    box-shadow: var(--shadow-elevation-md);
   }
 
   .overlay {
