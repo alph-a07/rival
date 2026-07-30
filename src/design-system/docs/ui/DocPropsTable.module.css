@@ -52,6 +52,29 @@
   white-space: nowrap;
 }
 
+.typeLink {
+  color: var(--color-primary);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--duration-hover) var(--ease-standard);
+}
+
+.typeLink:hover {
+  background: var(--op-primary-10);
+  text-decoration: underline;
+}
+
+.noteLink {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: var(--weight-medium);
+  transition: text-decoration var(--duration-hover) var(--ease-standard);
+}
+
+.noteLink:hover {
+  text-decoration: underline;
+}
+
 /** Responsive: On smaller screens, hide the table header and display each row as a block with labels. */
 
 @media (--bp-md) {
