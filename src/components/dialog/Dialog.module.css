@@ -1,0 +1,87 @@
+/* Backdrop Overlay */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(0 0 0 / 40%);
+  backdrop-filter: blur(4px);
+  padding: 1rem;
+  animation: rv-fade-in var(--duration-expand) var(--ease-standard);
+}
+
+/* Dialog Container */
+.dialogWrapper {
+  width: 100%;
+  max-height: calc(100vh - 2rem);
+  display: flex;
+  flex-direction: column;
+  animation: rv-slide-up var(--duration-expand) var(--ease-standard);
+}
+
+/* Sizing constraints */
+
+.sizeSm {
+  max-width: 400px;
+}
+.sizeMd {
+  max-width: 560px;
+}
+.sizeLg {
+  max-width: 800px;
+}
+
+/* Internal Layout */
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-surface);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: var(--weight-bold-display);
+  color: var(--text-main);
+}
+
+.body {
+  padding: 1.5rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* Animations */
+
+@keyframes rv-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes rv-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay,
+  .dialogWrapper {
+    animation: none !important;
+  }
+}
