@@ -1,0 +1,71 @@
+.card {
+  background-color: var(--bg-card);
+  color: var(--text-main);
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow var(--duration-hover) var(--ease-standard);
+}
+
+.variantElevated {
+  box-shadow: var(--shadow-card);
+  border: 1px solid transparent;
+}
+
+.variantOutlined {
+  border: 1px solid var(--border-card);
+  box-shadow: none;
+}
+
+.variantFilled {
+  background-color: var(--bg-floating);
+  border: 1px solid transparent;
+  box-shadow: none;
+}
+
+.radiusSm {
+  border-radius: var(--radius-sm);
+}
+
+.radiusMd {
+  border-radius: var(--radius-md);
+}
+
+.radiusLg {
+  border-radius: var(--radius-lg);
+}
+
+.radiusXl {
+  border-radius: var(--radius-xl);
+}
+
+.paddingNone {
+  padding: 0;
+}
+
+.paddingSm {
+  padding: 1rem;
+}
+
+.paddingMd {
+  padding: 1.5rem;
+}
+
+.paddingLg {
+  padding: 2rem;
+}
+
+.interactive:hover {
+  box-shadow: var(--shadow-elevation-md);
+  cursor: pointer;
+}
+
+.variantGlow {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-focus);
+  box-shadow: var(--glow-primary);
+}
+
+.interactive.variantGlow:hover {
+  box-shadow: var(--glow-primary-strong);
+  transform: translateY(-1px);
+}
