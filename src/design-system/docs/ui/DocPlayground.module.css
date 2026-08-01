@@ -227,10 +227,15 @@
   overflow-x: auto;
 }
 
-.codeSnippet pre {
+.codeSnippet pre,
+.codeSnippet code {
   margin: 0;
-  padding-right: 5rem;
   white-space: pre-wrap;
+  tab-size: 2;
+}
+
+.codeSnippet pre {
+  padding-right: 5rem;
 }
 
 .copyBtn {

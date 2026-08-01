@@ -5,7 +5,11 @@ import styles from "./DocPlayground.module.css";
 import { cx } from "@/components/utils";
 import type { PlaygroundConfig } from "@/design-system/docs/types/registry.types";
 
-export const DocPlayground = ({ config }: { config: PlaygroundConfig }) => {
+interface DocPlaygroundProps {
+  config: PlaygroundConfig;
+}
+
+export const DocPlayground = ({ config }: DocPlaygroundProps) => {
   const [state, setState] = useState<Record<string, any>>(() =>
     config.controls.reduce(
       (acc, ctrl) => ({ ...acc, [ctrl.name]: ctrl.defaultValue }),
@@ -108,7 +112,9 @@ export const DocPlayground = ({ config }: { config: PlaygroundConfig }) => {
       </div>
 
       <div className={styles.codeSnippet}>
-        <code dangerouslySetInnerHTML={{ __html: highlightedCode }} />
+        <pre>
+          <code dangerouslySetInnerHTML={{ __html: highlightedCode }} />
+        </pre>
         <button className={styles.copyBtn} onClick={handleCopy}>
           {copied ? "Copied!" : "Copy"}
         </button>

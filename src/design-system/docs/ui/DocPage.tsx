@@ -11,7 +11,6 @@ export const DocPage = () => {
   const { hash } = useLocation();
   const componentData = designSystemRegistry.find((c) => c.id === componentId);
 
-  // Scroll to the section if a hash is present in the URL
   useEffect(() => {
     if (hash) {
       setTimeout(() => {
@@ -51,7 +50,7 @@ export const DocPage = () => {
             {section.type === "custom" && section.customRender && section.customRender()}
 
             {section.type === "playground" && section.playground && (
-              <DocPlayground config={section.playground} />
+              <DocPlayground key={`${componentData.id}`} config={section.playground} />
             )}
 
             {section.type === "props" && section.propsList && (
