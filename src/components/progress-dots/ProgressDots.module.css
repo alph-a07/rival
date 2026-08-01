@@ -1,0 +1,27 @@
+.container {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background-color: var(--bg-disabled);
+  transition:
+    background-color var(--duration-hover) var(--ease-standard),
+    transform var(--duration-hover) var(--ease-standard);
+}
+
+.dotActive {
+  background-color: var(--color-primary);
+  transform: scale(1.2);
+}
+
+@media (pointer: coarse) {
+  .dot {
+    margin: 4px 0;
+  }
+}
