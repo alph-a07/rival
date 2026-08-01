@@ -11,6 +11,17 @@ import { buttonDoc } from "./content/components/button.doc";
 import { iconButtonDoc } from "./content/components/icon-button.doc";
 import { iconDoc } from "./content/components/icon.doc";
 import { shapeDoc } from "./content/foundations/shape-radius/shape-radius.doc";
+import { inputDoc } from "./content/components/input.doc";
+import { cardDoc } from "./content/components/card.doc";
+import { badgeDoc } from "./content/components/badge.doc";
+import { alertToastDoc } from "./content/components/alert-toast.doc";
+import { dialogDoc } from "./content/components/dialog.doc";
+import { dividerDoc } from "./content/components/divider.doc";
+import { progressDotsDoc } from "./content/components/progress-dots.doc";
+import { sheetDoc } from "./content/components/sheet.doc";
+import { typographyComponentsDoc } from "./content/components/typography-components.doc";
+import { iconLibraryDoc } from "./content/foundations/icons/IconLibrary";
+import { stepperDoc } from "./content/components/stepper.doc";
 
 export const designSystemRegistry: RegistryEntry[] = [
   // Foundations
@@ -19,9 +30,22 @@ export const designSystemRegistry: RegistryEntry[] = [
   shapeDoc,
   motionDoc,
   shadowGlowDoc,
+  iconLibraryDoc,
 
   // Components
+  typographyComponentsDoc,
   buttonDoc,
   iconDoc,
   iconButtonDoc,
+  inputDoc,
+  stepperDoc,
+  cardDoc,
+  badgeDoc,
+  dividerDoc,
+  progressDotsDoc,
+
+  // Overlays, Layouts & System Messages
+  dialogDoc,
+  sheetDoc,
+  alertToastDoc,
 ];
