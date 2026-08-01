@@ -80,30 +80,51 @@ export const buttonDoc: RegistryEntry = {
       propsList: [
         {
           name: "variant",
-          type: "hero · primary · secondary · danger · ghost",
+          type: "[ButtonVariant](/design-system/button#type-buttonvariant)",
           default: "primary",
           notes: "Visual role",
         },
-        { name: "size", type: "sm · md · lg", default: "md", notes: "Padding + font-size" },
-        { name: "shape", type: "rounded · pill", default: "rounded", notes: "Border radius" },
-        { name: "fullWidth", type: "boolean", default: "false", notes: "100% width" },
         {
-          name: "loading",
-          type: "boolean",
-          default: "false",
-          notes: "Swaps left icon for spinner, forces disabled",
+          name: "size",
+          type: "[ButtonSize](/design-system/button#type-buttonsize)",
+          default: "md",
+          notes: "Padding + font-size",
+        },
+        {
+          name: "shape",
+          type: "[ButtonShape](/design-system/button#type-buttonshape)",
+          default: "rounded",
+          notes: "Border radius",
         },
         {
           name: "leftIcon / rightIcon",
           type: "IconName",
           default: "—",
-          notes: "Rendered via the typed Icon system",
+          notes: "Rendered via the typed [Icon system](/design-system/icon-library)",
         },
         {
           name: "iconWeight",
-          type: "thin · regular · bold",
+          type: "[IconWeight](/design-system/icon#type-iconweight)",
           default: "regular",
           notes: "Stroke weight, passed through to Icon",
+        },
+      ],
+    },
+    {
+      type: "types",
+      title: "Custom Types",
+      typesList: [
+        {
+          name: "ButtonVariant",
+          definition: `type ButtonVariant = "hero" | "primary" | "secondary" | "danger" | "ghost";`,
+        },
+        {
+          name: "ButtonSize",
+          definition: `type ButtonSize = "sm" | "md" | "lg";`,
+        },
+        {
+          name: "ButtonShape",
+          definition: `type ButtonShape = "rounded" | "pill";`,
         },
       ],
     },
