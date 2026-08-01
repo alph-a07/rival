@@ -1,0 +1,120 @@
+/* Backdrop Overlay */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  background-color: rgb(0 0 0 / 40%);
+  backdrop-filter: blur(4px);
+  animation: rv-fade-in var(--duration-expand) var(--ease-standard);
+}
+
+/* Sheet Container */
+.sheet {
+  width: 100%;
+  max-width: 100%;
+  max-height: calc(100vh - 2rem);
+  background-color: var(--bg-card);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  box-shadow: var(--shadow-elevation-md);
+  display: flex;
+  flex-direction: column;
+  padding-bottom: env(safe-area-inset-bottom);
+  animation: rv-slide-up-sheet var(--duration-expand) var(--ease-emphasized);
+}
+
+/* 
+ * Interaction & Dimension Handling 
+ * On landscape tablets or large screens, constrain the width so it doesn't stretch 100vw.
+ * It will act like a bottom-anchored modal.
+ */
+@media (--bp-up-sm) {
+  .sheet {
+    max-width: 35em;
+  }
+}
+
+/** Touch Affordance (Drag Handle) */
+.dragHandleContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 0.75rem 0 0.25rem 0;
+  cursor: grab;
+  flex-shrink: 0;
+}
+
+.dragHandleContainer:active {
+  cursor: grabbing;
+}
+
+.dragHandle {
+  width: 36px;
+  height: 4px;
+  border-radius: var(--radius-pill);
+  background-color: var(--border-strong);
+}
+
+/* Hide the drag handle if the user is explicitly on a pure mouse device */
+@media (hover: hover) and (pointer: fine) {
+  .dragHandleContainer {
+    display: none;
+  }
+  .header {
+    padding-top: 1.5rem !important; /* Restore padding if handle is hidden */
+  }
+}
+
+/* Internal Layout */
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1.5rem 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-surface);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: var(--weight-bold-display);
+  color: var(--text-main);
+}
+
+.body {
+  padding: 1.5rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* Animations */
+
+@keyframes rv-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes rv-slide-up-sheet {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay,
+  .sheet {
+    animation: none !important;
+  }
+}
