@@ -1,0 +1,262 @@
+/* Stack & Layout */
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  font-family: var(--font-body);
+  width: fit-content;
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+/* Label Sizing & Styles */
+
+.label {
+  font-weight: var(--weight-medium);
+  color: var(--text-muted);
+}
+.labelSm {
+  font-size: 0.75rem;
+}
+.labelMd {
+  font-size: 0.875rem;
+}
+.labelLg {
+  font-size: 1rem;
+}
+
+/* Input Container */
+
+.inputContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-interactive);
+  transition:
+    border-color var(--duration-hover) var(--ease-standard),
+    box-shadow var(--duration-hover) var(--ease-standard),
+    background-color var(--duration-hover) var(--ease-standard),
+    color var(--duration-hover) var(--ease-standard);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Sizing */
+
+.sizeSm {
+  height: 2rem;
+  padding: 0 0.5rem;
+  font-size: 0.75rem;
+}
+.sizeMd {
+  height: 2.5rem;
+  padding: 0 0.75rem;
+  font-size: 0.875rem;
+}
+.sizeLg {
+  height: 3rem;
+  padding: 0 1rem;
+  font-size: 1rem;
+}
+
+@media (--bp-md) {
+  .sizeSm,
+  .sizeMd {
+    font-size: 1rem;
+  }
+}
+
+/* Shapes */
+
+.shapeRounded {
+  border-radius: var(--radius-md);
+}
+.shapePill {
+  border-radius: var(--radius-pill);
+}
+
+/* Base Interactive States */
+
+.inputContainer:hover:not(.disabled):not(.error):not(.success) {
+  border-color: var(--border-strong);
+}
+
+.inputContainer:has(.inputElement:focus):not(.disabled):not(.error):not(.success) {
+  outline: none;
+  box-shadow:
+    inset 0 0 0 1px var(--border-focus),
+    var(--glow-primary);
+}
+
+@media (forced-colors: active) {
+  .inputContainer:has(.inputElement:focus) {
+    outline: 2px solid;
+    outline-offset: 1px;
+  }
+}
+
+/* Validation States */
+
+.error {
+  border-color: var(--color-danger);
+}
+.error:has(.inputElement:focus) {
+  box-shadow: 0 0 0 3px var(--op-danger-20);
+}
+
+.success {
+  border-color: var(--color-success);
+}
+.success:has(.inputElement:focus) {
+  box-shadow: 0 0 0 3px var(--op-success-20);
+}
+
+.disabled {
+  background: var(--bg-disabled);
+  border-color: var(--border-disabled);
+  cursor: not-allowed;
+}
+
+/* Actual <input> Element */
+
+.inputElement {
+  flex-grow: 1;
+  border: none;
+  background: transparent;
+  color: var(--text-main);
+  outline: none;
+  font-family: inherit;
+  font-size: inherit;
+  min-width: 0;
+  padding: 0;
+  transition: color var(--duration-hover) var(--ease-standard);
+}
+
+.inputElement::placeholder {
+  color: var(--text-muted);
+}
+.inputElement:disabled {
+  color: var(--text-disabled);
+  cursor: not-allowed;
+}
+
+/* Stepper Variant Specifics */
+
+.stepperContainer {
+  background: var(--bg-floating);
+  border-color: transparent;
+  padding: 0;
+  justify-content: space-between;
+}
+
+.stepperContainer:hover:not(.disabled):not(.error):not(.success) {
+  border-color: var(--border-interactive);
+}
+
+.stepperInput {
+  text-align: center;
+  width: 4ch;
+  font-variant-numeric: tabular-nums;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.stepperInput::-webkit-outer-spin-button,
+.stepperInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.stepperBtn {
+  border-radius: 0 !important;
+  height: 100%;
+}
+
+/* Slot Elements */
+
+.adornment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: color var(--duration-hover) var(--ease-standard);
+}
+
+/* Message Grid Trick */
+
+.messageWrapper {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition:
+    grid-template-rows var(--duration-expand) var(--ease-standard),
+    margin-top var(--duration-expand) var(--ease-standard);
+  margin-top: 0;
+}
+.messageWrapper.hasMessage {
+  grid-template-rows: 1fr;
+  margin-top: 0.25rem;
+}
+.messageInner {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* Message Sizing & Styles */
+.message {
+  line-height: 1.2;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition:
+    opacity var(--duration-expand) var(--ease-standard),
+    transform var(--duration-expand) var(--ease-standard),
+    color var(--duration-hover) var(--ease-standard);
+}
+.messageSm {
+  font-size: 0.6875rem;
+}
+.messageMd {
+  font-size: 0.75rem;
+}
+.messageLg {
+  font-size: 0.875rem;
+}
+
+.messageVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.messageError {
+  color: var(--text-brand-danger);
+}
+.messageSuccess {
+  color: var(--text-brand-success);
+}
+.messageHelper {
+  color: var(--text-muted);
+}
+
+/* Touch Target Safeguards */
+
+@media (pointer: coarse) {
+  .sizeSm,
+  .sizeMd {
+    height: 44px;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .inputContainer:hover:not(.disabled):not(.error):not(.success) {
+    border-color: var(--border-strong);
+  }
+  .stepperContainer:hover:not(.disabled):not(.error):not(.success) {
+    border-color: var(--border-interactive);
+  }
+}
