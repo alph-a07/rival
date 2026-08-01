@@ -1,0 +1,68 @@
+.alert {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  font-family: var(--font-body);
+}
+
+.variantInfo {
+  --alert-tint: var(--color-info);
+  --alert-bg: var(--op-info-10);
+  --alert-text: var(--text-brand-info);
+}
+
+.variantWarning {
+  --alert-tint: var(--color-warning);
+  --alert-bg: var(--op-warning-10);
+  --alert-text: var(--text-brand-warning);
+}
+
+.variantError {
+  --alert-tint: var(--color-error);
+  --alert-bg: var(--op-danger-10);
+  --alert-text: var(--text-brand-error);
+}
+
+.variantSuccess {
+  --alert-tint: var(--color-success);
+  --alert-bg: var(--op-success-10);
+  --alert-text: var(--text-brand-success);
+}
+
+.alert {
+  background-color: var(--alert-bg);
+  border-color: color-mix(in srgb, var(--alert-tint) 25%, transparent);
+}
+
+.icon {
+  flex-shrink: 0;
+  color: var(--alert-text);
+  margin-top: 0.125rem;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex-grow: 1;
+}
+
+.title {
+  font-weight: var(--weight-bold-display);
+  font-size: 0.875rem;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.message {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.action {
+  margin-top: 0.5rem;
+}
