@@ -1,0 +1,76 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 1rem;
+  padding-top: 1rem;
+}
+
+.iconCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.5rem 0.5rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-surface);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--duration-hover) var(--ease-standard);
+  position: relative;
+}
+
+.iconCard:hover {
+  background: var(--bg-floating);
+  border-color: var(--border-focus);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-elevation-sm);
+}
+
+.iconCard:active {
+  transform: translateY(0) scale(0.95);
+}
+
+.iconLabel {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-align: center;
+  word-break: break-all;
+  transition: color var(--duration-hover) ease;
+}
+
+.iconCard:hover .iconLabel {
+  color: var(--color-primary);
+}
+
+.copiedMessage {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.375rem;
+  font-family: var(--font-body);
+  font-size: 0.625rem;
+  font-weight: var(--weight-medium);
+  color: var(--color-primary);
+  opacity: 0;
+  animation: rv-fade-up-out 1.5s ease forwards;
+}
+
+@keyframes rv-fade-up-out {
+  0% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  15% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  75% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}

@@ -1,4 +1,5 @@
 import React from "react";
+import type { TypeDefinition } from "@/design-system/docs/ui/DocTypesList";
 
 export type ControlType = "select" | "radio" | "boolean" | "text" | "number" | "range";
 export type RegistryCategory = "Start" | "Foundations" | "Components" | "Reference";
@@ -21,9 +22,10 @@ export interface PlaygroundConfig<T = any> {
 }
 
 export interface DocSection {
-  type: "markdown" | "props" | "variants" | "playground" | "custom";
+  type: "markdown" | "props" | "variants" | "playground" | "types" | "custom";
   title?: string;
   content?: string;
+  typesList?: TypeDefinition[];
   propsList?: Array<{ name: string; type: string; default: string; notes: string }>;
   playground?: PlaygroundConfig<any>;
   customRender?: () => React.ReactNode;
