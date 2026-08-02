@@ -22,6 +22,8 @@ import { sheetDoc } from "./content/components/sheet.doc";
 import { typographyComponentsDoc } from "./content/components/typography-components.doc";
 import { iconLibraryDoc } from "./content/foundations/icons/IconLibrary";
 import { stepperDoc } from "./content/components/stepper.doc";
+import { loaderDoc } from "./content/components/loader.doc";
+import { logoDoc } from "./content/components/logo.doc";
 
 export const designSystemRegistry: RegistryEntry[] = [
   // Foundations
@@ -34,6 +36,8 @@ export const designSystemRegistry: RegistryEntry[] = [
 
   // Components
   typographyComponentsDoc,
+  logoDoc,
+  loaderDoc,
   buttonDoc,
   iconDoc,
   iconButtonDoc,
