@@ -37,7 +37,7 @@ export const DocLayout = () => {
 
       <aside className={cx(styles.sidebar, isSidebarOpen && styles.sidebarOpen)}>
         <div className={styles.sidebarHeader}>
-          <h2 className={styles.brand}>System</h2>
+          <h2 className={styles.brand}>Design</h2>
           <button className={styles.themeToggle} onClick={toggleTheme} aria-label="Toggle Theme">
             {theme === "dark" ? "☀️ Light" : "🌙 Dark"}
           </button>
