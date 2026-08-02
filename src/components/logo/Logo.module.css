@@ -1,0 +1,36 @@
+.logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  vertical-align: middle;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  transition: filter var(--duration-nav) var(--ease-standard);
+}
+
+.hasBackground {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-surface);
+  border-radius: 22%;
+  box-shadow: var(--shadow-elevation-sm);
+}
+
+.hasBackground .image {
+  width: 64%;
+  height: 64%;
+}
+
+.monochrome {
+  filter: grayscale(100%) brightness(var(--logo-brightness, 1));
+}
+
+:global([data-theme="dark"]) .monochrome {
+  --logo-brightness: 2.5;
+}
