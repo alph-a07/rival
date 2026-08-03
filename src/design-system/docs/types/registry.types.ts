@@ -31,10 +31,16 @@ export interface DocSection {
   customRender?: () => React.ReactNode;
 }
 
+export interface RegistryEntryChild {
+  id: string;
+  title: string;
+}
+
 export interface RegistryEntry {
   id: string;
   title: string;
   category: RegistryCategory;
   description?: string;
+  parent?: string;
   sections: DocSection[];
 }
