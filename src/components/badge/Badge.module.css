@@ -29,6 +29,7 @@
   font-size: 0.875rem;
 }
 
+/* Base Color Variants */
 .colorPrimary {
   --badge-fill: var(--color-primary);
   --badge-text: var(--text-brand-primary);
@@ -59,17 +60,52 @@
 }
 .colorHabit {
   --badge-fill: var(--color-habit);
-  --badge-text: var(--color-habit);
+  --badge-text: var(--text-domain-habit);
 }
 .colorMaintaining {
   --badge-fill: var(--color-maintaining);
-  --badge-text: var(--color-maintaining);
+  --badge-text: var(--text-domain-maintaining);
 }
 .colorMuted {
   --badge-fill: var(--border-strong);
   --badge-text: var(--text-muted);
 }
 
+/* Consistency Domain Variants */
+.colorConsistencyWarmingUp {
+  --badge-fill: var(--color-consistency-warming-up);
+  --badge-text: var(--text-consistency-warming-up);
+}
+.colorConsistencyDialedIn {
+  --badge-fill: var(--color-consistency-dialed-in);
+  --badge-text: var(--text-consistency-dialed-in);
+}
+.colorConsistencyOnTrack {
+  --badge-fill: var(--color-consistency-on-track);
+  --badge-text: var(--text-consistency-on-track);
+}
+.colorConsistencyFindingFooting {
+  --badge-fill: var(--color-consistency-finding-footing);
+  --badge-text: var(--text-consistency-finding-footing);
+}
+.colorConsistencyUnevenGround {
+  --badge-fill: var(--color-consistency-uneven-ground);
+  --badge-text: var(--text-consistency-uneven-ground);
+}
+.colorConsistencyChoppyWaters {
+  --badge-fill: var(--color-consistency-choppy-waters);
+  --badge-text: var(--text-consistency-choppy-waters);
+}
+.colorConsistencyOffCourse {
+  --badge-fill: var(--color-consistency-off-course);
+  --badge-text: var(--text-consistency-off-course);
+}
+.colorConsistencyInTheStorm {
+  --badge-fill: var(--color-consistency-in-the-storm);
+  --badge-text: var(--text-consistency-in-the-storm);
+}
+
+/* Style Variants */
 .variantSolid {
   background-color: var(--badge-fill);
   color: var(--text-on-brand);

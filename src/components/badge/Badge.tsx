@@ -13,7 +13,15 @@ export type BadgeColor =
   | "practicing"
   | "habit"
   | "maintaining"
-  | "muted";
+  | "muted"
+  | "consistencyWarmingUp"
+  | "consistencyDialedIn"
+  | "consistencyOnTrack"
+  | "consistencyFindingFooting"
+  | "consistencyUnevenGround"
+  | "consistencyChoppyWaters"
+  | "consistencyOffCourse"
+  | "consistencyInTheStorm";
 
 export type BadgeVariant = "solid" | "soft" | "outlined";
 export type BadgeSize = "sm" | "md";
