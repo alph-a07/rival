@@ -18,6 +18,7 @@ interface StepperState {
 export const stepperDoc: RegistryEntry = {
   id: "stepper",
   title: "Stepper",
+  parent: "input",
   category: "Components",
   description:
     "Numeric input with step-up and step-down controls. Automatically assumes placeholder value if starting from empty.",

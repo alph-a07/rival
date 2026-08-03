@@ -18,6 +18,7 @@ interface IconButtonState {
 
 export const iconButtonDoc: RegistryEntry = {
   id: "icon-button",
+  parent: "button",
   title: "Icon Button",
   category: "Components",
   description:
