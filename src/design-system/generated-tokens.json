@@ -12,7 +12,15 @@
     "--color-success",
     "--color-warning",
     "--color-info",
-    "--color-error"
+    "--color-error",
+    "--color-consistency-warming-up",
+    "--color-consistency-dialed-in",
+    "--color-consistency-on-track",
+    "--color-consistency-finding-footing",
+    "--color-consistency-uneven-ground",
+    "--color-consistency-choppy-waters",
+    "--color-consistency-off-course",
+    "--color-consistency-in-the-storm"
   ],
   "domainRoles": [
     "--color-building",
@@ -48,6 +56,14 @@
     "--text-domain-practicing",
     "--text-domain-habit",
     "--text-domain-maintaining",
+    "--text-consistency-warming-up",
+    "--text-consistency-dialed-in",
+    "--text-consistency-on-track",
+    "--text-consistency-finding-footing",
+    "--text-consistency-uneven-ground",
+    "--text-consistency-choppy-waters",
+    "--text-consistency-off-course",
+    "--text-consistency-in-the-storm",
     "--text-syntax-component",
     "--text-syntax-prop",
     "--text-syntax-string"
