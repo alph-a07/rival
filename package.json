@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "extract-tokens": "tsx scripts/extract-tokens.ts",
-    "dev": "npm run extract-tokens && vite",
-    "build": "npm run extract-tokens && npm run typecheck && vite build",
+    "dev": "npm run extract-tokens && VITE_ENV=development vite",
+    "prod": "npm run extract-tokens && VITE_ENV=production vite",
+    "build": "npm run extract-tokens && npm run typecheck && VITE_ENV=production vite build",
     "preview": "vite preview",
     "typecheck": "tsc -b",
     "test": "vitest run",
@@ -48,5 +49,16 @@
     "tsx": "^4.23.1",
     "typescript": "~6.0.2",
     "vite": "^8.1.1"
+  },
+  "env": {
+    "VITE_ENV": {
+      "description": "Deployment environment selector. Drives defaults (e.g. the logging minimum level).",
+      "values": [
+        "development",
+        "production"
+      ],
+      "defaultDev": "development",
+      "defaultProd": "production"
+    }
   }
 }
