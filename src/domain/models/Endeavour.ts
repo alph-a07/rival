@@ -5,10 +5,7 @@ export interface DomainSegment {
   attachedGisIds: string[];
 }
 
-/**
- * An endeavour represents a specific goal or objective that a user wants to
- * achieve.
- */
+/** An endeavour represents a specific goal or objective that a user wants to achieve. */
 export interface Endeavour {
   id: string;
   name: string;
