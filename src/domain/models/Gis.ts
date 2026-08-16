@@ -1,3 +1,5 @@
+import type { IconName } from "@/design-system/icons";
+
 export type GisTier = "mandatory" | "optional" | "recommended";
 
 export type QuestionType = "single-select" | "multi-select" | "scale";
@@ -33,6 +35,7 @@ export interface Question {
 export interface Gis {
   id: string;
   name: string;
+  icon?: IconName;
   baseWeight: number;
   questions: Question[];
 }
