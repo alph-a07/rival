@@ -2,7 +2,8 @@ import React from "react";
 import base from "@/components/button/ButtonBase.module.css";
 import styles from "./IconButton.module.css";
 import { cx } from "@/components/utils";
-import { Icon, type IconName, type IconWeight } from "@/components/icon/Icon";
+import { Icon, type IconWeight } from "@/components/icon/Icon";
+import type { IconName } from "@/design-system/icons";
 
 export type IconButtonVariant = "primary" | "secondary" | "filled" | "danger" | "ghost";
 type IconButtonSize = "sm" | "md" | "lg";

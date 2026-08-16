@@ -82,5 +82,3 @@ export const Icon = ({
     </span>
   );
 };
-
-export type { IconName };

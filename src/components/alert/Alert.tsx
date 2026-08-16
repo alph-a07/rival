@@ -1,7 +1,8 @@
 import React from "react";
 import styles from "./Alert.module.css";
 import { cx } from "@/components/utils";
-import { Icon, type IconName } from "@/components/icon/Icon";
+import { Icon } from "@/components/icon/Icon";
+import type { IconName } from "@/design-system/icons";
 
 export type AlertVariant = "info" | "warning" | "error" | "success";
 

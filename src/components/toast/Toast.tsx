@@ -2,7 +2,8 @@ import React, { useCallback, useEffect, useState } from "react";
 import styles from "./Toast.module.css";
 import { cx } from "@/components/utils";
 import { IconButton } from "@/components/icon-button/IconButton";
-import { Icon, type IconName } from "@/components/icon/Icon";
+import { Icon } from "@/components/icon/Icon";
+import type { IconName } from "@/design-system/icons";
 
 export type ToastVariant = "info" | "warning" | "error" | "success";
 

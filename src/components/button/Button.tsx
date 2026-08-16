@@ -2,7 +2,8 @@ import React from "react";
 import base from "./ButtonBase.module.css";
 import styles from "./Button.module.css";
 import { cx } from "@/components/utils";
-import { Icon, type IconName, type IconWeight } from "@/components/icon/Icon";
+import { Icon, type IconWeight } from "@/components/icon/Icon";
+import type { IconName } from "@/design-system/icons";
 
 type ButtonVariant = "hero" | "primary" | "secondary" | "danger" | "ghost";
 
