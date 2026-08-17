@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { GIS_DEFINITIONS } from "@/domain/gis/gisDefinitions";
+import { GisRegistry } from "@/domain/gis/gisDefinitions";
 import { RIVAL_MATH_CONFIG } from "@/domain/config/tuningConstants";
 import type { GisTier } from "@/domain/models/Gis";
 import { evaluateCheckIn } from "./orchestrator";
@@ -50,7 +50,7 @@ function buildContext(
   enabledGisIds: string[] = BUILDING_GIS_IDS,
   selectedDomainId: string = "building",
 ): CheckInContext {
-  const enabledGis = GIS_DEFINITIONS.filter((gis) => enabledGisIds.includes(gis.id));
+  const enabledGis = GisRegistry.all().filter((gis) => enabledGisIds.includes(gis.id));
   const gisTierById: Record<string, GisTier> = {};
   for (const id of enabledGisIds) {
     gisTierById[id] = BUILDING_TIER_BY_GIS[id] ?? "optional";

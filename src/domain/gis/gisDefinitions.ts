@@ -1,7 +1,7 @@
-import type { Gis } from "@/domain/models/Gis";
+import type { Gis, GisTier } from "@/domain/models/Gis";
 
 /** Single source of truth for all Growth Indicative Strategies available in the product. */
-export const GIS_DEFINITIONS: Gis[] = [
+const GIS_DEFINITIONS: Gis[] = [
   {
     id: "depth_of_focus",
     name: "Depth of Focus",
@@ -223,3 +223,24 @@ export const GIS_DEFINITIONS: Gis[] = [
     ],
   },
 ];
+
+/** Canonical resolver + sole public access pattern for the GIS content layer. */
+export const GisRegistry = {
+  /** All GIS definitions available in the product. */
+  all(): readonly Gis[] {
+    return GIS_DEFINITIONS;
+  },
+
+  /** Resolves a gisId -> tier map into the `Map<Gis, GisTier>` */
+  resolveActiveSet(gisTierById: Record<string, GisTier>): Map<Gis, GisTier> {
+    const byId = new Map(GIS_DEFINITIONS.map((gis) => [gis.id, gis] as const));
+    const active = new Map<Gis, GisTier>();
+    for (const [gisId, tier] of Object.entries(gisTierById)) {
+      const gis = byId.get(gisId);
+      if (gis) {
+        active.set(gis, tier);
+      }
+    }
+    return active;
+  },
+};

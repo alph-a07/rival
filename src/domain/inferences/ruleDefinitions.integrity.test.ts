@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
-import { DOMAIN_DEFINITIONS } from "@/domain/domains/domainDefinitions";
-import { GIS_DEFINITIONS } from "@/domain/gis/gisDefinitions";
+import { DomainRegistry } from "@/domain/domains/domainDefinitions";
+import { GisRegistry } from "@/domain/gis/gisDefinitions";
 import {
   ANSWER_INFERENCE_RULES,
   CONTRADICTION_RULES,
@@ -10,13 +10,13 @@ import {
 import type { Condition } from "./types";
 
 const optionByQuestion = new Map<string, Set<string>>();
-for (const gis of GIS_DEFINITIONS) {
+for (const gis of GisRegistry.all()) {
   for (const question of gis.questions) {
     optionByQuestion.set(question.id, new Set(question.options.map((o) => o.id)));
   }
 }
-const gisIds = new Set(GIS_DEFINITIONS.map((g) => g.id));
-const domainIds = new Set(DOMAIN_DEFINITIONS.map((d) => d.id));
+const gisIds = new Set(GisRegistry.all().map((g) => g.id));
+const domainIds = new Set(DomainRegistry.all().map((d) => d.id));
 
 function allConditions(): Condition[] {
   const fromRules = [

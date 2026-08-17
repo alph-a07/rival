@@ -1,10 +1,10 @@
 import { describe, expect, test } from "vitest";
-import { GIS_DEFINITIONS } from "@/domain/gis/gisDefinitions";
+import { GisRegistry } from "@/domain/gis/gisDefinitions";
 import { ConditionEvaluator } from "./ConditionEvaluator";
 import type { CheckInContext, Condition } from "./types";
 
 describe("ConditionEvaluator", () => {
-  const enabledGis = GIS_DEFINITIONS.filter((gis) =>
+  const enabledGis = GisRegistry.all().filter((gis) =>
     ["depth_of_focus", "time_invested", "challenge_stretch"].includes(gis.id),
   );
   const answeredSoFar = [{ questionId: "depth_of_focus_q1", optionId: "depth_of_focus_flow" }];

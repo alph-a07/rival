@@ -1,7 +1,7 @@
 import type { Domain } from "@/domain/models/Domain";
 
 /** Single source of truth for the `Domain`s we support in the product, and their definitions. */
-export const DOMAIN_DEFINITIONS: Domain[] = [
+const DOMAIN_DEFINITIONS: Domain[] = [
   {
     id: "building",
     name: "Building",
@@ -120,5 +120,18 @@ export const DOMAIN_DEFINITIONS: Domain[] = [
 ];
 
 /** In-product disambiguator copy for the Habit/Maintaining split surface at domain selection time. */
-export const HABIT_VS_MAINTAINING_DISAMBIGUATOR =
+const HABIT_VS_MAINTAINING_DISAMBIGUATOR =
   "Still building the behavior? \u2192 Habit. Already automatic, just don't want it to slip? \u2192 Maintaining.";
+
+/** Canonical resolver + sole public access pattern for the domain content layer. */
+export const DomainRegistry = {
+  /** All domain definitions available in the product. */
+  all(): readonly Domain[] {
+    return DOMAIN_DEFINITIONS;
+  },
+
+  /** In-product disambiguator copy for the Habit/Maintaining split. */
+  fetchHabitMaintenanceDistinction(): string {
+    return HABIT_VS_MAINTAINING_DISAMBIGUATOR;
+  },
+};
