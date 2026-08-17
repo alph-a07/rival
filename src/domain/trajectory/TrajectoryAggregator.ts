@@ -1,9 +1,19 @@
 import { RIVAL_MATH_CONFIG } from "@/domain/config/tuningConstants";
 
+/**
+ * A trajectory label is a human-usable direction summary derived from a
+ * normalized `TrajectoryReading` (a z-score against a domain's own history).
+ *
+ * `new` is reserved for readings without a baseline.
+ */
+export type TrajectoryLabel = "climbing" | "steady" | "cooling" | "new";
+
 export interface TrajectoryReading {
   value: number;
   /** Whether the reading has a valid baseline for comparison, `false` if not enough history or zero variance */
   hasBaseline: boolean;
+  /** Display label derived from `value` and `hasBaseline`. */
+  label: TrajectoryLabel;
 }
 
 export class TrajectoryAggregator {
@@ -13,7 +23,7 @@ export class TrajectoryAggregator {
    */
   static zScore(value: number, history: number[]): TrajectoryReading {
     if (history.length < RIVAL_MATH_CONFIG.TRAJECTORY_BASELINE_MIN) {
-      return { value: 0, hasBaseline: false };
+      return { value: 0, hasBaseline: false, label: "new" };
     }
 
     const mean = history.reduce((sum, v) => sum + v, 0) / history.length;
@@ -21,10 +31,11 @@ export class TrajectoryAggregator {
     const stdev = Math.sqrt(variance);
 
     if (stdev === 0) {
-      return { value: 0, hasBaseline: false };
+      return { value: 0, hasBaseline: false, label: "new" };
     }
 
-    return { value: (value - mean) / stdev, hasBaseline: true };
+    const z = (value - mean) / stdev;
+    return { value: z, hasBaseline: true, label: this.labelOf(z, true) };
   }
 
   /**
@@ -32,25 +43,25 @@ export class TrajectoryAggregator {
    * domain's own baseline history, then averages -- but only across items that
    * actually got a real reading. Items without a baseline are EXCLUDED from the
    * average (not counted as 0). If none have one, the whole rollup reports
-   * hasBaseline: false.
+   * hasBaseline: false (and label `new`).
    */
   static domainRollup(
     currentItemTrends: number[],
     domainTrendHistory: number[],
   ): TrajectoryReading {
     if (currentItemTrends.length === 0) {
-      return { value: 0, hasBaseline: false };
+      return { value: 0, hasBaseline: false, label: "new" };
     }
 
     const readings = currentItemTrends.map((t) => this.zScore(t, domainTrendHistory));
     const withBaseline = readings.filter((r) => r.hasBaseline);
 
     if (withBaseline.length === 0) {
-      return { value: 0, hasBaseline: false };
+      return { value: 0, hasBaseline: false, label: "new" };
     }
 
     const avg = withBaseline.reduce((sum, r) => sum + r.value, 0) / withBaseline.length;
-    return { value: avg, hasBaseline: true };
+    return { value: avg, hasBaseline: true, label: this.labelOf(avg, true) };
   }
 
   /**
@@ -62,10 +73,24 @@ export class TrajectoryAggregator {
     const withBaseline = domainRollups.filter((r) => r.hasBaseline);
 
     if (withBaseline.length === 0) {
-      return { value: 0, hasBaseline: false };
+      return { value: 0, hasBaseline: false, label: "new" };
     }
 
     const avg = withBaseline.reduce((sum, r) => sum + r.value, 0) / withBaseline.length;
-    return { value: avg, hasBaseline: true };
+    return { value: avg, hasBaseline: true, label: this.labelOf(avg, true) };
+  }
+
+  /** Derives the display label for a finalized reading value. */
+  private static labelOf(value: number, hasBaseline: boolean): TrajectoryLabel {
+    if (!hasBaseline) {
+      return "new";
+    }
+    if (value >= RIVAL_MATH_CONFIG.TRAJECTORY_CLIMB_THRESHOLD) {
+      return "climbing";
+    }
+    if (value <= RIVAL_MATH_CONFIG.TRAJECTORY_COOL_THRESHOLD) {
+      return "cooling";
+    }
+    return "steady";
   }
 }
