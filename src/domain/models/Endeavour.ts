@@ -1,8 +1,11 @@
+import type { GisTier } from "./Gis";
+
 export interface DomainSegment {
   domainId: string;
   startDate: string; // ISO string
   endDate: string | null; // null = active segment
-  attachedGisIds: string[];
+  /** The GIS attached to this segment with their tiers, keyed by gisId. */
+  attachedGis: Record<string, GisTier>;
 }
 
 /** An endeavour represents a specific goal or objective that a user wants to achieve. */
