@@ -1,6 +1,7 @@
 import { expect, test, describe } from "vitest";
-import { ConsistencyTracker } from "./ConsistencyTracker";
+import { ConsistencyTracker, type ConsistencyStatus } from "./ConsistencyTracker";
 import { RIVAL_MATH_CONFIG } from "@/domain/config/tuningConstants";
+import type { Snapshot } from "@/domain/models/Snapshot";
 
 describe("ConsistencyTracker", () => {
   describe("insufficient data gate (rival-v1-content-decisions.md §3)", () => {
@@ -70,8 +71,56 @@ describe("ConsistencyTracker", () => {
       expect(result).toBe("in_the_storm");
     });
   });
+
+  describe("flagWorst", () => {
+    test("returns null under two snapshots", () => {
+      expect(ConsistencyTracker.flagWorst([snap(1)])).toBeNull();
+      expect(ConsistencyTracker.flagWorst([])).toBeNull();
+    });
+
+    test("returns the index of the largest absolute residual", () => {
+      const list = [snap(10), snap(-30), snap(5), snap(20)];
+      // absolutes: 10, 30, 5, 20 -> worst is index 1 (residual = -30)
+      expect(ConsistencyTracker.flagWorst(list)).toBe(1);
+    });
+
+    test("breaks ties toward the first occurrence", () => {
+      const list = [snap(15), snap(-15), snap(10)]; // 15 and -15 tie in magnitude
+      expect(ConsistencyTracker.flagWorst(list)).toBe(0);
+    });
+
+    test("skips null residuals (first check-in of a segment)", () => {
+      const list = [snap(null), snap(2), snap(-5), snap(8)];
+      // null is skipped; worst magnitude is 8 at index 3
+      expect(ConsistencyTracker.flagWorst(list)).toBe(3);
+    });
+
+    test("returns null when no snapshot carries a real residual", () => {
+      const list = [snap(null), snap(null)];
+      expect(ConsistencyTracker.flagWorst(list)).toBeNull();
+    });
+  });
 });
 
 function generateResiduals(targetStdev: number): number[] {
   return Array.from({ length: 6 }, (_, i) => (i % 2 === 0 ? targetStdev : -targetStdev));
+}
+
+/** Build a minimal Snapshot carrying only the residual a test cares about. */
+function snap(residual: number | null): Snapshot {
+  return {
+    id: "s",
+    endeavourId: "e",
+    checkInId: "c",
+    timestamp: "2026-01-01T00:00:00Z",
+    domainId: "d",
+    segmentStartDate: "2026-01-01T00:00:00Z",
+    n: 1,
+    raw: 0,
+    forecast: 0,
+    residual,
+    level: 0,
+    trend: 0,
+    consistencyStatus: "on_track" as ConsistencyStatus,
+  };
 }
