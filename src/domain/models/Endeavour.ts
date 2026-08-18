@@ -14,3 +14,8 @@ export interface Endeavour {
   name: string;
   domainHistory: DomainSegment[];
 }
+
+/** The currently-active segment (endDate null) of an endeavour, if any. */
+export function activeSegment(endeavour: Endeavour): DomainSegment | undefined {
+  return endeavour.domainHistory.find((s) => s.endDate === null);
+}
