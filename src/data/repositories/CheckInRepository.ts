@@ -1,20 +1,48 @@
+import { db as defaultDb } from "@/data/db";
+import type { AppDatabase } from "@/data/db";
 import type { CheckIn } from "@/domain/models/CheckIn";
-import { db } from "@/data/db";
+import type { Snapshot } from "@/domain/models/Snapshot";
+import {
+  snapshotRepository as defaultSnapshotRepository,
+  SnapshotRepository,
+} from "./SnapshotRepository";
 
-export const CheckInRepository = {
+export class CheckInRepository {
+  private readonly db: AppDatabase;
+  private readonly snapshots: SnapshotRepository;
+
+  constructor(
+    db: AppDatabase = defaultDb,
+    snapshots: SnapshotRepository = defaultSnapshotRepository,
+  ) {
+    this.db = db;
+    this.snapshots = snapshots;
+  }
+
   async create(checkIn: CheckIn): Promise<string> {
-    return db.checkIns.add(checkIn);
-  },
+    return this.db.checkIns.add(checkIn);
+  }
 
   async get(id: string): Promise<CheckIn | undefined> {
-    return db.checkIns.get(id);
-  },
+    return this.db.checkIns.get(id);
+  }
 
   async getByEndeavour(endeavourId: string): Promise<CheckIn[]> {
-    return db.checkIns.where({ endeavourId }).sortBy("timestamp");
-  },
+    return this.db.checkIns.where({ endeavourId }).sortBy("timestamp");
+  }
 
   async delete(id: string): Promise<void> {
-    return db.checkIns.delete(id);
-  },
-};
+    return this.db.checkIns.delete(id);
+  }
+
+  /** Persists a completed check-in and its resulting Snapshot in a single transaction. */
+  async record(checkIn: CheckIn, snapshot: Snapshot): Promise<void> {
+    await this.db.transaction("rw", this.db.checkIns, this.db.snapshots, async () => {
+      await this.db.checkIns.add(checkIn);
+      await this.snapshots.create(snapshot);
+    });
+  }
+}
+
+/** App-wide singleton `CheckInRepository` instance. */
+export const checkInRepository = new CheckInRepository();
