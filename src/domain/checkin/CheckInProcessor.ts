@@ -2,7 +2,7 @@ import type { Gis, GisTier } from "@/domain/models/Gis";
 import type { CheckIn } from "@/domain/models/CheckIn";
 import type { DomainSegment } from "@/domain/models/Endeavour";
 import type { Snapshot } from "@/domain/models/Snapshot";
-import { GisEngine } from "@/domain/gis/GisEngine";
+import { CheckInScoringEngine } from "@/domain/checkin/CheckInScoringEngine";
 import { HoltSmoother } from "@/domain/trajectory/HoltSmoother";
 import { ConsistencyTracker } from "@/domain/trajectory/ConsistencyTracker";
 
@@ -20,7 +20,7 @@ export class CheckInProcessor {
       priorSnapshot === null || priorSnapshot.segmentStartDate !== segment.startDate;
     const n = segmentChanged ? 1 : priorSnapshot.n + 1;
 
-    const raw = GisEngine.calculateRawScore(activeGis, checkIn.responses, modifier);
+    const raw = CheckInScoringEngine.calculateRawScore(activeGis, checkIn.responses, modifier);
 
     const holt = HoltSmoother.step(
       n,

@@ -1,6 +1,7 @@
 import type { Gis, GisTier } from "@/domain/models/Gis";
 import type { Response } from "@/domain/models/CheckIn";
 import { RIVAL_MATH_CONFIG } from "@/domain/config/tuningConstants";
+import { GisRegistry } from "@/domain/gis/gisDefinitions";
 
 const TIER_WEIGHT_MULTIPLIER: Record<GisTier, number> = {
   mandatory: RIVAL_MATH_CONFIG.TIER_WEIGHT_MULTIPLIER.mandatory,
@@ -8,23 +9,40 @@ const TIER_WEIGHT_MULTIPLIER: Record<GisTier, number> = {
   recommended: RIVAL_MATH_CONFIG.TIER_WEIGHT_MULTIPLIER.recommended,
 };
 
-/**
- * Stateless scoring engine for check-ins.
- *
- * Each GIS has a base weight (W_gis) and a tier multiplier (M_tier). Each
- * question has options with fractional values (0.0-1.0). The raw score is
- * calculated as:
- *
- * - For each active GIS:
- *
- *   - Calculate potential weight: W_gis * M_tier
- *   - Calculate earned weight: potential weight * average answer value
- * - Sum earned weights across all active GIS.
- * - Normalize by dividing total earned weight by total potential weight.
- * - Apply synergy/friction modifier (M_hybrid). Final score is clamped between 0
- *   and 100.
- */
-export class GisEngine {
+/** Stateless scoring engine for check-in responses. */
+export class CheckInScoringEngine {
+  /** the per-GIS fraction answer value (0..1), keyed by `gisId`, for a set of responses. */
+  static computeByGisId(
+    responses: Response[],
+    gisRegistry: readonly Gis[] = GisRegistry.all(),
+  ): Record<string, number> {
+    const byId = new Map(gisRegistry.map((gis) => [gis.id, gis] as const));
+    const byGisId = new Map<string, number[]>();
+
+    for (const response of responses) {
+      const gis = byId.get(response.gisId);
+      if (!gis) {
+        continue; // ignore responses for unknown GIS
+      }
+      const resolved = this.resolveAnswerValue(gis, response);
+      const bucket = byGisId.get(response.gisId);
+      if (bucket) {
+        bucket.push(resolved ?? 0);
+      } else {
+        byGisId.set(response.gisId, [resolved ?? 0]);
+      }
+    }
+
+    const result: Record<string, number> = {};
+    for (const [gisId, values] of byGisId) {
+      const gis = byId.get(gisId)!;
+      // Skipped questions drag the average toward 0, matching calculateRawScore.
+      const total = values.reduce((sum, v) => sum + v, 0);
+      result[gisId] = total / gis.questions.length;
+    }
+    return result;
+  }
+
   /** Calculates a check-in's normalized raw score (0-100). */
   static calculateRawScore(
     activeGis: Map<Gis, GisTier>,
@@ -41,7 +59,7 @@ export class GisEngine {
       const gisResponses = responses.filter((r) => r.gisId === gis.id);
 
       if (gisResponses.length === 0) {
-        return; // active but completely unanswered: earns 0, penalizing the score
+        return; // no responses for this GIS, so it contributes 0 to the earned weight
       }
 
       // Resolve and sum the fractional values for all submitted responses
@@ -67,11 +85,8 @@ export class GisEngine {
     return Math.min(Math.max(scoreWithSynergy, 0), 100);
   }
 
-  /**
-   * Resolves a single Response into a fractional value (0.0-1.0). Multi-select
-   * questions sum the values of all selected options and cap at 1.0.
-   */
-  private static resolveAnswerValue(gis: Gis, response: Response): number | undefined {
+  /** Resolves a single Response into a fractional value (0.0-1.0). */
+  static resolveAnswerValue(gis: Gis, response: Response): number | undefined {
     const question = gis.questions.find((q) => q.id === response.questionId);
     if (!question) {
       return undefined;

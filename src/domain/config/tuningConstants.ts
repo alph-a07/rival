@@ -16,7 +16,7 @@ export const RIVAL_MATH_CONFIG = {
   STEADY_THRESHOLD: 5.0,
   MIXED_THRESHOLD: 10.0,
 
-  // GisEngine Multipliers
+  // CheckInScoringEngine Multipliers
   TIER_WEIGHT_MULTIPLIER: {
     mandatory: 1.0,
     recommended: 0.75,
@@ -35,6 +35,11 @@ export const RIVAL_MATH_CONFIG = {
 
   // Trajectory Thresholds
   TRAJECTORY_BASELINE_MIN: 2,
+
+  // Trajectory banding thresholds (applied when a TrajectoryReading.finalizes its label).
+  // Above +CLIMB => "climbing"; below -COOL => "cooling"; everything in between => "steady".
+  TRAJECTORY_CLIMB_THRESHOLD: 0.5,
+  TRAJECTORY_COOL_THRESHOLD: -0.5,
 
   // Confidence thresholds to derive `EvidenceType`
   STRONG_HEURISTIC_MIN: 0.85,
