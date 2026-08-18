@@ -66,6 +66,7 @@ const DOMAIN_DEFINITIONS: Domain[] = [
     definition: "Deliberately repeating a skill to improve performance.",
     icon: "practicing",
     colorToken: "var(--color-practicing)",
+    cadenceDays: 2,
     gisMap: {
       depth_of_focus: "mandatory",
       challenge_stretch: "mandatory",
@@ -85,6 +86,7 @@ const DOMAIN_DEFINITIONS: Domain[] = [
     definition: "Making a new behavior stick — it isn't automatic yet.",
     icon: "habit",
     colorToken: "var(--color-habit)",
+    cadenceDays: 1,
     gisMap: {
       consistency_adherence: "mandatory",
       resilience: "mandatory",
@@ -105,6 +107,7 @@ const DOMAIN_DEFINITIONS: Domain[] = [
       "Keeping something already established from slipping — it's already automatic, this is just the upkeep.",
     icon: "maintaining",
     colorToken: "var(--color-maintaining)",
+    cadenceDays: 2,
     gisMap: {
       consistency_adherence: "mandatory",
       decay_check: "mandatory",

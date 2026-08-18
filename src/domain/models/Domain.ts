@@ -17,4 +17,9 @@ export interface Domain {
   icon?: IconName;
   colorToken: DomainColorToken;
   gisMap: Record<string, GisTier>; // gisId -> tier (mandatory/recommended/optional)
+  /**
+   * Expected check-in cadence in days for cadence-driven domains (habit / practicing / maintaining).
+   * `null` for open-ended domains (learning / exploring / building).
+   */
+  cadenceDays?: number;
 }
