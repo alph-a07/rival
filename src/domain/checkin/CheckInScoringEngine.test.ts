@@ -129,9 +129,7 @@ describe("CheckInScoringEngine", () => {
 
     test("ignores unanswered GIS safely (friction budget trim)", () => {
       const activeGis: Map<Gis, GisTier> = new Map([[mockGisB, "optional"]]);
-      const responses: Response[] = [
-        { gisId: "gis_b", questionId: "q2", optionIds: ["b1"] },
-      ];
+      const responses: Response[] = [{ gisId: "gis_b", questionId: "q2", optionIds: ["b1"] }];
 
       const score = CheckInScoringEngine.calculateRawScore(activeGis, responses);
       expect(score).toBe(100);
@@ -154,9 +152,7 @@ describe("CheckInScoringEngine", () => {
 
     test("applies hybrid modifiers and caps at 100", () => {
       const activeGis: Map<Gis, GisTier> = new Map([[mockGisA, "mandatory"]]);
-      const responses: Response[] = [
-        { gisId: "gis_a", questionId: "q1", optionIds: ["a1"] },
-      ];
+      const responses: Response[] = [{ gisId: "gis_a", questionId: "q1", optionIds: ["a1"] }];
 
       const score = CheckInScoringEngine.calculateRawScore(activeGis, responses, 1.2);
       expect(score).toBe(100);
@@ -264,9 +260,7 @@ describe("CheckInScoringEngine", () => {
 
     test("clamps the score at the floor of 0", () => {
       const activeGis = new Map<Gis, GisTier>([[mockGisA, "mandatory"]]);
-      const responses: Response[] = [
-        { gisId: "gis_a", questionId: "q1", optionIds: ["a1"] },
-      ];
+      const responses: Response[] = [{ gisId: "gis_a", questionId: "q1", optionIds: ["a1"] }];
 
       const score = CheckInScoringEngine.calculateRawScore(activeGis, responses, 0);
       expect(score).toBe(0);

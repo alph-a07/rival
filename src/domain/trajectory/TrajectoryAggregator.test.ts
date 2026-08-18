@@ -1,8 +1,5 @@
 import { expect, test, describe } from "vitest";
-import {
-  TrajectoryAggregator,
-  type TrajectoryReading,
-} from "./TrajectoryAggregator";
+import { TrajectoryAggregator, type TrajectoryReading } from "./TrajectoryAggregator";
 
 describe("TrajectoryAggregator", () => {
   describe("zScore", () => {
@@ -155,8 +152,14 @@ function noBaseline(): TrajectoryReading {
 
 /** Mirror of the aggregator's private banding for building test inputs. */
 function labelOf(value: number, hasBaseline: boolean): "climbing" | "steady" | "cooling" | "new" {
-  if (!hasBaseline) return "new";
-  if (value >= 0.5) return "climbing";
-  if (value <= -0.5) return "cooling";
+  if (!hasBaseline) {
+    return "new";
+  }
+  if (value >= 0.5) {
+    return "climbing";
+  }
+  if (value <= -0.5) {
+    return "cooling";
+  }
   return "steady";
 }
