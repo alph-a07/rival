@@ -17,6 +17,14 @@ export class SnapshotRepository {
     return this.db.snapshots.get(id);
   }
 
+  /** All Snapshots, oldest-first. */
+  async getAll(): Promise<Snapshot[]> {
+    const snapshots = await this.db.snapshots.toArray();
+    return snapshots.sort((a, b) =>
+      a.timestamp < b.timestamp ? -1 : a.timestamp > b.timestamp ? 1 : 0,
+    );
+  }
+
   /** All Snapshots for an endeavour, oldest-first. */
   async getByEndeavour(endeavourId: string): Promise<Snapshot[]> {
     const snapshots = await this.db.snapshots.where({ endeavourId }).toArray();
