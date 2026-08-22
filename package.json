@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "extract-tokens": "tsx scripts/extract-tokens.ts",
-    "dev": "npm run extract-tokens && VITE_ENV=development vite",
-    "prod": "npm run extract-tokens && VITE_ENV=production vite",
-    "build": "npm run extract-tokens && npm run typecheck && VITE_ENV=production vite build",
+    "dev": "npm run extract-tokens && vite --mode development",
+    "prod": "npm run extract-tokens && vite --mode production",
+    "build": "npm run extract-tokens && npm run typecheck && vite build --mode production",
     "preview": "vite preview",
     "typecheck": "tsc -b",
     "test": "vitest run",
