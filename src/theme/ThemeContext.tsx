@@ -1,6 +1,9 @@
 import { createContext, useContext } from "react";
 
-export type Theme = "dark" | "light";
+/** Canonical theme options. */
+export const THEMES = ["dark", "light"] as const;
+
+export type Theme = (typeof THEMES)[number];
 
 export const STORAGE_KEY = "rival-theme";
 
