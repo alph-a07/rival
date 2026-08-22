@@ -2,8 +2,8 @@ import { beforeEach, expect, test, describe } from "vitest";
 import { AppDatabase } from "@/data/db";
 import { EndeavourRepository } from "./EndeavourRepository";
 import { SnapshotRepository } from "./SnapshotRepository";
-import type { Endeavour } from "@/domain/models/Endeavour";
-import type { Snapshot } from "@/domain/models/Snapshot";
+import { activeSegment, type Endeavour } from "@/data/schema/Endeavour";
+import type { Snapshot } from "@/data/schema/Snapshot";
 
 describe("EndeavourRepository", () => {
   let db: AppDatabase;
@@ -124,6 +124,54 @@ describe("EndeavourRepository", () => {
 
     test("throws when the endeavour does not exist", async () => {
       await expect(repo.switchDomain("nope", "habit")).rejects.toThrow();
+    });
+  });
+
+  describe("close", () => {
+    test("ends the active segment without opening a new one", async () => {
+      const e = endeavour("building");
+      await db.endeavours.add(e);
+
+      await repo.close(e.id);
+
+      const updated = await db.endeavours.get(e.id);
+      expect(updated!.domainHistory).toHaveLength(1);
+      expect(updated!.domainHistory[0].endDate).not.toBeNull();
+      expect(activeSegment(updated!)).toBeUndefined();
+    });
+
+    test("throws when already closed", async () => {
+      const e = endeavour("building");
+      await db.endeavours.add(e);
+      await repo.close(e.id);
+      await expect(repo.close(e.id)).rejects.toThrow(/no active segment/);
+    });
+
+    test("throws when the endeavour does not exist", async () => {
+      await expect(repo.close("nope")).rejects.toThrow();
+    });
+  });
+
+  describe("reopen", () => {
+    test("starts a new active segment in the last-lived domain", async () => {
+      const e = endeavour("habit");
+      await db.endeavours.add(e);
+      await repo.close(e.id);
+
+      await repo.reopen(e.id);
+
+      const updated = await db.endeavours.get(e.id);
+      expect(updated!.domainHistory).toHaveLength(2);
+      const reopened = updated!.domainHistory.at(-1)!;
+      expect(reopened.domainId).toBe("habit");
+      expect(reopened.endDate).toBeNull();
+      expect(activeSegment(updated!)).toBe(reopened);
+    });
+
+    test("throws when already active", async () => {
+      const e = endeavour("building");
+      await db.endeavours.add(e);
+      await expect(repo.reopen(e.id)).rejects.toThrow(/already active/);
     });
   });
 });
