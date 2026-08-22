@@ -1,7 +1,7 @@
 import { db as defaultDb } from "@/data/db";
 import type { AppDatabase } from "@/data/db";
-import type { CheckIn } from "@/domain/models/CheckIn";
-import type { Snapshot } from "@/domain/models/Snapshot";
+import type { CheckIn } from "@/data/schema/CheckIn";
+import type { Snapshot } from "@/data/schema/Snapshot";
 import {
   snapshotRepository as defaultSnapshotRepository,
   SnapshotRepository,

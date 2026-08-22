@@ -1,6 +1,6 @@
 import { db as defaultDb } from "@/data/db";
 import type { AppDatabase } from "@/data/db";
-import type { Snapshot } from "@/domain/models/Snapshot";
+import type { Snapshot } from "@/data/schema/Snapshot";
 
 export class SnapshotRepository {
   private readonly db: AppDatabase;

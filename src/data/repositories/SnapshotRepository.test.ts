@@ -1,7 +1,7 @@
 import { beforeEach, expect, test, describe } from "vitest";
 import { AppDatabase } from "@/data/db";
 import { SnapshotRepository } from "./SnapshotRepository";
-import type { Snapshot } from "@/domain/models/Snapshot";
+import type { Snapshot } from "@/data/schema/Snapshot";
 
 describe("SnapshotRepository", () => {
   let db: AppDatabase;
