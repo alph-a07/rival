@@ -2,9 +2,8 @@
 export type MicroMood = "rough" | "okay" | "good" | "great";
 
 /**
- * A lightweight daily mood log. Unlike a full CheckIn/Snapshot it carries no
- * domain scoring — it exists to capture a quick "how did today feel" signal
- * that feeds the Biography breadcrumb and enforces a once-a-day cap.
+ * A lightweight daily mood log.
+ * It exists to capture a quick "how did today feel" signal.
  */
 export interface MicroCheckIn {
   id: string;
