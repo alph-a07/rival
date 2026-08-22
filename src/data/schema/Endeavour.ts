@@ -1,4 +1,4 @@
-import type { GisTier } from "./Gis";
+import type { GisTier } from "@/domain/models/Gis";
 
 export interface DomainSegment {
   domainId: string;
