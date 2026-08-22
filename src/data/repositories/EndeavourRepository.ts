@@ -1,9 +1,10 @@
 import { db as defaultDb } from "@/data/db";
 import type { AppDatabase } from "@/data/db";
-import type { Endeavour } from "@/domain/models/Endeavour";
-import { activeSegment } from "@/domain/models/Endeavour";
-import type { Snapshot } from "@/domain/models/Snapshot";
+import type { Endeavour } from "@/data/schema/Endeavour";
+import { activeSegment } from "@/data/schema/Endeavour";
+import type { Snapshot } from "@/data/schema/Snapshot";
 import { SnapshotRepository } from "./SnapshotRepository";
+import { Logger } from "@/core/logging/logger";
 
 /** An Endeavour with its most recent Snapshot attached (or null if none exists). */
 export type EndeavourWithLatestSnapshot = Endeavour & {
@@ -77,6 +78,60 @@ export class EndeavourRepository {
     });
 
     await this.db.endeavours.update(endeavourId, { domainHistory: history });
+    Logger.behavior.info("Endeavour.switchDomain", {
+      endeavourId,
+      newDomainId,
+      at: now,
+    });
+  }
+
+  /** Ends the active segment without opening a new one, retiring the endeavour. */
+  async close(endeavourId: string): Promise<void> {
+    const endeavour = await this.db.endeavours.get(endeavourId);
+    if (!endeavour) {
+      throw new Error(`close: endeavour ${endeavourId} not found`);
+    }
+    if (!activeSegment(endeavour)) {
+      throw new Error(`close: endeavour ${endeavourId} has no active segment`);
+    }
+    const now = new Date().toISOString();
+    const history = endeavour.domainHistory.map((segment) =>
+      segment.endDate === null ? { ...segment, endDate: now } : segment,
+    );
+    await this.db.endeavours.update(endeavourId, { domainHistory: history });
+    Logger.behavior.info("Endeavour.close", {
+      endeavourId,
+      segments: history.length,
+      closedAt: now,
+    });
+  }
+
+  /** Re-opens a closed endeavour by starting a fresh active segment in the domain it last lived in. */
+  async reopen(endeavourId: string): Promise<void> {
+    const endeavour = await this.db.endeavours.get(endeavourId);
+    if (!endeavour) {
+      throw new Error(`reopen: endeavour ${endeavourId} not found`);
+    }
+    if (activeSegment(endeavour)) {
+      throw new Error(`reopen: endeavour ${endeavourId} is already active`);
+    }
+    const lastSeg = endeavour.domainHistory.at(-1);
+    const now = new Date().toISOString();
+    const history = [
+      ...endeavour.domainHistory,
+      {
+        domainId: lastSeg?.domainId ?? "exploring",
+        startDate: now,
+        endDate: null,
+        attachedGis: {},
+      },
+    ];
+    await this.db.endeavours.update(endeavourId, { domainHistory: history });
+    Logger.behavior.info("Endeavour.reopen", {
+      endeavourId,
+      resumedDomain: lastSeg?.domainId ?? "exploring",
+      at: now,
+    });
   }
 }
 
