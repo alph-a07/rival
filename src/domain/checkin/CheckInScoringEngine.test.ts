@@ -1,6 +1,6 @@
 import { expect, test, describe } from "vitest";
 import { CheckInScoringEngine } from "./CheckInScoringEngine";
-import type { Response } from "@/domain/models/CheckIn";
+import type { Response } from "@/data/schema/CheckIn";
 import type { Gis, GisTier } from "@/domain/models/Gis";
 
 describe("CheckInScoringEngine", () => {

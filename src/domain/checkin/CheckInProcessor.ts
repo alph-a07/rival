@@ -1,7 +1,7 @@
 import type { Gis, GisTier } from "@/domain/models/Gis";
-import type { CheckIn } from "@/domain/models/CheckIn";
-import type { DomainSegment } from "@/domain/models/Endeavour";
-import type { Snapshot } from "@/domain/models/Snapshot";
+import type { CheckIn } from "@/data/schema/CheckIn";
+import type { DomainSegment } from "@/data/schema/Endeavour";
+import type { Snapshot } from "@/data/schema/Snapshot";
 import { CheckInScoringEngine } from "@/domain/checkin/CheckInScoringEngine";
 import { HoltSmoother } from "@/domain/trajectory/HoltSmoother";
 import { ConsistencyTracker } from "@/domain/trajectory/ConsistencyTracker";
