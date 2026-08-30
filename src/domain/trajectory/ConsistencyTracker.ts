@@ -1,5 +1,5 @@
 import { RIVAL_MATH_CONFIG } from "@/domain/config/tuningConstants";
-import type { Snapshot } from "@/domain/models/Snapshot";
+import type { Snapshot } from "@/data/schema/Snapshot";
 
 export type ConsistencyStatus =
   | "warming_up" // gate state: not enough check-ins/residuals yet to read anything
