@@ -1,6 +1,6 @@
 import { RIVAL_MATH_CONFIG } from "@/domain/config/tuningConstants";
 import type { Gis } from "@/domain/models/Gis";
-import type { Response } from "@/domain/models/CheckIn";
+import type { Response } from "@/data/schema/CheckIn";
 import { ConditionEvaluator } from "./ConditionEvaluator";
 import type {
   AnsweredOption,
