@@ -28,37 +28,12 @@ export function getEnvMode(): AppEnv {
   return getEnvString("VITE_ENV") === "production" ? "production" : "development";
 }
 
-/** The Firebase project API key. */
-export function firebaseApiKey(): string | null {
-  return getEnvString("VITE_FIREBASE_API_KEY");
+/** The Google OAuth client id (from GSI). */
+export function googleClientId(): string | null {
+  return getEnvString("VITE_GOOGLE_CLIENT_ID");
 }
 
-/** The Firebase Auth domain (e.g. `rival-xyz.firebaseapp.com`). */
-export function firebaseAuthDomain(): string | null {
-  return getEnvString("VITE_FIREBASE_AUTH_DOMAIN");
-}
-
-/** The Firebase project id. */
-export function firebaseProjectId(): string | null {
-  return getEnvString("VITE_FIREBASE_PROJECT_ID");
-}
-
-/** The Firebase storage bucket. */
-export function firebaseStorageBucket(): string | null {
-  return getEnvString("VITE_FIREBASE_STORAGE_BUCKET");
-}
-
-/** The Firebase messaging sender id. */
-export function firebaseMessagingSenderId(): string | null {
-  return getEnvString("VITE_FIREBASE_MESSAGING_SENDER_ID");
-}
-
-/** The Firebase web app id. */
-export function firebaseAppId(): string | null {
-  return getEnvString("VITE_FIREBASE_APP_ID");
-}
-
-/** URL of the hosted `refreshDriveToken` Cloud Function, or null when unset. */
+/** Base URL of the Cloudflare Worker (token refresh), or null when unset. */
 export function driveTokenFunctionUrl(): string | null {
   return getEnvUrl("VITE_DRIVE_TOKEN_FUNCTION");
 }
