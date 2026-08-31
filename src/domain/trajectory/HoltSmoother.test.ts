@@ -1,8 +1,8 @@
 import { expect, test, describe } from "vitest";
-import { HoltSmoother } from "./HoltSmoother";
+import { holtStep } from "./HoltSmoother";
 import { RIVAL_MATH_CONFIG } from "@/domain/config/tuningConstants";
 
-describe("HoltSmoother Adaptive Algorithm", () => {
+describe("holtStep Adaptive Algorithm", () => {
   test("matches the 6-day worked example from the math spec exactly", () => {
     const rawScores = [60, 68, 55, 70, 75, 78];
 
@@ -11,7 +11,7 @@ describe("HoltSmoother Adaptive Algorithm", () => {
 
     const results = rawScores.map((raw, index) => {
       const n = index + 1;
-      const result = HoltSmoother.step(n, raw, prevLevel, prevTrend);
+      const result = holtStep(n, raw, prevLevel, prevTrend);
       prevLevel = result.level;
       prevTrend = result.trend;
       return result;
@@ -56,14 +56,14 @@ describe("HoltSmoother Adaptive Algorithm", () => {
     let prevLevel: number | null = null;
     let prevTrend: number | null = null;
     [60, 68, 55].forEach((raw, i) => {
-      const r = HoltSmoother.step(i + 1, raw, prevLevel, prevTrend);
+      const r = holtStep(i + 1, raw, prevLevel, prevTrend);
       prevLevel = r.level;
       prevTrend = r.trend;
     });
     // prevLevel/prevTrend now hold old-segment state (~62.3 / ~0.8)
 
     // Caller correctly resets n=1 AND state -> clean fresh start
-    const freshStart = HoltSmoother.step(1, 90, prevLevel, prevTrend);
+    const freshStart = holtStep(1, 90, prevLevel, prevTrend);
     expect(freshStart.level).toBe(90);
     expect(freshStart.trend).toBe(0);
     expect(freshStart.forecast).toBeNull();
@@ -71,18 +71,18 @@ describe("HoltSmoother Adaptive Algorithm", () => {
 
     // Safety net: even if a caller BUG leaves n un-reset, passing null state
     // alone still forces a fresh start -- old segment data can't leak in.
-    const stillResets = HoltSmoother.step(4, 90, null, null);
+    const stillResets = holtStep(4, 90, null, null);
     expect(stillResets.level).toBe(90);
     expect(stillResets.trend).toBe(0);
   });
 
   test("throws an error if n is less than 1", () => {
     expect(() => {
-      HoltSmoother.step(0, 100, 50, 2);
+      holtStep(0, 100, 50, 2);
     }).toThrow(/invalid n=0/);
 
     expect(() => {
-      HoltSmoother.step(-5, 100, 50, 2);
+      holtStep(-5, 100, 50, 2);
     }).toThrow(/must be >= 1/);
   });
 
@@ -93,7 +93,7 @@ describe("HoltSmoother Adaptive Algorithm", () => {
     const prevLevel = 50;
     const prevTrend = 2;
 
-    const result = HoltSmoother.step(n, raw_t, prevLevel, prevTrend);
+    const result = holtStep(n, raw_t, prevLevel, prevTrend);
 
     const expectedForecast = prevLevel + prevTrend;
     const expectedResidual = raw_t - expectedForecast;
