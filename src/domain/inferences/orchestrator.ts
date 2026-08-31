@@ -1,16 +1,16 @@
 import { RIVAL_MATH_CONFIG } from "@/domain/config/tuningConstants";
 import { Logger } from "@/core/logging/logger";
 import { clampScore, generateMutualExclusionContradictions } from "./utils";
-import { ConditionEvaluator } from "./ConditionEvaluator";
+import { buildLookups, conditionHolds, conditionIsApplicable } from "./ConditionEvaluator";
 import {
-  AnswerInferenceEngine,
-  BeliefEngine,
-  ClarificationEngine,
-  ContradictionEngine,
-  QuestionEvaluationEngine,
-  CheckInArchetypeEngine,
+  evaluateAnswerInferences,
+  evaluateBeliefs,
+  deriveClarifications,
+  detectContradictions,
+  evaluateQuestionRelevance,
+  evaluateCheckInArchetypes,
 } from "./engine";
-import { PresentationPolicy } from "./PresentationPolicy";
+import { deriveQuestionPresentation } from "./PresentationPolicy";
 import {
   ANSWER_INFERENCE_RULES,
   CONTRADICTION_RULES,
@@ -45,14 +45,14 @@ export function evaluateCheckIn(
   Logger.performance.mark("checkIn.evaluate:start");
 
   const rules = { ...DEFAULT_RULE_SETS, ...ruleSets };
-  const lookups = ConditionEvaluator.buildLookups(context);
+  const lookups = buildLookups(context);
   const participatingQuestionIds = lookups.participatingQuestionIds;
 
   // -- Scope each rule family to the participating question/GIS set --
   const scopedAnswerRules: AnswerInferenceRule[] = rules.answerInferenceRules
     .filter((rule) =>
       rule.conditions.every((condition) =>
-        ConditionEvaluator.isApplicable(condition, context, lookups),
+        conditionIsApplicable(condition, context, lookups),
       ),
     )
     .map((rule) => ({
@@ -67,7 +67,7 @@ export function evaluateCheckIn(
       ...evaluator,
       modifiers: evaluator.modifiers.filter((modifier) =>
         modifier.conditions.every((condition) =>
-          ConditionEvaluator.isApplicable(condition, context, lookups),
+          conditionIsApplicable(condition, context, lookups),
         ),
       ),
     }));
@@ -75,7 +75,7 @@ export function evaluateCheckIn(
   const contradictionRules: ContradictionRule[] = [
     ...rules.contradictionRules.filter((rule) =>
       rule.conditions.every((condition) =>
-        ConditionEvaluator.isApplicable(condition, context, lookups),
+        conditionIsApplicable(condition, context, lookups),
       ),
     ),
     ...generateMutualExclusionContradictions(enabledGis),
@@ -83,13 +83,13 @@ export function evaluateCheckIn(
 
   const scopedArchetypes: CheckInArchetype[] = rules.sessionArchetypes.filter((archetype) =>
     archetype.conditions.every((condition) =>
-      ConditionEvaluator.isApplicable(condition, context, lookups),
+      conditionIsApplicable(condition, context, lookups),
     ),
   );
 
   // -- Deductions, beliefs, relevance --
-  const inferences = AnswerInferenceEngine.evaluate(scopedAnswerRules, context, lookups);
-  const beliefsByQuestion = BeliefEngine.evaluate(inferences);
+  const inferences = evaluateAnswerInferences(scopedAnswerRules, context, lookups);
+  const beliefsByQuestion = evaluateBeliefs(inferences);
 
   // -- Default relevance scores (tier blended with GIS baseWeight) --
   const defaultScoreByQuestion = new Map<string, number>();
@@ -108,7 +108,7 @@ export function evaluateCheckIn(
     }
   }
 
-  const evaluatedQuestions = QuestionEvaluationEngine.evaluate(
+  const evaluatedQuestions = evaluateQuestionRelevance(
     scopedEvaluators,
     context,
     defaultScoreByQuestion,
@@ -119,13 +119,13 @@ export function evaluateCheckIn(
   );
 
   // -- Contradictions, clarifications, archetypes --
-  const contradictions = ContradictionEngine.detect(contradictionRules, context, lookups);
-  const clarifications = ClarificationEngine.derive(contradictions, context);
+  const contradictions = detectContradictions(contradictionRules, context, lookups);
+  const clarifications = deriveClarifications(contradictions, context);
   const reaskQuestionIds = new Set(
     clarifications.map((clarification) => clarification.reaskQuestionId),
   );
 
-  const archetypes = CheckInArchetypeEngine.evaluate(scopedArchetypes, context, lookups);
+  const archetypes = evaluateCheckInArchetypes(scopedArchetypes, context, lookups);
   const archetypeById = new Map(archetypes.map((a) => [a.id, a] as const));
   const archetypePullByQuestion = new Map<string, number>();
   for (const raw of scopedArchetypes) {
@@ -139,7 +139,7 @@ export function evaluateCheckIn(
       if (condition.type !== "question_answer") {
         continue;
       }
-      if (!ConditionEvaluator.holds(condition, context, lookups)) {
+      if (!conditionHolds(condition, context, lookups)) {
         archetypePullByQuestion.set(
           condition.questionId,
           (archetypePullByQuestion.get(condition.questionId) ?? 0) + pullPerCondition,
@@ -159,7 +159,7 @@ export function evaluateCheckIn(
       const score = evaluated ? clampScore(evaluated.score) : clampScore(defaultScore);
       const isAnswered = answeredQuestionIds.has(question.id);
 
-      const basePresentation = PresentationPolicy.deriveQuestionPresentation(
+      const basePresentation = deriveQuestionPresentation(
         isAnswered,
         beliefsByQuestion.get(question.id) ?? {
           questionId: question.id,

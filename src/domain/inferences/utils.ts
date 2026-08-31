@@ -1,9 +1,7 @@
 import { RIVAL_MATH_CONFIG } from "@/domain/config/tuningConstants";
 import type { Gis } from "@/domain/models/Gis";
-import type { Response } from "@/data/schema/CheckIn";
-import { ConditionEvaluator } from "./ConditionEvaluator";
+import { conditionHolds } from "./ConditionEvaluator";
 import type {
-  AnsweredOption,
   CheckInContext,
   Condition,
   ContradictionRule,
@@ -118,7 +116,7 @@ export function matchedConditions(
   lookups?: EvaluatorLookups,
 ): string {
   const held = conditions.filter((condition) =>
-    ConditionEvaluator.holds(condition, context, lookups),
+    conditionHolds(condition, context, lookups),
   );
   if (held.length === 0) {
     return "";
@@ -136,18 +134,4 @@ export function matchedConditions(
     }
   });
   return ` [caused by: ${parts.join(", ")}]`;
-}
-
-/**
- * Flattens persisted check-in responses into one `AnsweredOption` per selected
- * option. Multi-select responses produce several tuples; single-select produce
- * one. This is the bridge from the `CheckIn` data model into `CheckInContext`.
- */
-export function responsesToAnsweredOptions(responses: Response[]): AnsweredOption[] {
-  return responses.flatMap((response) =>
-    response.optionIds.map((optionId) => ({
-      questionId: response.questionId,
-      optionId,
-    })),
-  );
 }

@@ -3,7 +3,7 @@ import { GisRegistry } from "@/domain/gis/gisDefinitions";
 import { RIVAL_MATH_CONFIG } from "@/domain/config/tuningConstants";
 import type { GisTier } from "@/domain/models/Gis";
 import { evaluateCheckIn } from "./orchestrator";
-import { PresentationPolicy } from "./PresentationPolicy";
+import { deriveQuestionPresentation } from "./PresentationPolicy";
 import type { AnsweredOption, CheckInContext, CheckInRuleSets, CheckInArchetype } from "./types";
 
 const VALID_PRESENTATION_STATES = [
@@ -304,7 +304,7 @@ describe("evaluateCheckIn", () => {
     const tierScoreFor = (gisId: string) =>
       RIVAL_MATH_CONFIG.DEFAULT_QUESTION_SCORE_BY_TIER[BUILDING_TIER_BY_GIS[gisId] ?? "optional"];
     const expectedStateFor = (questionId: string, gisId: string) =>
-      PresentationPolicy.deriveQuestionPresentation(
+      deriveQuestionPresentation(
         false,
         { questionId, beliefs: [], excludedOptionIds: new Set() },
         undefined,

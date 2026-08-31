@@ -45,9 +45,9 @@ types → utils (helpers) → ConditionEvaluator → engines → ruleDefinitions
 ```
 
 - **`types.ts`** — the contracts/vocabulary (below). Understanding the types _is_ understanding the design.
-- **`utils.ts`** — shared helpers: `clampScore`, the evidence-resolution functions (`deriveEvidence`, `resolveEvidence`), `buildExplanation`, `sortExplanations`, `matchedConditions`, `generateMutualExclusionContradictions`, and the input bridge `responsesToAnsweredOptions`.
+- **`utils.ts`** — shared helpers: `clampScore`, the evidence-resolution functions (`deriveEvidence`, `resolveEvidence`), `buildExplanation`, `sortExplanations`, `matchedConditions`, `generateMutualExclusionContradictions`.
 - **`ConditionEvaluator.ts`** — the single interpreter of `Condition`.
-- **`engine.ts`** — the knowledge engines (`AnswerInferenceEngine`, `BeliefEngine`, `QuestionEvaluationEngine`, `ContradictionEngine`, `ClarificationEngine`, `CheckInArchetypeEngine`).
+- **`engine.ts`** — the knowledge functions (`evaluateAnswerInferences`, `evaluateBeliefs`, `evaluateQuestionRelevance`, `detectContradictions`, `deriveClarifications`, `evaluateCheckInArchetypes`).
 - **`ruleDefinitions.ts`** — the authored behavioral knowledge.
 - **`orchestrator.ts`** — `evaluateCheckIn`, the public entry point.
 - **`PresentationPolicy.ts`** — the single UI-deciding component.
@@ -71,7 +71,10 @@ Built by the caller (the viewmodel) from the persisted check-in + active endeavo
 | `answerValueByGisId` | fractional per-GIS score (0..1); feeds `weight` conditions                          |
 | `selectedDomainId`   | the domain, feeds `domain` conditions                                               |
 
-`responsesToAnsweredOptions(responses)` (in `utils.ts`) bridges the persisted `CheckIn.Response[]` (which groups by `gisId` and holds `optionIds[]`) into the flat `AnsweredOption[]` the context wants. This is the only translation between the persistence model and the engine's flat input model.
+The caller (a viewmodel) builds `answeredSoFar` — the flat `AnsweredOption[]`
+the context wants — inline while collecting the user's responses. This is the
+only translation between the persistence model and the engine's flat input
+model.
 
 ---
 
@@ -128,7 +131,7 @@ The old design multiplied confidence by a tier weight (`signalStrength = confide
 
   **Significance:** this is the single input vocabulary shared by every engine and
   rule. Rules are just lists of conditions + effects; the conditions are interpreted
-  by exactly one place (`ConditionEvaluator`). The `weight` and `gis` types are fully
+  by exactly one place (`conditionHolds`). The `weight` and `gis` types are fully
   implemented but currently unused in the catalog — latent capability worth
   expanding very carefully (see Rule authoring).
 
@@ -163,7 +166,7 @@ The old design multiplied confidence by a tier weight (`signalStrength = confide
 - **`QuestionRelevanceEvaluator`** `{ questionId, modifiers[] }` — the full scoring recipe for one question.
 - **`EvaluatedQuestionRelevance`** `{ questionId, score, explanations, evidence: Set }` — the resulting relevance score plus the ordered evidence that produced it.
 
-**Significance:** this is the _relevance_ axis — how much a question matters to ask — as opposed to the _belief_ axis — what we think the answer is. The engines keep them separate and only `PresentationPolicy` merges them.
+**Significance:** this is the _relevance_ axis — how much a question matters to ask — as opposed to the _belief_ axis — what we think the answer is. The engines keep them separate and only `deriveQuestionPresentation` merges them.
 
 ### Contradiction / resolution / archetype contracts
 
@@ -176,7 +179,7 @@ The old design multiplied confidence by a tier weight (`signalStrength = confide
 ### Belief contracts (the presentation input)
 
 - **`OptionBelief`** `{ optionId, support, contributingRuleIds, evidence }` — how strongly the accumulated evidence supports one option. `support` is the noisy-OR combined confidence; `contributingRuleIds` make the belief auditable; `evidence` is the strongest contributor's derived tier (display/audit only — the resolve bar keys on `support`).
-- **`QuestionBelief`** `{ questionId, beliefs[], excludedOptionIds: Set }` — the belief engine's per-question output. Exactly what `PresentationPolicy` consumes.
+- **`QuestionBelief`** `{ questionId, beliefs[], excludedOptionIds: Set }` — the belief engine's per-question output. Exactly what `deriveQuestionPresentation` consumes.
 
 ### UI contracts
 
@@ -194,9 +197,9 @@ The old design multiplied confidence by a tier weight (`signalStrength = confide
 
 ## Brain: who does what
 
-Knowledge engines live in `engine.ts`. Each has **exactly one responsibility** and is a stateless class of static methods. Engines produce _knowledge_; only `PresentationPolicy` decides _UI_, and it lives in its own module (`PresentationPolicy.ts`) precisely so the knowledge layer and the single UI-deciding component stay physically separated.
+Knowledge functions live in `engine.ts`. Each has **exactly one responsibility** and is a plain exported function (no class in the public surface — see core/runtime/CONVENTIONS.md). Functions produce _knowledge_; only `deriveQuestionPresentation` decides _UI_, and it lives in its own module (`PresentationPolicy.ts`) precisely so the knowledge layer and the single UI-deciding component stay physically separated.
 
-### `ConditionEvaluator` (the single interpreter of `Condition`)
+### `conditionHolds` + `conditionIsApplicable` (the single interpreter of `Condition`)
 
 A stateless class of static methods that every engine and rule relies on:
 
@@ -210,25 +213,25 @@ A stateless class of static methods that every engine and rule relies on:
 
 `evaluateCheckIn(context, ruleSets?)` is the single public entry point. Steps:
 
-1. **Scope.** Filter every rule family to the participating question/GIS set via `ConditionEvaluator.isApplicable`, so no reasoning ever targets a question that isn't being asked. Also auto-generate same-question mutual-exclusion contradiction rules from the participating single-select questions (`generateMutualExclusionContradictions`).
+1. **Scope.** Filter every rule family to the participating question/GIS set via `conditionIsApplicable`, so no reasoning ever targets a question that isn't being asked. Also auto-generate same-question mutual-exclusion contradiction rules from the participating single-select questions (`generateMutualExclusionContradictions`).
 2. **Run.** Call all engines over the same (immutable) context, threading the shared `lookups` so the pass-invariant sets are built once.
 3. **Fold.** Accumulate per-option beliefs, assemble per-question `QuestionView`s, apply the `"clarify"` presentation override where a clarification targets a question, and compute the value-of-information ranking.
 4. **Return** a single `CheckInUnderstanding`.
 
 ### Engines
 
-| Component                  | Responsibility                                                                                                                                                                                                                                            |
-| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `AnswerInferenceEngine`    | Filters rules whose conditions all `holds`, sorts them by effective confidence (deterministic precedence), and flattens each rule's effects into the explainable `EvaluatedAnswerInference[]` — the debug/telemetry record and the belief engine's input. |
-| `BeliefEngine`             | **The UX core.** Turns the inference list into a per-option belief for every question. Suggestions combine via noisy-OR (`1 - Π(1 - c_i)` over confidences); exclusions hard-zero the option outright. See below.                                         |
-| `QuestionEvaluationEngine` | Scores each question's relevance: base score (tier × baseWeight default) plus each applicable modifier's `adjustment × confidence`, clamped to [0,1], with the ordered explanations behind every adjustment.                                              |
-| `ContradictionEngine`      | Detects suspicious answer combinations (curated narratively-surprising pairs + auto-derived mutual exclusions) and emits `DetectedContradiction`s with severity.                                                                                          |
-| `ClarificationEngine`      | **A pure transform** over `DetectedContradiction[]` → actionable `Clarification`s (the conflicting answers and the question to re-ask). No second filter pass.                                                                                            |
-| `CheckInArchetypeEngine`   | Recognizes session patterns with partial matching. Emits `EvaluatedArchetype`s that are `emerging` (≥ half of signals) or `confirmed` (all signals), with confidence scaled by progress.                                                                  |
+| Component                       | Responsibility                                                                                                                                                                                                                                            |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `evaluateAnswerInferences`    | Filters rules whose conditions all `conditionHolds`, sorts them by effective confidence (deterministic precedence), and flattens each rule's effects into the explainable `EvaluatedAnswerInference[]` — the debug/telemetry record and the belief engine's input. |
+| `evaluateBeliefs`             | **The UX core.** Turns the inference list into a per-option belief for every question. Suggestions combine via noisy-OR (`1 - Π(1 - c_i)` over confidences); exclusions hard-zero the option outright. See below.                                         |
+| `evaluateQuestionRelevance` | Scores each question's relevance: base score (tier × baseWeight default) plus each applicable modifier's `adjustment × confidence`, clamped to [0,1], with the ordered explanations behind every adjustment.                                              |
+| `detectContradictions`      | Detects suspicious answer combinations (curated narratively-surprising pairs + auto-derived mutual exclusions) and emits `DetectedContradiction`s with severity.                                                                                          |
+| `deriveClarifications`      | **A pure transform** over `DetectedContradiction[]` → actionable `Clarification`s (the conflicting answers and the question to re-ask). No second filter pass.                                                                                            |
+| `evaluateCheckInArchetypes`   | Recognizes session patterns with partial matching. Emits `EvaluatedArchetype`s that are `emerging` (≥ half of signals) or `confirmed` (all signals), with confidence scaled by progress.                                                                  |
 
-### `BeliefEngine` (winner-take-all is gone)
+### `evaluateBeliefs` (winner-take-all is gone)
 
-`BeliefEngine` is the fix for the old flaw where `PresentationPolicy` reduced a flat list of suggestions to a single `Math.max` winner — throwing away everything else and letting one raw confidence silently float over another.
+`evaluateBeliefs` is the fix for the old flaw where `deriveQuestionPresentation` reduced a flat list of suggestions to a single `Math.max` winner — throwing away everything else and letting one raw confidence silently float over another.
 
 **Why noisy-OR and not `max`?** `max` throws away everything but the winner and can't express _agreement_. Noisy-OR is the probabilistic way to say "more independent sources agreeing ⇒ more confident," which is exactly how a human gets more sure. And because each belief retains its contributors, it stays auditable.
 
@@ -239,21 +242,21 @@ A stateless class of static methods that every engine and rule relies on:
 `OptionBelief` = `{ optionId, support, contributingRuleIds, evidence }`, grouped per
 question into `QuestionBelief = { questionId, beliefs, excludedOptionIds }`.
 
-### `QuestionEvaluationEngine`
+### `evaluateQuestionRelevance`
 
 Scores each question's relevance: start at the base score (GIS tier default blended with the GIS's `baseWeight`), apply every modifier whose conditions `holds`, scaling the adjustment by the modifier's resolved confidence. Clamps to `[0,1]`, sorts explanations by confidence (then reason).
 
 **Why one confidence dial and no tier weight?** The old `0.6 + confidence*0.8` formula ignored evidence entirely; the later `confidence × tierWeight` double-counted it. Now a modifier's effect is `adjustment × its single confidence` — one number, no separate tier scaling, no redundancy.
 
-### `ContradictionEngine` + `ClarificationEngine`
+### `detectContradictions` + `deriveClarifications`
 
-`ContradictionEngine.detect` finds rules whose conditions all `holds` and turns them into `DetectedContradiction`s (with `conflictingAnswers` extracted from their `question_answer` conditions). It serves both curated contradictions _and_ the auto-generated mutual-exclusion rules.
+`detectContradictions` finds rules whose conditions all `holds` and turns them into `DetectedContradiction`s (with `conflictingAnswers` extracted from their `question_answer` conditions). It serves both curated contradictions _and_ the auto-generated mutual-exclusion rules.
 
-`ClarificationEngine.derive` is **a pure transform** — no second filter pass. It takes already-detected contradictions and maps each into a `Clarification`, computing `reaskQuestionId` by picking the _most recently given_ conflicting answer (the most likely slip).
+`deriveClarifications` is **a pure transform** — no second filter pass. It takes already-detected contradictions and maps each into a `Clarification`, computing `reaskQuestionId` by picking the _most recently given_ conflicting answer (the most likely slip).
 
-**Why merged?** The old `ClarificationEngine` re-filtered the same rules it had already filtered in `ContradictionEngine` — two independent passes computing the same "does this fire" predicate. Now detection happens once and clarification is a cheap mapping over its output.
+**Why merged?** The old `deriveClarifications` re-filtered the same rules it had already filtered in `detectContradictions` — two independent passes computing the same "does this fire" predicate. Now detection happens once and clarification is a cheap mapping over its output.
 
-### `CheckInArchetypeEngine`
+### `evaluateCheckInArchetypes`
 
 For each archetype, counts how many conditions `holds`. Surfaces it only if fully satisfied (`confirmed`) or if the satisfied fraction clears the emergence floor (`emerging`). Confidence scales with progress for `emerging` archetypes; Definition archetypes get full confidence.
 
@@ -301,7 +304,7 @@ The old bug — `overreach_suggests_under_recovered` (0.68 StrongHeuristic → s
 
 **`competing` is deliberately non-blocking.** Curated contradictions go through the full `clarify` reconfirm flow because they are hand-picked, narratively surprising pairs worth interrupting for. A competing belief is different: it's the system honestly saying "two decent signals disagree, here's our best guess and the alternative" — a small "we're not totally sure — also consider X" chip next to the prefilled pick, never a modal.
 
-### `PresentationPolicy` precedence (a live deduction always wins over hiding)
+### `deriveQuestionPresentation` precedence (a live deduction always wins over hiding)
 
 1. directly answered → `resolved`
 2. top belief clears its bar AND margin → `resolved` (prefilled)
@@ -396,7 +399,7 @@ Concrete rendering decisions the UI makes _from_ the understanding — it never 
 - **Session summary / result** → consume `archetypes`, `contradictions`, and the final score to personalize the result phase.
 - **Debug/explain mode** → render `explanations` verbatim for any question.
 
-Nothing outside the viewmodel calls the engines directly. The package has no single `index.ts` barrel — consumers import the entry points they need by deep path: `@/domain/inferences/orchestrator` (`evaluateCheckIn`), `@/domain/inferences/types` (the contracts), plus `utils.ts` bridge (`responsesToAnsweredOptions`), the rule sets, and the engines (for testing/tooling), and the evidence helpers.
+Nothing outside the viewmodel calls the engines directly. The package has no single `index.ts` barrel — consumers import the entry points they need by deep path: `@/domain/inferences/orchestrator` (`evaluateCheckIn`), `@/domain/inferences/types` (the contracts), the rule sets, and the engines (for testing/tooling), and the evidence helpers.
 
 ---
 
@@ -443,22 +446,22 @@ npx vitest run --config vite.config.ts src/domain/config/inferences
 ## Putting it together: the full flow
 
 ```
-User answers  →  responsesToAnsweredOptions  →  CheckInContext
+User answers  →  viewmodel builds AnsweredOption[]  →  CheckInContext
                                                    │
         ┌──────────────────────────────────────────┼──────────────────────────────┐
         ▼                                          ▼                              ▼
   scoped answer rules                        scoped evaluators               scoped archetypes
         │                                          │                              │
- AnswerInferenceEngine                    QuestionEvaluationEngine      CheckInArchetypeEngine
+ evaluateAnswerInferences                 evaluateQuestionRelevance    evaluateCheckInArchetypes
   (flat, explainable)                     (relevance scores)             (emerging/confirmed)
         │                                          │                              │
         ▼                                          ▼                              ▼
- BeliefEngine ───────────────────►  evaluatedByQuestion ───────────►  archetypePull
+ evaluateBeliefs ───────────────────►  evaluatedByQuestion ───────────►  archetypePull
   (per-option support)                              │                          │
         │                                          ▼                          ▼
-        └──────────────────────────────►  PresentationPolicy   ──►   VOI ranking
+        └──────────────────────────────►  deriveQuestionPresentation  ──►   VOI ranking
                                              (per-question state)        ──► remainingQuestions
- ContradictionEngine ─► ClarificationEngine (transform) ─► clarifications
+ detectContradictions ─► deriveClarifications (transform) ─► clarifications
         │                                                  │
         ▼                                                  ▼
    contradictions                            CheckInUnderstanding (rendered)

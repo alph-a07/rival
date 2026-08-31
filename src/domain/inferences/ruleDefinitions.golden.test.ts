@@ -1,9 +1,9 @@
 import { describe, expect, test } from "vitest";
 import {
-  AnswerInferenceEngine,
-  ContradictionEngine,
-  QuestionEvaluationEngine,
-  CheckInArchetypeEngine,
+  evaluateAnswerInferences,
+  detectContradictions,
+  evaluateQuestionRelevance,
+  evaluateCheckInArchetypes,
 } from "./engine";
 import {
   ANSWER_INFERENCE_RULES,
@@ -22,9 +22,9 @@ describe("behavioral rules (golden)", () => {
   test("no answers keeps baseline behavior stable", () => {
     const answeredSoFar: AnsweredOption[] = [];
 
-    const contradictions = ContradictionEngine.detect(CONTRADICTION_RULES, context(answeredSoFar));
-    const archetypes = CheckInArchetypeEngine.evaluate(CHECK_IN_ARCHETYPES, context(answeredSoFar));
-    const evaluatedQuestions = QuestionEvaluationEngine.evaluate(
+    const contradictions = detectContradictions(CONTRADICTION_RULES, context(answeredSoFar));
+    const archetypes = evaluateCheckInArchetypes(CHECK_IN_ARCHETYPES, context(answeredSoFar));
+    const evaluatedQuestions = evaluateQuestionRelevance(
       QUESTION_EVALUATORS,
       context(answeredSoFar),
     );
@@ -44,7 +44,7 @@ describe("behavioral rules (golden)", () => {
       { questionId: "depth_of_focus_q1", optionId: "depth_of_focus_flow" },
     ];
 
-    const inferences = AnswerInferenceEngine.evaluate(
+    const inferences = evaluateAnswerInferences(
       ANSWER_INFERENCE_RULES,
       context(answeredSoFar),
     );
@@ -142,7 +142,7 @@ describe("behavioral rules (golden)", () => {
       { questionId: "resilience_q1", optionId: "resilience_derailed" },
     ];
 
-    const contradictions = ContradictionEngine.detect(CONTRADICTION_RULES, context(answeredSoFar));
+    const contradictions = detectContradictions(CONTRADICTION_RULES, context(answeredSoFar));
 
     const golden = contradictions.map((c) => ({
       id: c.id,
@@ -184,7 +184,7 @@ describe("behavioral rules (golden)", () => {
       { questionId: "curiosity_pull_q1", optionId: "curiosity_pull_wanted" },
     ];
 
-    const evaluatedQuestions = QuestionEvaluationEngine.evaluate(
+    const evaluatedQuestions = evaluateQuestionRelevance(
       QUESTION_EVALUATORS,
       context(answeredSoFar),
     );
@@ -211,7 +211,7 @@ describe("behavioral rules (golden)", () => {
       { questionId: "progress_realized_q1", optionId: "progress_realized_milestone" },
     ];
 
-    const archetypes = CheckInArchetypeEngine.evaluate(CHECK_IN_ARCHETYPES, context(answeredSoFar));
+    const archetypes = evaluateCheckInArchetypes(CHECK_IN_ARCHETYPES, context(answeredSoFar));
 
     const deepWork = archetypes.find((a) => a.id === "deep_work");
     expect(deepWork).toBeDefined();

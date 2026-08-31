@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { BeliefEngine } from "./engine";
+import { evaluateBeliefs } from "./engine";
 import { deriveEvidence } from "./utils";
 import type { EvidenceType, EvaluatedAnswerInference } from "./types";
 
@@ -20,9 +20,9 @@ function inf(
   };
 }
 
-describe("BeliefEngine", () => {
+describe("evaluateBeliefs", () => {
   test("two agreeing suggestions compound via noisy-OR", () => {
-    const beliefs = BeliefEngine.evaluate([
+    const beliefs = evaluateBeliefs([
       inf("a", "q1", "o1", "suggest_answer", 0.9),
       inf("b", "q1", "o1", "suggest_answer", 0.9),
     ]).get("q1")!;
@@ -36,7 +36,7 @@ describe("BeliefEngine", () => {
   });
 
   test("disagreeing suggestions both survive in the same belief map", () => {
-    const beliefs = BeliefEngine.evaluate([
+    const beliefs = evaluateBeliefs([
       inf("overreach", "recovery_q1", "not_really", "suggest_answer", 0.68),
       inf("flow", "recovery_q1", "absolutely", "suggest_answer", 0.62),
     ]).get("recovery_q1")!;
@@ -46,7 +46,7 @@ describe("BeliefEngine", () => {
   });
 
   test("an exclusion hard-zeros the option and drops its suggestion belief", () => {
-    const beliefs = BeliefEngine.evaluate([
+    const beliefs = evaluateBeliefs([
       inf("a", "q1", "o1", "suggest_answer", 0.9),
       inf("x", "q1", "o1", "exclude_answer", 1, "Definition"),
     ]).get("q1")!;
@@ -56,7 +56,7 @@ describe("BeliefEngine", () => {
   });
 
   test("exclusion wins regardless of stream order (even a same-tier suggestion after it)", () => {
-    const beliefs = BeliefEngine.evaluate([
+    const beliefs = evaluateBeliefs([
       inf("excl", "q1", "o1", "exclude_answer", 1, "Definition"),
       inf("sugg", "q1", "o1", "suggest_answer", 1, "Definition"),
     ]).get("q1")!;
@@ -66,7 +66,7 @@ describe("BeliefEngine", () => {
   });
 
   test("keeps the strongest-tier evidence as the belief's dominant tier", () => {
-    const beliefs = BeliefEngine.evaluate([
+    const beliefs = evaluateBeliefs([
       inf("a", "q1", "o1", "suggest_answer", 0.4), // derives Hypothesis
       inf("b", "q1", "o1", "suggest_answer", 0.9), // derives StrongHeuristic
     ]).get("q1")!;
