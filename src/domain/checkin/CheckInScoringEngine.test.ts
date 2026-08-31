@@ -1,9 +1,9 @@
 import { expect, test, describe } from "vitest";
-import { CheckInScoringEngine } from "./CheckInScoringEngine";
-import type { Response } from "@/data/schema/CheckIn";
+import { calculateRawScore, computeByGisId } from "./CheckInScoringEngine";
+import type { Response } from "@/domain/models/CheckIn";
 import type { Gis, GisTier } from "@/domain/models/Gis";
 
-describe("CheckInScoringEngine", () => {
+describe("check-in scoring fns", () => {
   const mockGisA: Gis = {
     id: "gis_a",
     name: "GIS A",
@@ -122,7 +122,7 @@ describe("CheckInScoringEngine", () => {
         { gisId: "gis_b", questionId: "q2", optionIds: ["b2"] }, // earns 0
       ];
 
-      const score = CheckInScoringEngine.calculateRawScore(activeGis, responses);
+      const score = calculateRawScore(activeGis, responses);
       // 10 / 13.75 * 100 = 72.7272...
       expect(score).toBeCloseTo(72.72, 1);
     });
@@ -131,7 +131,7 @@ describe("CheckInScoringEngine", () => {
       const activeGis: Map<Gis, GisTier> = new Map([[mockGisB, "optional"]]);
       const responses: Response[] = [{ gisId: "gis_b", questionId: "q2", optionIds: ["b1"] }];
 
-      const score = CheckInScoringEngine.calculateRawScore(activeGis, responses);
+      const score = calculateRawScore(activeGis, responses);
       expect(score).toBe(100);
     });
 
@@ -146,7 +146,7 @@ describe("CheckInScoringEngine", () => {
       ];
 
       // Total possible = 15. Earned = 10. Score = 66.67, not 100.
-      const score = CheckInScoringEngine.calculateRawScore(activeGis, responses);
+      const score = calculateRawScore(activeGis, responses);
       expect(score).toBeCloseTo(66.67, 1);
     });
 
@@ -154,15 +154,15 @@ describe("CheckInScoringEngine", () => {
       const activeGis: Map<Gis, GisTier> = new Map([[mockGisA, "mandatory"]]);
       const responses: Response[] = [{ gisId: "gis_a", questionId: "q1", optionIds: ["a1"] }];
 
-      const score = CheckInScoringEngine.calculateRawScore(activeGis, responses, 1.2);
+      const score = calculateRawScore(activeGis, responses, 1.2);
       expect(score).toBe(100);
 
-      const score2 = CheckInScoringEngine.calculateRawScore(activeGis, responses, 0.8);
+      const score2 = calculateRawScore(activeGis, responses, 0.8);
       expect(score2).toBe(80);
     });
 
     test("returns 0 if total possible weight is 0", () => {
-      expect(CheckInScoringEngine.calculateRawScore(new Map(), [], 1.0)).toBe(0);
+      expect(calculateRawScore(new Map(), [], 1.0)).toBe(0);
     });
 
     test("sums values of multiple selected options", () => {
@@ -171,7 +171,7 @@ describe("CheckInScoringEngine", () => {
         { gisId: "gis_c", questionId: "q3", optionIds: ["c1", "c3"] }, // 0.6 + 0.3 = 0.9
       ];
 
-      const score = CheckInScoringEngine.calculateRawScore(activeGis, responses);
+      const score = calculateRawScore(activeGis, responses);
       expect(score).toBe(90);
     });
 
@@ -181,7 +181,7 @@ describe("CheckInScoringEngine", () => {
         { gisId: "gis_c", questionId: "q3", optionIds: ["c1", "c2"] }, // 0.6 + 0.5 = 1.1 -> capped to 1.0
       ];
 
-      const score = CheckInScoringEngine.calculateRawScore(activeGis, responses);
+      const score = calculateRawScore(activeGis, responses);
       expect(score).toBe(100);
     });
 
@@ -191,7 +191,7 @@ describe("CheckInScoringEngine", () => {
         { gisId: "gis_c", questionId: "q3", optionIds: ["c1", "does_not_exist"] },
       ];
 
-      const score = CheckInScoringEngine.calculateRawScore(activeGis, responses);
+      const score = calculateRawScore(activeGis, responses);
       expect(score).toBe(60);
     });
 
@@ -201,7 +201,7 @@ describe("CheckInScoringEngine", () => {
         { gisId: "gis_a", questionId: "q1", optionIds: ["not_a_real_option"] },
       ];
 
-      const score = CheckInScoringEngine.calculateRawScore(activeGis, responses);
+      const score = calculateRawScore(activeGis, responses);
       expect(score).toBe(0);
     });
 
@@ -211,7 +211,7 @@ describe("CheckInScoringEngine", () => {
         { gisId: "gis_a", questionId: "not_a_real_question", optionIds: ["a1"] },
       ];
 
-      const score = CheckInScoringEngine.calculateRawScore(activeGis, responses);
+      const score = calculateRawScore(activeGis, responses);
       expect(score).toBe(0);
     });
 
@@ -224,7 +224,7 @@ describe("CheckInScoringEngine", () => {
       ];
 
       // Average of 1.0 and 0.5 is 0.75 -> earned 7.5 / 10 = 75.
-      const score = CheckInScoringEngine.calculateRawScore(activeGis, responses);
+      const score = calculateRawScore(activeGis, responses);
       expect(score).toBe(75);
     });
 
@@ -241,7 +241,7 @@ describe("CheckInScoringEngine", () => {
       ];
 
       // Q1: 0.5. Q2: min(1.0, 0.4+0.4)=0.8. Avg = 0.65 -> score 65.
-      const score = CheckInScoringEngine.calculateRawScore(activeGis, responses);
+      const score = calculateRawScore(activeGis, responses);
       expect(score).toBe(65);
     });
 
@@ -254,7 +254,7 @@ describe("CheckInScoringEngine", () => {
       ];
 
       // Q1 value: 1.0. Q2 value: 0 (missing). Avg = 0.5 -> score 50.
-      const score = CheckInScoringEngine.calculateRawScore(activeGis, responses);
+      const score = calculateRawScore(activeGis, responses);
       expect(score).toBe(50);
     });
 
@@ -262,7 +262,7 @@ describe("CheckInScoringEngine", () => {
       const activeGis = new Map<Gis, GisTier>([[mockGisA, "mandatory"]]);
       const responses: Response[] = [{ gisId: "gis_a", questionId: "q1", optionIds: ["a1"] }];
 
-      const score = CheckInScoringEngine.calculateRawScore(activeGis, responses, 0);
+      const score = calculateRawScore(activeGis, responses, 0);
       expect(score).toBe(0);
     });
   });
@@ -271,7 +271,7 @@ describe("CheckInScoringEngine", () => {
     const registry: Gis[] = [mockGisA, mockGisC, mockGisD];
 
     test("single-select resolves to the option's value", () => {
-      const byGisId = CheckInScoringEngine.computeByGisId(
+      const byGisId = computeByGisId(
         [{ gisId: "gis_a", questionId: "q1", optionIds: ["a2"] }],
         registry,
       );
@@ -279,7 +279,7 @@ describe("CheckInScoringEngine", () => {
     });
 
     test("multi-select sums and caps at 1.0", () => {
-      const byGisId = CheckInScoringEngine.computeByGisId(
+      const byGisId = computeByGisId(
         [{ gisId: "gis_c", questionId: "q3", optionIds: ["c1", "c2"] }],
         registry,
       );
@@ -287,7 +287,7 @@ describe("CheckInScoringEngine", () => {
     });
 
     test("averages across a GIS with multiple questions", () => {
-      const byGisId = CheckInScoringEngine.computeByGisId(
+      const byGisId = computeByGisId(
         [
           { gisId: "gis_d", questionId: "q_first", optionIds: ["opt1"] }, // 1.0
           { gisId: "gis_d", questionId: "q_second", optionIds: ["opt4"] }, // 0.5
@@ -298,7 +298,7 @@ describe("CheckInScoringEngine", () => {
     });
 
     test("partial completion drags the average toward 0", () => {
-      const byGisId = CheckInScoringEngine.computeByGisId(
+      const byGisId = computeByGisId(
         [{ gisId: "gis_d", questionId: "q_first", optionIds: ["opt1"] }],
         registry,
       );
@@ -306,7 +306,7 @@ describe("CheckInScoringEngine", () => {
     });
 
     test("skips responses for GIS not in the registry", () => {
-      const byGisId = CheckInScoringEngine.computeByGisId(
+      const byGisId = computeByGisId(
         [{ gisId: "unknown", questionId: "q1", optionIds: ["a1"] }],
         registry,
       );
@@ -314,7 +314,7 @@ describe("CheckInScoringEngine", () => {
     });
 
     test("returns an empty record for no responses", () => {
-      expect(CheckInScoringEngine.computeByGisId([])).toEqual({});
+      expect(computeByGisId([])).toEqual({});
     });
   });
 });
