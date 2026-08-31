@@ -2,8 +2,9 @@ import { beforeEach, expect, test, describe } from "vitest";
 import { AppDatabase } from "@/data/db";
 import { EndeavourRepository } from "./EndeavourRepository";
 import { SnapshotRepository } from "./SnapshotRepository";
-import { activeSegment, type Endeavour } from "@/data/schema/Endeavour";
-import type { Snapshot } from "@/data/schema/Snapshot";
+import { unwrap } from "@/domain/errors/Result";
+import { activeSegment, type Endeavour } from "@/domain/models/Endeavour";
+import type { Snapshot } from "@/domain/models/Snapshot";
 
 describe("EndeavourRepository", () => {
   let db: AppDatabase;
@@ -54,7 +55,7 @@ describe("EndeavourRepository", () => {
     test("returns endeavours with no snapshot when none exist", async () => {
       await db.endeavours.bulkAdd([endeavour(), endeavour()]);
 
-      const result = await repo.getAllWithLatestSnapshot();
+      const result = unwrap(await repo.getAllWithLatestSnapshot());
       expect(result).toHaveLength(2);
       for (const row of result) {
         expect(row.latestSnapshot).toBeNull();
@@ -72,7 +73,7 @@ describe("EndeavourRepository", () => {
         snapshot(e2.id, "2026-01-03T00:00:00.000Z"),
       ]);
 
-      const result = await repo.getAllWithLatestSnapshot();
+      const result = unwrap(await repo.getAllWithLatestSnapshot());
       const row1 = result.find((r) => r.id === e1.id)!;
       const row2 = result.find((r) => r.id === e2.id)!;
 
@@ -87,7 +88,7 @@ describe("EndeavourRepository", () => {
       const learning = endeavour("structured_learning");
       await db.endeavours.bulkAdd([building, learning]);
 
-      const result = await repo.getByDomain("building");
+      const result = unwrap(await repo.getByDomain("building"));
       expect(result.map((e) => e.id)).toEqual([building.id]);
     });
   });
@@ -122,8 +123,9 @@ describe("EndeavourRepository", () => {
       expect(snapshots[0].domainId).toBe("building"); // archived, not rewritten
     });
 
-    test("throws when the endeavour does not exist", async () => {
-      await expect(repo.switchDomain("nope", "habit")).rejects.toThrow();
+    test("returns an error when the endeavour does not exist", async () => {
+      const result = await repo.switchDomain("nope", "habit");
+      expect(result.ok).toBe(false);
     });
   });
 
@@ -140,15 +142,17 @@ describe("EndeavourRepository", () => {
       expect(activeSegment(updated!)).toBeUndefined();
     });
 
-    test("throws when already closed", async () => {
+    test("returns an error when already closed", async () => {
       const e = endeavour("building");
       await db.endeavours.add(e);
       await repo.close(e.id);
-      await expect(repo.close(e.id)).rejects.toThrow(/no active segment/);
+      const result = await repo.close(e.id);
+      expect(result.ok).toBe(false);
     });
 
-    test("throws when the endeavour does not exist", async () => {
-      await expect(repo.close("nope")).rejects.toThrow();
+    test("returns an error when the endeavour does not exist", async () => {
+      const result = await repo.close("nope");
+      expect(result.ok).toBe(false);
     });
   });
 
@@ -168,10 +172,11 @@ describe("EndeavourRepository", () => {
       expect(activeSegment(updated!)).toBe(reopened);
     });
 
-    test("throws when already active", async () => {
+    test("returns an error when already active", async () => {
       const e = endeavour("building");
       await db.endeavours.add(e);
-      await expect(repo.reopen(e.id)).rejects.toThrow(/already active/);
+      const result = await repo.reopen(e.id);
+      expect(result.ok).toBe(false);
     });
   });
 });

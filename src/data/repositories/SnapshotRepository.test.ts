@@ -1,7 +1,8 @@
 import { beforeEach, expect, test, describe } from "vitest";
 import { AppDatabase } from "@/data/db";
 import { SnapshotRepository } from "./SnapshotRepository";
-import type { Snapshot } from "@/data/schema/Snapshot";
+import { unwrap } from "@/domain/errors/Result";
+import type { Snapshot } from "@/domain/models/Snapshot";
 
 describe("SnapshotRepository", () => {
   let db: AppDatabase;
@@ -45,7 +46,7 @@ describe("SnapshotRepository", () => {
         snapshot("e2", "2026-01-04T00:00:00.000Z"),
       ]);
 
-      const result = await repo.getByEndeavour("e1");
+      const result = unwrap(await repo.getByEndeavour("e1"));
       expect(result.map((s) => s.timestamp)).toEqual([
         "2026-01-03T00:00:00.000Z",
         "2026-01-05T00:00:00.000Z",
@@ -53,7 +54,7 @@ describe("SnapshotRepository", () => {
     });
 
     test("returns empty array for an endeavour with no snapshots", async () => {
-      expect(await repo.getByEndeavour("nope")).toEqual([]);
+      expect(unwrap(await repo.getByEndeavour("nope"))).toEqual([]);
     });
   });
 
@@ -64,12 +65,12 @@ describe("SnapshotRepository", () => {
         snapshot("e1", "2026-01-07T00:00:00.000Z"),
       ]);
 
-      const latest = await repo.getLatestForEndeavour("e1");
+      const latest = unwrap(await repo.getLatestForEndeavour("e1"));
       expect(latest?.timestamp).toBe("2026-01-07T00:00:00.000Z");
     });
 
     test("returns null when no snapshots exist", async () => {
-      expect(await repo.getLatestForEndeavour("e1")).toBeNull();
+      expect(unwrap(await repo.getLatestForEndeavour("e1"))).toBeNull();
     });
   });
 
@@ -84,7 +85,7 @@ describe("SnapshotRepository", () => {
         snapshot("e2", "2026-01-04T00:00:00.000Z", segA),
       ]);
 
-      const result = await repo.getBySegment("e1", segA);
+      const result = unwrap(await repo.getBySegment("e1", segA));
       expect(result.map((s) => s.timestamp)).toEqual([
         "2026-01-03T00:00:00.000Z",
         "2026-01-05T00:00:00.000Z",
@@ -100,12 +101,12 @@ describe("SnapshotRepository", () => {
         snapshot("e1", "2026-01-05T00:00:00.000Z", segA),
       ]);
 
-      const latest = await repo.getLatestForSegment("e1", segA);
+      const latest = unwrap(await repo.getLatestForSegment("e1", segA));
       expect(latest?.timestamp).toBe("2026-01-05T00:00:00.000Z");
     });
 
     test("returns null when no snapshots exist in the segment", async () => {
-      const latest = await repo.getLatestForSegment("e1", "segA");
+      const latest = unwrap(await repo.getLatestForSegment("e1", "segA"));
       expect(latest).toBeNull();
     });
   });
@@ -118,14 +119,14 @@ describe("SnapshotRepository", () => {
         snapshot("e2", "2026-01-05T00:00:00.000Z"),
       ]);
 
-      const map = await repo.getLatestPerEndeavour();
+      const map = unwrap(await repo.getLatestPerEndeavour());
       expect(map.get("e1")?.timestamp).toBe("2026-01-07T00:00:00.000Z");
       expect(map.get("e2")?.timestamp).toBe("2026-01-05T00:00:00.000Z");
       expect(map.has("e3")).toBe(false);
     });
 
     test("returns an empty map when no snapshots exist", async () => {
-      const map = await repo.getLatestPerEndeavour();
+      const map = unwrap(await repo.getLatestPerEndeavour());
       expect(map.size).toBe(0);
     });
   });

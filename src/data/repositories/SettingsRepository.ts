@@ -5,6 +5,8 @@ import type { AppSettings, SettingsRow, SyncStatus } from "@/data/schema/AppSett
 import type { Theme } from "@/theme/ThemeContext";
 import { THEMES } from "@/theme/ThemeContext";
 import { Logger } from "@/core/logging/logger";
+import { Ok, Err, type Result } from "@/domain/errors/Result";
+import { ErrorClassifier } from "@/domain/errors/ErrorClassifier";
 
 /** Fallback values used before any preference has been persisted. */
 export const DEFAULT_SETTINGS: AppSettings = {
@@ -25,60 +27,69 @@ export class SettingsRepository {
     this.db = db;
   }
 
-  async get(): Promise<AppSettings> {
-    const rows = await this.db.settings.toArray();
-    const values = rows.reduce<Record<string, unknown>>((acc, row) => {
-      acc[row.key] = row.value;
-      return acc;
-    }, {});
+  async get(): Promise<Result<AppSettings>> {
+    try {
+      const rows = await this.db.settings.toArray();
+      const values = rows.reduce<Record<string, unknown>>((acc, row) => {
+        acc[row.key] = row.value;
+        return acc;
+      }, {});
 
-    const syncStatus = SYNC_STATUSES.includes(values.syncStatus as SyncStatus)
-      ? (values.syncStatus as SyncStatus)
-      : DEFAULT_SETTINGS.syncStatus;
+      const syncStatus = SYNC_STATUSES.includes(values.syncStatus as SyncStatus)
+        ? (values.syncStatus as SyncStatus)
+        : DEFAULT_SETTINGS.syncStatus;
 
-    const theme = THEMES.includes(values.theme as Theme)
-      ? (values.theme as Theme)
-      : DEFAULT_SETTINGS.theme;
+      const theme = THEMES.includes(values.theme as Theme)
+        ? (values.theme as Theme)
+        : DEFAULT_SETTINGS.theme;
 
-    if (values.syncStatus !== undefined && values.syncStatus !== syncStatus) {
-      Logger.storage.warn("SettingsRepository.get — unknown syncStatus, fell back", {
-        raw: values.syncStatus,
-        fallback: syncStatus,
+      if (values.syncStatus !== undefined && values.syncStatus !== syncStatus) {
+        Logger.storage.warn("SettingsRepository.get — unknown syncStatus, fell back", {
+          raw: values.syncStatus,
+          fallback: syncStatus,
+        });
+      }
+
+      if (values.theme !== undefined && values.theme !== theme) {
+        Logger.storage.warn("SettingsRepository.get — unknown theme, fell back", {
+          raw: values.theme,
+          fallback: theme,
+        });
+      }
+
+      return Ok({
+        emailNudgesEnabled:
+          typeof values.emailNudgesEnabled === "boolean"
+            ? values.emailNudgesEnabled
+            : DEFAULT_SETTINGS.emailNudgesEnabled,
+        syncStatus,
+        theme,
       });
+    } catch (e) {
+      return Err(ErrorClassifier.fromDexieError(e, { entity: "Settings" }));
     }
+  }
 
-    if (values.theme !== undefined && values.theme !== theme) {
-      Logger.storage.warn("SettingsRepository.get — unknown theme, fell back", {
-        raw: values.theme,
-        fallback: theme,
-      });
+  private async set(key: string, value: unknown): Promise<Result<void>> {
+    try {
+      await this.db.settings.put({ key, value } satisfies SettingsRow);
+      Logger.storage.debug("SettingsRepository.set", { key, value });
+      return Ok(undefined);
+    } catch (e) {
+      return Err(ErrorClassifier.fromDexieError(e, { entity: "Settings", key }));
     }
-
-    return {
-      emailNudgesEnabled:
-        typeof values.emailNudgesEnabled === "boolean"
-          ? values.emailNudgesEnabled
-          : DEFAULT_SETTINGS.emailNudgesEnabled,
-      syncStatus,
-      theme,
-    };
   }
 
-  private async set(key: string, value: unknown): Promise<void> {
-    await this.db.settings.put({ key, value } satisfies SettingsRow);
-    Logger.storage.debug("SettingsRepository.set", { key, value });
+  async setEmailNudgesEnabled(enabled: boolean): Promise<Result<void>> {
+    return this.set("emailNudgesEnabled", enabled);
   }
 
-  async setEmailNudgesEnabled(enabled: boolean): Promise<void> {
-    await this.set("emailNudgesEnabled", enabled);
+  async setSyncStatus(status: SyncStatus): Promise<Result<void>> {
+    return this.set("syncStatus", status);
   }
 
-  async setSyncStatus(status: SyncStatus): Promise<void> {
-    await this.set("syncStatus", status);
-  }
-
-  async setTheme(theme: Theme): Promise<void> {
-    await this.set("theme", theme);
+  async setTheme(theme: Theme): Promise<Result<void>> {
+    return this.set("theme", theme);
   }
 }
 

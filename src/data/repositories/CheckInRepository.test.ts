@@ -2,8 +2,8 @@ import { beforeEach, expect, test, describe } from "vitest";
 import { AppDatabase } from "@/data/db";
 import { CheckInRepository } from "./CheckInRepository";
 import { SnapshotRepository } from "./SnapshotRepository";
-import type { CheckIn } from "@/data/schema/CheckIn";
-import type { Snapshot } from "@/data/schema/Snapshot";
+import type { CheckIn } from "@/domain/models/CheckIn";
+import type { Snapshot } from "@/domain/models/Snapshot";
 
 describe("CheckInRepository", () => {
   let db: AppDatabase;

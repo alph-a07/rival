@@ -1,7 +1,7 @@
-import type { CheckIn } from "@/data/schema/CheckIn";
-import type { Endeavour } from "@/data/schema/Endeavour";
+import type { CheckIn } from "@/domain/models/CheckIn";
+import type { Endeavour } from "@/domain/models/Endeavour";
 import type { MicroCheckIn } from "@/data/schema/MicroCheckIn";
-import type { Snapshot } from "@/data/schema/Snapshot";
+import type { Snapshot } from "@/domain/models/Snapshot";
 import type { SettingsRow } from "@/data/schema/AppSettings";
 import Dexie, { type Table } from "dexie";
 
