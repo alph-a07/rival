@@ -32,7 +32,7 @@ export interface Runtime {
   raiseStorageCorrupt(opts: { title: string; body?: string; action?: RuntimeAction }): void;
   /** Blocking auth-expired interest. */
   raiseAuthExpired(opts: { title: string; body?: string; action?: RuntimeAction }): void;
-  /** Non-blocking sync-conflict banner with a wired Reconcile action (gap #3). */
+  /** Non-blocking sync-conflict banner with a wired Reconcile action. */
   raiseSyncConflict(opts?: { body?: string; label?: string }): void;
   /** Clear an active sync-conflict after resolution. */
   clearSyncConflict(): void;
@@ -40,26 +40,17 @@ export interface Runtime {
   setReconcileHandler(onReconcile: () => void | Promise<void>): void;
 }
 
-let mountedRuntime: Runtime | null = null;
-let fallbackRuntime: Runtime | null = null;
+let singleton: Runtime | null = null;
 
-/** Called by `RuntimeProvider` on mount to bind the live runtime. */
-export function registerRuntime(runtime: Runtime | null): void {
-  mountedRuntime = runtime;
-}
-
-/** Returns the active runtime, creating a standalone one if not yet mounted. */
+/** The single app runtime. */
 export function getRuntime(): Runtime {
-  if (mountedRuntime) {
-    return mountedRuntime;
+  if (!singleton) {
+    singleton = createRuntime({ store: createRuntimeStore() });
   }
-  if (!fallbackRuntime) {
-    fallbackRuntime = createRuntime({ store: createRuntimeStore() });
-  }
-  return fallbackRuntime;
+  return singleton;
 }
 
-export function createRuntime(opts: RuntimeOpts): Runtime {
+function createRuntime(opts: RuntimeOpts): Runtime {
   const { store, storage = fallbackStorageProvider(), onReconcileConflict } = opts;
   const bridge = createBridge(store);
 
@@ -68,9 +59,14 @@ export function createRuntime(opts: RuntimeOpts): Runtime {
 
   const connectivity = createConnectivityMonitor(opts.connectivity);
 
+  // Monitor wiring owned by `start`, torn down by `stop` and re-armed each start
+  // so StrictMode mount/unmount never stacks duplicate subscriptions.
+  let stopMonitors: (() => void) | null = null;
+
   const runtime: Runtime = {
     store,
     bridge,
+    connectivity,
 
     setReconcileHandler(handler) {
       reconcileHandler = handler;
@@ -134,52 +130,68 @@ export function createRuntime(opts: RuntimeOpts): Runtime {
       );
     },
 
-    connectivity,
-
     start() {
-      connectivity.subscribe((ev) => {
-        if (ev.online) {
-          bridge.clear("conn");
-          wakeRetryQueue();
-        } else {
-          bridge.raise(
-            interest(
-              "conn",
-              "info",
-              { surface: "banner" },
-              "You're offline",
-              "Some changes will sync once you're back online.",
-            ),
-          );
-        }
-      });
+      if (stopMonitors) {
+        return;
+      }
+      const disposers: (() => void)[] = [];
+
+      disposers.push(
+        connectivity.subscribe((ev) => {
+          if (ev.online) {
+            bridge.clear("conn");
+            wakeRetryQueue();
+          } else {
+            bridge.raise(
+              interest(
+                "conn",
+                "info",
+                { surface: "banner" },
+                "You're offline",
+                "Some changes will sync once you're back online.",
+              ),
+            );
+          }
+        }),
+        () => connectivity.stop(),
+      );
       connectivity.start();
 
       const storageMonitor = createStorageMonitor({ provider: storage, warnRatio: 0.9 });
-      storageMonitor.subscribe((event) => {
-        if (event.type === "relief") {
-          bridge.clear("storage-pressure");
-          return;
-        }
-        if (reconciling) {
-          return;
-        }
-        bridge.raise(
-          interest(
-            "storage-pressure",
-            "warning",
-            { surface: "banner" },
-            "You're running low on device storage",
-            "Consider enabling persistent storage or enabling Drive sync for a backup.",
-            { action: event.action },
-          ),
-        );
-      });
+      disposers.push(
+        storageMonitor.subscribe((event) => {
+          if (event.type === "relief") {
+            bridge.clear("storage-pressure");
+            return;
+          }
+          if (reconciling) {
+            return;
+          }
+          bridge.raise(
+            interest(
+              "storage-pressure",
+              "warning",
+              { surface: "banner" },
+              "You're running low on device storage",
+              "Consider enabling persistent storage or enabling Drive sync for a backup.",
+              { action: event.action },
+            ),
+          );
+        }),
+        () => storageMonitor.stop(),
+      );
       storageMonitor.start();
+
+      stopMonitors = () => {
+        for (const dispose of disposers) {
+          dispose();
+        }
+      };
     },
 
     stop() {
-      connectivity.stop();
+      stopMonitors?.();
+      stopMonitors = null;
     },
   };
 
