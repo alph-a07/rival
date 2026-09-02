@@ -30,7 +30,7 @@ The **pure, UI-agnostic brain** of Rival. Everything that is true about the prod
 
 | Sub-package      | Responsibility                                                                   | Key files                                                                                              |
 | ---------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `models/`        | The base entity contracts — `Domain`, `Gis`, `Option`, `GisTier`, `QuestionType` | `Domain.ts`, `Gis.ts`                                                                                  |
+| `models/`        | The base entity contracts — `Domain`, `Gis`, `Option`, `GisTier`, `QuestionType`, plus the persisted aggregate shapes `CheckIn`, `Response`, `Snapshot`, `Endeavour`, `DomainSegment` (with `activeSegment`) | `Domain.ts`, `Gis.ts`, `CheckIn.ts`, `Snapshot.ts`, `Endeavour.ts`                                                                                  |
 | `config/`        | **One place** for every math/behavior threshold                                  | `tuningConstants.ts`                                                                                   |
 | `gis/`           | The authored Growth Indicative Strategies (questions per GIS)                    | `gisDefinitions.ts`                                                                                    |
 | `domains/`       | The authored Domain definitions + their GIS map                                  | `domainDefinitions.ts`                                                                                 |
@@ -38,7 +38,7 @@ The **pure, UI-agnostic brain** of Rival. Everything that is true about the prod
 | `trajectory/`    | Smoothes scores over time + reads a direction label                              | `HoltSmoother.ts`, `ConsistencyTracker.ts`, `TrajectoryAggregator.ts`                                  |
 | `inferences/`    | The check-in reasoning engine — `evaluateCheckIn`                                | `orchestrator.ts`, `engine.ts`, `ruleDefinitions.ts`, `ConditionEvaluator.ts`, `PresentationPolicy.ts` |
 | `errors/`        | Error taxonomy, `Result`, classification, retry, reporter                        | `AppError.ts`, `Result.ts`, `ErrorClassifier.ts`, `withRetry.ts`, `reporter.ts`                        |
-| `notifications/` | The message lifecycle — store, bridge, arbitration                               | `types.ts`, `store.ts`, `client.ts`, `arbitration.ts`                                                  |
+| `notifications/` | The message lifecycle — store, bridge, arbitration, typed action builders         | `types.ts`, `store.ts`, `client.ts`, `arbitration.ts`, `actions/`                                        |
 
 ---
 
@@ -49,9 +49,9 @@ The sub-packages form a clear build-up from **leaf data → math → reasoning �
 ```mermaid
 flowchart LR
     M[models: Domain · Gis · Option] --> DEF[config + gis + domains: authored knowledge]
-    DEF --> C[checkin: CheckInScoringEngine]
-    DEF --> T[trajectory: HoltSmoother · ConsistencyTracker · Aggregator]
-    C --> CP[CheckInProcessor]
+    DEF --> C[checkin: scoring fns]
+    DEF --> T[trajectory: holtStep · evaluateConsistency · aggregator]
+    C --> CP[applyCheckIn]
     T --> CP
     CP --> SNAPSHOT[Snapshot]
     M --> INF[inferences: evaluateCheckIn]
@@ -79,8 +79,8 @@ flowchart LR
 
 | Consumer             | What it uses                                                                                                 |
 | -------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `src/data`           | schema types (`Snapshot`, `CheckIn`) from `domain/checkin` + `domain/trajectory`; repos call `domain/errors` |
-| `src/viewmodels`     | `domain/checkin` (CheckInProcessor), `domain/inferences` (evaluateCheckIn), `domain/config`                  |
+| `src/data`           | entity contracts (`Snapshot`, `CheckIn`, `Endeavour`, `DomainSegment`) from `domain/models`; repos call `domain/errors` |
+| `src/viewmodels`     | `domain/checkin` (applyCheckIn, scoring fns), `domain/inferences` (evaluateCheckIn), `domain/config`                  |
 | `src/core/runtime`   | `domain/notifications` + `domain/errors` (bridge, classification, withRetry)                                 |
 | `src/sync`           | `domain/errors` (classify Drive errors)                                                                      |
 | `src/shells/runtime` | `domain/errors` + `domain/notifications` (reportError, bridge)                                               |

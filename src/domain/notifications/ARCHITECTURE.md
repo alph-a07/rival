@@ -26,36 +26,40 @@ The **pure state machine + signal bus** at the heart of the runtime feedback fra
 
 ## The message model
 
-A **`RuntimeMessage`** is the immutable unit of feedback. Every source — a monitor, a service, a service worker — ultimately produces one.
+A **`RuntimeMessage`** is the immutable unit of feedback. Every source — a monitor, a service, a service worker — ultimately produces one. Its `tone` and `surface` come with it (never mapped in the renderer); the **blocking branch** of `surface` drives arbitration (`isBlockingSurface` / `blockingRank`).
 
 ```mermaid
 flowchart LR
     subgraph Vocabulary
-        K[MessageKind<br/>network·storage·sync·pwa·toast·auth·corruption]
-        B[BlockingKind<br/>blocking / passive]
-        P[BlockingPriority<br/>corruption 2 > auth 1 > other 0]
+        T[MessageTone<br/>info · warning · error]
+        S[MessageSurface<br/>toast · banner · blocking{priority}]
         A[RuntimeAction<br/>kind + presentationKind + run]
     end
-    K --> M[RuntimeMessage]
-    B --> M
+    T --> M[RuntimeMessage]
+    S --> M
     A --> M
 ```
 
-**`RuntimeMessage`** = `{ id, kind, blocking, title, body?, once?, action?, busy? }`
+**`RuntimeMessage`** = `{ id, tone, surface, title, body?, once?, action?, busy? }`
 
-The `blocking` field is the whole **arbitration hook**: it says whether this message is a passive banner or a modal, and if a modal, how urgent. `once` says "show this modal once, then never re-raise until re-armed" (so an expired-session dialog doesn't recur every render).
+Presentation is one axis (`surface`) plus a pure color (`tone`):
+
+- **`tone`** sets the color and flows straight from the source (the error classifier) — the renderer never re-derives it from a reason label.
+- **`surface`** is a single closed union: a passive `toast`, a passive `banner`, or the one arbitrated **blocking** modal (ranked by `priority`). There is no "not-blocking-but-unspecified" in-between. `isBlockingSurface`/`blockingRank` surface the arbitration hooks.
+
+`once` says "show this modal once, then never re-raise until re-armed" (so an expired-session dialog doesn't recur every render).
 
 ---
 
 ## File-by-file map
 
-| File             | Responsibility                                                                                                                                                    | Public surface                                                 |
-| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| `types.ts`       | The entire vocabulary — `MessageKind`, `BlockingKind`, `BlockingPriority`, `BLOCKING_PRIORITY`, `Blockable`, `ActionKind`, `RuntimeAction`, `RuntimeMessage`, `RuntimeInterest` | all of the above                                               |
-| `store.ts`       | A tiny pub/sub snapshot holder; immutable `replace` + notify. Factory-over-class (see CONVENTIONS.md)                                                             | `createRuntimeStore()`, `RuntimeStore`, `RuntimeStoreSnapshot` |
-| `client.ts`      | The **bridge** — dedup by key, once/re-arm, and paths each raise through arbitration                                                                              | `createBridge()`, `Bridge`                                     |
-| `arbitration.ts` | The blocking policy — pick the single active modal                                                                                                                | `arbitrate()`, `compareBlocking()`                             |
-| `actions/`       | Typed action builders — one tight factory per action kind; `RuntimeAction.kind` is the closed `ActionKind` union, so producers can't emit stray action literals            | each `createXAction()`                                         |
+| File             | Responsibility                                                                                                                                                                                                         | Public surface                                                 |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| `types.ts`       | The entire vocabulary — `MessageTone`, `MessageSurface`, `BlockingPriority`, `BLOCKING_PRIORITY`, `isBlockingSurface`, `blockingRank`, `Blockable`, `ActionKind`, `RuntimeAction`, `RuntimeMessage`, `RuntimeInterest` | all of the above                                               |
+| `store.ts`       | A tiny pub/sub snapshot holder; immutable `replace` + notify. Factory-over-class (see CONVENTIONS.md)                                                                                                                  | `createRuntimeStore()`, `RuntimeStore`, `RuntimeStoreSnapshot` |
+| `client.ts`      | The **bridge** — dedup by key, once/re-arm, and paths each raise through arbitration                                                                                                                                   | `createBridge()`, `Bridge`                                     |
+| `arbitration.ts` | The blocking policy — pick the single active modal                                                                                                                                                                     | `arbitrate()`, `compareBlocking()`                             |
+| `actions/`       | Typed action builders — one tight factory per action kind; `RuntimeAction.kind` is the closed `ActionKind` union, so producers can't emit stray action literals                                                        | each `createXAction()`                                         |
 
 ---
 
@@ -86,7 +90,7 @@ flowchart TD
 // arbitration.ts — the whole policy in a few lines
 const active = arbitrate(blockingCandidates(messages));
 const blocking = active ? (messages.find((m) => m.id === active.id) ?? null) : null;
-const notices = messages.filter((m) => (m.blocking.blocking ? m.id === activeId : true));
+const notices = messages.filter((m) => (isBlockingSurface(m.surface) ? m.id === activeId : true));
 store.replace({ blocking, notices });
 ```
 
@@ -102,15 +106,15 @@ The store is deliberately dumb — it stores **exactly** the `{ blocking, notice
 
 ### Outbound — who consumes `domain/notifications`
 
-| Consumer                                   | What it uses                                                                 | When                                                                                                 |
-| ------------------------------------------ | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `@/domain/errors` (`AppError`, `reporter`) | `BlockingKind`, `RuntimeMessage`, `Bridge`, `RuntimeInterest`                | `AppError.display` reuses the blocking vocabulary; `reporter` raises surfaced errors onto the bridge |
-| `@/core/runtime/coordinator`               | `createBridge`, `createRuntimeStore`, `RuntimeInterest`, `BLOCKING_PRIORITY` | `createRuntime` builds the bridge + store and raises monitor-driven interests                        |
-| `@/core/runtime/react`→`shells/runtime`    | `createRuntimeStore`, `RuntimeStoreSnapshot`                                 | the React provider subscribes and re-renders                                                         |
+| Consumer                                   | What it uses                                                                 | When                                                                                                                                                             |
+| ------------------------------------------ | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@/domain/errors` (`AppError`, `reporter`) | `MessageSurface`, `RuntimeMessage`, `Bridge`, `RuntimeInterest`              | `AppError.surface` is a `MessageSurface` (+ log-only `silent`); `reporter` copies `tone` + `surface` straight through and raises surfaced errors onto the bridge |
+| `@/core/runtime/coordinator`               | `createBridge`, `createRuntimeStore`, `RuntimeInterest`, `BLOCKING_PRIORITY` | `createRuntime` builds the bridge + store and raises monitor-driven interests                                                                                    |
+| `@/core/runtime/react`→`shells/runtime`    | `createRuntimeStore`, `RuntimeStoreSnapshot`                                 | the React provider subscribes and re-renders                                                                                                                     |
 
 ### Runtime interest factory
 
-Both the coordinator (monitor-driven) and `reporter` (error-driven) build `RuntimeInterest` objects. They share the **type** — the coordinator uses a small local `interest()` builder for its monitor messages; the reporter builds its own shape inline. Single ownership of the _type_ is in `types.ts` (beside its output twin `RuntimeMessage`); the two producers stay separate because they express different concerns against the same contract.
+Both the coordinator (monitor-driven) and `reporter` (error-driven) build `RuntimeInterest` objects. They share the **type** — the coordinator uses a small local `interest()` builder, the reporter builds its own shape inline. Both set `tone` + `surface` at the source; each `surface` is the same closed `MessageSurface` union, so no producer ever re-maps a reason or splits surface across fields. Single ownership of the _type_ is in `types.ts` (beside its output twin `RuntimeMessage`); the two producers stay separate because they express different concerns against the same contract.
 
 ---
 
