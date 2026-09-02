@@ -35,7 +35,7 @@ The **framework-free, browser-coupled infrastructure** of the runtime feedback f
 | `storage.ts`      | Proactive storage-pressure monitor — samples `estimate()` at boot + on a timer                                       | `createStorageMonitor()`, `StoragePressureSignal`, `StorageMonitorOpts`          |
 | `crossTab.ts`     | Typed `BroadcastChannel` transport with a `storage`-event fallback                                                   | `createCrossTabBus()`, `CrossTabEventBus`, `RuntimeChannelEventMap`              |
 | `pwa.ts`          | New-build updater — broadcasts across tabs, each tab offers Reload                                                   | `createPwaUpdater()`, `PwaUpdateHook`, `PwaUpdaterOpts`, `crossTabBus`           |
-| `coordinator.ts`  | The **single glue** — `createRuntime` wires monitors onto the bridge + exposes `getRuntime()` for non-React services | `createRuntime()`, `getRuntime()`, `registerRuntime()`, `Runtime`, `RuntimeOpts` |
+| `coordinator.ts`  | The **single owner** of the app runtime — `createRuntime` wires monitors onto the bridge; `getRuntime()` returns the one lazily-created store+runtime | `createRuntime()`, `getRuntime()`, `Runtime`, `RuntimeOpts` |
 
 ## The monitors
 
@@ -103,9 +103,11 @@ flowchart LR
 | `clearSyncConflict`   | —            | clears the conflict after resolution        | sync layer |
 | `setReconcileHandler` | —            | wires the Reconcile action's callback       | shells     |
 
-### `getRuntime()` — the bridge to non-React code
+### `getRuntime()` — the one runtime, for shell and services alike
 
-`auth.ts`, `syncService.ts`, and viewmodels run outside React and can't use the provider hook. `getRuntime()` is a module-level accessor: the React `RuntimeProvider` registers the live runtime via `registerRuntime()` on mount; until it mounts, `getRuntime()` returns a lazily-created standalone runtime so a service firing before first paint still works.
+`RuntimeProvider` mounts monitors and draws; `auth.ts`, `syncService.ts`, and viewmodels run outside React and only raise interests. Both sides use the same accessor. `getRuntime()` returns **the** lazily-created singleton store+runtime (not a per-caller fallback), so a service firing before first paint raises onto the exact store the shell later draws — there is never a second instance.
+
+Monitors are mounted lazily by the shell via `start()`/`stop()`: `start()` re-arms connectivity + storage subscriptions and `stop()` tears them down symmetrically, so repeated start from StrictMode remounts never stacks duplicate monitors. Shell-only concerns (`registerSW`, error-reporter funnel) stay in the React layer and call the same runtime's `setReconcileHandler(...)`/`start()`.
 
 ```ts
 // in auth.ts — outside React:
@@ -132,7 +134,7 @@ getRuntime().raiseAuthExpired({ title: "Your Google connection expired", ... });
 | ------------------------------ | ------------------------------------------------------------------------------- | ------------------------------------------------- |
 | `src/auth/auth.ts`             | `getRuntime().raiseAuthExpired`                                                 | an expired Drive token → blocking re-auth modal   |
 | `src/sync/syncService.ts`      | `getRuntime().raiseSyncConflict`                                                | a Drive 409 → the Reconcile banner                |
-| `src/shells/runtime/react.tsx` | `createRuntime`, `registerRuntime`, `createPwaUpdater`, `crossTabBus`, monitors | the React provider mounts the runtime + wires PWA |
+| `src/shells/runtime/react.tsx` | `getRuntime` (start/stop/setReconcileHandler), `crossTabBus`, `Runtime`   | the provider mounts the coordinator's single runtime + wires PWA |
 
 ---
 
