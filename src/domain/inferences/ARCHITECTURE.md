@@ -197,7 +197,7 @@ The old design multiplied confidence by a tier weight (`signalStrength = confide
 
 ## Brain: who does what
 
-Knowledge functions live in `engine.ts`. Each has **exactly one responsibility** and is a plain exported function (no class in the public surface — see core/runtime/CONVENTIONS.md). Functions produce _knowledge_; only `deriveQuestionPresentation` decides _UI_, and it lives in its own module (`PresentationPolicy.ts`) precisely so the knowledge layer and the single UI-deciding component stay physically separated.
+Knowledge functions live in `engine.ts`. Each has **exactly one responsibility** and is a plain exported function (no class in the public surface). Functions produce _knowledge_; only `deriveQuestionPresentation` decides _UI_, and it lives in its own module (`PresentationPolicy.ts`) precisely so the knowledge layer and the single UI-deciding component stay physically separated.
 
 ### `conditionHolds` + `conditionIsApplicable` (the single interpreter of `Condition`)
 
@@ -220,14 +220,14 @@ A stateless class of static methods that every engine and rule relies on:
 
 ### Engines
 
-| Component                       | Responsibility                                                                                                                                                                                                                                            |
-| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `evaluateAnswerInferences`    | Filters rules whose conditions all `conditionHolds`, sorts them by effective confidence (deterministic precedence), and flattens each rule's effects into the explainable `EvaluatedAnswerInference[]` — the debug/telemetry record and the belief engine's input. |
-| `evaluateBeliefs`             | **The UX core.** Turns the inference list into a per-option belief for every question. Suggestions combine via noisy-OR (`1 - Π(1 - c_i)` over confidences); exclusions hard-zero the option outright. See below.                                         |
-| `evaluateQuestionRelevance` | Scores each question's relevance: base score (tier × baseWeight default) plus each applicable modifier's `adjustment × confidence`, clamped to [0,1], with the ordered explanations behind every adjustment.                                              |
-| `detectContradictions`      | Detects suspicious answer combinations (curated narratively-surprising pairs + auto-derived mutual exclusions) and emits `DetectedContradiction`s with severity.                                                                                          |
-| `deriveClarifications`      | **A pure transform** over `DetectedContradiction[]` → actionable `Clarification`s (the conflicting answers and the question to re-ask). No second filter pass.                                                                                            |
-| `evaluateCheckInArchetypes`   | Recognizes session patterns with partial matching. Emits `EvaluatedArchetype`s that are `emerging` (≥ half of signals) or `confirmed` (all signals), with confidence scaled by progress.                                                                  |
+| Component                   | Responsibility                                                                                                                                                                                                                                                     |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `evaluateAnswerInferences`  | Filters rules whose conditions all `conditionHolds`, sorts them by effective confidence (deterministic precedence), and flattens each rule's effects into the explainable `EvaluatedAnswerInference[]` — the debug/telemetry record and the belief engine's input. |
+| `evaluateBeliefs`           | **The UX core.** Turns the inference list into a per-option belief for every question. Suggestions combine via noisy-OR (`1 - Π(1 - c_i)` over confidences); exclusions hard-zero the option outright. See below.                                                  |
+| `evaluateQuestionRelevance` | Scores each question's relevance: base score (tier × baseWeight default) plus each applicable modifier's `adjustment × confidence`, clamped to [0,1], with the ordered explanations behind every adjustment.                                                       |
+| `detectContradictions`      | Detects suspicious answer combinations (curated narratively-surprising pairs + auto-derived mutual exclusions) and emits `DetectedContradiction`s with severity.                                                                                                   |
+| `deriveClarifications`      | **A pure transform** over `DetectedContradiction[]` → actionable `Clarification`s (the conflicting answers and the question to re-ask). No second filter pass.                                                                                                     |
+| `evaluateCheckInArchetypes` | Recognizes session patterns with partial matching. Emits `EvaluatedArchetype`s that are `emerging` (≥ half of signals) or `confirmed` (all signals), with confidence scaled by progress.                                                                           |
 
 ### `evaluateBeliefs` (winner-take-all is gone)
 

@@ -12,8 +12,7 @@ export type RuntimeStoreSnapshot = Readonly<RuntimeStoreState>;
 type Listener = () => void;
 
 /**
- * A lifecycle-managed message store (see core/runtime/CONVENTIONS.md — the
- * factory-over-class contract extends beyond `core/runtime`).
+ * A lifecycle-managed message store.
  *
  * `createRuntimeStore()` returns the store; there is no `class` in the public
  * surface. The store holds the arbitrated snapshot and notifies subscribers on
