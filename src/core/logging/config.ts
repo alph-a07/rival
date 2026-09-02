@@ -32,11 +32,6 @@ export let activeConfig: LoggerConfig = {
   minLevel: DEFAULT_MIN_LEVEL,
 };
 
-/** Updates the active configuration (partial merge). */
-export function configureLogger(config: Partial<LoggerConfig>): void {
-  activeConfig = { ...activeConfig, ...config };
-}
-
 /** True when `level` is at or above the `minLevel` threshold. */
 export function isLevelEnabled(minLevel: LogLevel, level: LogLevel): boolean {
   return LOG_LEVEL_ORDER[level] >= LOG_LEVEL_ORDER[minLevel];
