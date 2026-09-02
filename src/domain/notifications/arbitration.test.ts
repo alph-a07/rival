@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { arbitrate, compareBlocking } from "./arbitration";
-import { BLOCKING_PRIORITY, type BlockingKind } from "./types";
+import { BLOCKING_PRIORITY, type MessageSurface, isBlockingSurface } from "./types";
 import { createBridge } from "./client";
 import { createRuntimeStore } from "./store";
 
@@ -9,31 +9,29 @@ describe("arbitration — gap #2", () => {
     id: string,
     priority: number,
     order: number,
-  ): { id: string; blocking: BlockingKind; order: number } =>
+  ): { id: string; surface: MessageSurface; order: number } =>
     priority === -1
-      ? { id, blocking: { blocking: false }, order }
-      : { id, blocking: { blocking: true, priority: priority as 0 | 1 | 2 }, order };
+      ? { id, surface: { surface: "banner" }, order }
+      : { id, surface: { surface: "blocking", priority: priority as 0 | 1 | 2 }, order };
   const nonBlocking = block("notice", -1, 0); // reuse for the null case
 
   it("compareBlocking orders corruption > auth > other", () => {
+    const b = (priority: 0 | 1 | 2): MessageSurface => ({ surface: "blocking", priority });
     expect(
-      compareBlocking(
-        { blocking: true, priority: BLOCKING_PRIORITY.CORRUPTION },
-        { blocking: true, priority: BLOCKING_PRIORITY.AUTH },
-      ),
+      compareBlocking(b(BLOCKING_PRIORITY.CORRUPTION), b(BLOCKING_PRIORITY.AUTH)),
     ).toBeGreaterThan(0);
+    expect(compareBlocking(b(BLOCKING_PRIORITY.AUTH), b(BLOCKING_PRIORITY.OTHER))).toBeGreaterThan(
+      0,
+    );
     expect(
-      compareBlocking(
-        { blocking: true, priority: BLOCKING_PRIORITY.AUTH },
-        { blocking: true, priority: BLOCKING_PRIORITY.OTHER },
-      ),
+      compareBlocking(b(BLOCKING_PRIORITY.CORRUPTION), b(BLOCKING_PRIORITY.OTHER)),
     ).toBeGreaterThan(0);
-    expect(
-      compareBlocking(
-        { blocking: true, priority: BLOCKING_PRIORITY.CORRUPTION },
-        { blocking: true, priority: BLOCKING_PRIORITY.OTHER },
-      ),
-    ).toBeGreaterThan(0);
+  });
+
+  it("isBlockingSurface discriminates blocking vs passive", () => {
+    expect(isBlockingSurface({ surface: "blocking", priority: 2 })).toBe(true);
+    expect(isBlockingSurface({ surface: "banner" })).toBe(false);
+    expect(isBlockingSurface({ surface: "toast" })).toBe(false);
   });
 
   it("a higher-priority blocker preempts a currently-lower one", () => {
@@ -75,8 +73,8 @@ describe("bridge — dedup + once semantics", () => {
     const { store, bridge } = make();
     const base = {
       key: "conn",
-      kind: "network" as const,
-      blocking: { blocking: false } as const,
+      tone: "info" as const,
+      surface: { surface: "banner" } as const,
       title: "offline",
       body: "b1",
     };
@@ -91,14 +89,14 @@ describe("bridge — dedup + once semantics", () => {
     const { store, bridge } = make();
     bridge.raise({
       key: "auth",
-      kind: "auth",
-      blocking: { blocking: true, priority: BLOCKING_PRIORITY.AUTH } as const,
+      tone: "error",
+      surface: { surface: "blocking", priority: BLOCKING_PRIORITY.AUTH } as const,
       title: "auth",
     });
     bridge.raise({
       key: "corruption",
-      kind: "corruption",
-      blocking: { blocking: true, priority: BLOCKING_PRIORITY.CORRUPTION } as const,
+      tone: "error",
+      surface: { surface: "blocking", priority: BLOCKING_PRIORITY.CORRUPTION } as const,
       title: "corrupt",
     });
     const { blocking } = store.getSnapshot();
@@ -109,8 +107,8 @@ describe("bridge — dedup + once semantics", () => {
     const { store, bridge } = make();
     const base = {
       key: "auth-expired",
-      kind: "auth" as const,
-      blocking: { blocking: true, priority: BLOCKING_PRIORITY.AUTH } as const,
+      tone: "error" as const,
+      surface: { surface: "blocking", priority: BLOCKING_PRIORITY.AUTH } as const,
       title: "auth expired",
       once: true,
     };

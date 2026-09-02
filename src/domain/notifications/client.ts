@@ -1,6 +1,7 @@
 import { type RuntimeStore } from "./store";
 import { arbitrate } from "./arbitration";
 import type { Blockable, RuntimeInterest, RuntimeMessage } from "./types";
+import { isBlockingSurface } from "./types";
 import { Logger } from "@/core/logging/logger";
 
 export interface Bridge {
@@ -27,8 +28,8 @@ export function createBridge(store: RuntimeStore): Bridge {
   function materialize(input: RuntimeInterest, id: string): RuntimeMessage {
     return {
       id,
-      kind: input.kind,
-      blocking: input.blocking,
+      tone: input.tone,
+      surface: input.surface,
       title: input.title,
       body: input.body,
       once: input.once,
@@ -37,11 +38,11 @@ export function createBridge(store: RuntimeStore): Bridge {
     };
   }
 
-  /** Build `Blockable` candidates carrying each message's priority + FIFO order. */
+  /** Build `Blockable` candidates carrying each message's surface + FIFO order. */
   function blockingCandidates(messages: RuntimeMessage[]): Blockable[] {
     return messages.map((m) => ({
       id: m.id,
-      blocking: m.blocking,
+      surface: m.surface,
       order: orders.get(m.id) ?? 0,
     }));
   }
@@ -54,13 +55,15 @@ export function createBridge(store: RuntimeStore): Bridge {
     activeId = active?.id ?? null;
 
     const blocking = active ? (messages.find((m) => m.id === active.id) ?? null) : null;
-    const notices = messages.filter((m) => (m.blocking.blocking ? m.id === activeId : true));
+    const notices = messages.filter((m) =>
+      isBlockingSurface(m.surface) ? m.id === activeId : true,
+    );
     store.replace({ blocking, notices });
   }
 
   const bridge: Bridge = {
     raise(input: RuntimeInterest) {
-      Logger.analytics.debug(`raise interest: ${input.kind} (${input.key})`);
+      Logger.analytics.debug(`raise interest: ${input.key} (${input.surface.surface})`);
       // Suppress spent once-keys (dismissed, not re-armed).
       if (input.once && completedNotifications.has(input.key)) {
         return;

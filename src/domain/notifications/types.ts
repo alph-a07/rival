@@ -1,26 +1,24 @@
-/** Why a message exists — drives default presentation and priority. */
-export type MessageKind =
-  | "network" // offline / back-online notice (non-blocking)
-  | "storage" // proactive storage-pressure warning (non-blocking, actionable)
-  | "sync" // sync conflict: some changes need reconciliation (actionable)
-  | "pwa" // a new service-worker build is waiting (actionable: reload)
-  | "toast" // transient one-off notice (auto-dismisses)
-  | "auth" // blocking: credentials expired, must re-auth now
-  | "corruption"; // blocking: local store corrupt, must fix before continuing
-
-export type BlockingKind = { blocking: false } | { blocking: true; priority: BlockingPriority };
+/** How urgent a runtime message is — drives the color the renderer picks. */
+export type MessageTone = "error" | "warning" | "info";
 
 export type BlockingPriority = 0 | 1 | 2;
 
+/** A blocking modal's arbitration rank — higher wins the single modal slot. */
 export const BLOCKING_PRIORITY: Record<"CORRUPTION" | "AUTH" | "OTHER", BlockingPriority> = {
   CORRUPTION: 2,
   AUTH: 1,
   OTHER: 0,
 };
 
+/** The set of all possible message surfaces. */
+export type MessageSurface =
+  | { surface: "toast" }
+  | { surface: "banner" }
+  | { surface: "blocking"; priority: BlockingPriority };
+
 export interface Blockable {
   id: string;
-  blocking: BlockingKind;
+  surface: MessageSurface;
   /** Insertion/raise order, to break priority ties deterministically. */
   order: number;
 }
@@ -45,8 +43,8 @@ export interface RuntimeAction<Kind extends ActionKind = ActionKind> {
 /** An immutable, UI-facing notice emitted by the runtime layer. */
 export interface RuntimeMessage {
   id: string;
-  kind: MessageKind;
-  blocking: BlockingKind;
+  tone: MessageTone;
+  surface: MessageSurface;
   title: string;
   body?: string;
   /** "once" → show a blocking message and drop it on dismiss (never re-raise). */
@@ -66,12 +64,24 @@ export interface RuntimeMessage {
  */
 export interface RuntimeInterest {
   key: string;
-  kind: MessageKind;
-  blocking: BlockingKind;
+  tone: MessageTone;
+  surface: MessageSurface;
   title: string;
   body?: string;
   once?: boolean;
   action?: RuntimeAction;
   /** True while the underlying operation is processing (e.g. reconciling). */
   busy?: boolean;
+}
+
+/** True when the message contends for the single modal slot. */
+export function isBlockingSurface(
+  s: MessageSurface,
+): s is Extract<MessageSurface, { surface: "blocking" }> {
+  return s.surface === "blocking";
+}
+
+/** Arbitration priority for a surface, monotonic with modal urgency. */
+export function blockingRank(s: MessageSurface): number {
+  return s.surface === "blocking" ? s.priority : -1;
 }
