@@ -2,6 +2,7 @@ import { createConnectivityMonitor, type ConnectivityMonitor } from "./connectiv
 import type { ConnectivityEnv } from "./connectivity";
 import { createBridge, type Bridge } from "@/domain/notifications/client";
 import { createReconcileAction } from "@/domain/notifications/actions/reconcileAction";
+import { createReAuthAction } from "@/domain/notifications/actions/reAuthAction";
 import { createStorageMonitor } from "./storage";
 import type { StorageProvider } from "./storage";
 import { wakeRetryQueue } from "@/domain/errors/withRetry";
@@ -30,14 +31,13 @@ export interface Runtime {
   stop(): void;
   /** Blocking storage-corrupt interest (highest priority). */
   raiseStorageCorrupt(opts: { title: string; body?: string; action?: RuntimeAction }): void;
-  /** Blocking auth-expired interest. */
-  raiseAuthExpired(opts: { title: string; body?: string; action?: RuntimeAction }): void;
   /** Non-blocking sync-conflict banner with a wired Reconcile action. */
   raiseSyncConflict(opts?: { body?: string; label?: string }): void;
   /** Clear an active sync-conflict after resolution. */
   clearSyncConflict(): void;
   /** Wire/refresh the reconciled action (in case the callback changes). */
   setReconcileHandler(onReconcile: () => void | Promise<void>): void;
+  setAuthRecovery(onRecover: (() => void | Promise<void>) | null): void;
 }
 
 let singleton: Runtime | null = null;
@@ -52,7 +52,21 @@ export function getRuntime(): Runtime {
 
 function createRuntime(opts: RuntimeOpts): Runtime {
   const { store, storage = fallbackStorageProvider(), onReconcileConflict } = opts;
-  const bridge = createBridge(store);
+  const baseBridge = createBridge(store);
+  let authRecovery: (() => void | Promise<void>) | null = null;
+  const bridge: Bridge = {
+    ...baseBridge,
+    raise(input) {
+      const action =
+        input.action ??
+        (input.surface.surface === "blocking" &&
+        (input.errorKind === "auth-expired" || input.errorKind === "auth-denied") &&
+        authRecovery
+          ? createReAuthAction(authRecovery)
+          : undefined);
+      baseBridge.raise(action ? { ...input, action } : input);
+    },
+  };
 
   let reconcileHandler = onReconcileConflict;
   let reconciling = false;
@@ -72,25 +86,16 @@ function createRuntime(opts: RuntimeOpts): Runtime {
       reconcileHandler = handler;
     },
 
+    setAuthRecovery(handler) {
+      authRecovery = handler;
+    },
+
     raiseStorageCorrupt({ title, body, action }) {
       bridge.raise(
         interest(
           "corruption",
           "error",
           { surface: "blocking", priority: BLOCKING_PRIORITY.CORRUPTION },
-          title,
-          body,
-          { action, once: true },
-        ),
-      );
-    },
-
-    raiseAuthExpired({ title, body, action }) {
-      bridge.raise(
-        interest(
-          "auth",
-          "error",
-          { surface: "blocking", priority: BLOCKING_PRIORITY.AUTH },
           title,
           body,
           { action, once: true },

@@ -29,13 +29,13 @@ The **framework-free, browser-coupled infrastructure** of the runtime feedback f
 
 ## File-by-file map
 
-| File              | Responsibility                                                                                                       | Public surface                                                                   |
-| ----------------- | -------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| `connectivity.ts` | Boot-offline connectivity monitor — emits **current** state, then transitions                                        | `createConnectivityMonitor()`, `ConnectivityEvent`, `ConnectivityListener`       |
-| `storage.ts`      | Proactive storage-pressure monitor — samples `estimate()` at boot + on a timer                                       | `createStorageMonitor()`, `StoragePressureSignal`, `StorageMonitorOpts`          |
-| `crossTab.ts`     | Typed `BroadcastChannel` transport with a `storage`-event fallback                                                   | `createCrossTabBus()`, `CrossTabEventBus`, `RuntimeChannelEventMap`              |
-| `pwa.ts`          | New-build updater — broadcasts across tabs, each tab offers Reload                                                   | `createPwaUpdater()`, `PwaUpdateHook`, `PwaUpdaterOpts`, `crossTabBus`           |
-| `coordinator.ts`  | The **single owner** of the app runtime — `createRuntime` wires monitors onto the bridge; `getRuntime()` returns the one lazily-created store+runtime | `createRuntime()`, `getRuntime()`, `Runtime`, `RuntimeOpts` |
+| File              | Responsibility                                                                                                                                        | Public surface                                                             |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `connectivity.ts` | Boot-offline connectivity monitor — emits **current** state, then transitions                                                                         | `createConnectivityMonitor()`, `ConnectivityEvent`, `ConnectivityListener` |
+| `storage.ts`      | Proactive storage-pressure monitor — samples `estimate()` at boot + on a timer                                                                        | `createStorageMonitor()`, `StoragePressureSignal`, `StorageMonitorOpts`    |
+| `crossTab.ts`     | Typed `BroadcastChannel` transport with a `storage`-event fallback                                                                                    | `createCrossTabBus()`, `CrossTabEventBus`, `RuntimeChannelEventMap`        |
+| `pwa.ts`          | New-build updater — broadcasts across tabs, each tab offers Reload                                                                                    | `createPwaUpdater()`, `PwaUpdateHook`, `PwaUpdaterOpts`, `crossTabBus`     |
+| `coordinator.ts`  | The **single owner** of the app runtime — `createRuntime` wires monitors onto the bridge; `getRuntime()` returns the one lazily-created store+runtime | `createRuntime()`, `getRuntime()`, `Runtime`, `RuntimeOpts`                |
 
 ## The monitors
 
@@ -89,31 +89,43 @@ flowchart LR
         B[bridge] --- S[store]
         CM[createConnectivityMonitor] --> B
         SM[createStorageMonitor] --> B
-        RA[raiseAuthExpired] --> B
-        RC[raiseSyncConflict] --> B
         RS[raiseStorageCorrupt] --> B
+        RC[raiseSyncConflict] --> B
     end
 ```
 
 | Method                | Kind         | Blocking                                    | Wired by   |
 | --------------------- | ------------ | ------------------------------------------- | ---------- |
-| `raiseAuthExpired`    | `auth`       | blocking, priority `AUTH` (1), `once`       | auth layer |
 | `raiseStorageCorrupt` | `corruption` | blocking, priority `CORRUPTION` (2), `once` | data layer |
 | `raiseSyncConflict`   | `sync`       | passive banner                              | sync layer |
 | `clearSyncConflict`   | —            | clears the conflict after resolution        | sync layer |
 | `setReconcileHandler` | —            | wires the Reconcile action's callback       | shells     |
 
+App-auth failures no longer raise through the coordinator: `auth.ts` classifies a dead session
+(`auth-expired`) and `sync` classifies a denied grant (`auth-denied`), and the single error funnel
+(`reportError`) surfaces them as blocking modals; the coordinator translates classified auth
+interests into a wired re-auth action. The coordinator owns
+only the monitor-driven + reconcile interests listed above.
+
 ### `getRuntime()` — the one runtime, for shell and services alike
 
-`RuntimeProvider` mounts monitors and draws; `auth.ts`, `syncService.ts`, and viewmodels run outside React and only raise interests. Both sides use the same accessor. `getRuntime()` returns **the** lazily-created singleton store+runtime (not a per-caller fallback), so a service firing before first paint raises onto the exact store the shell later draws — there is never a second instance.
+`RuntimeProvider` mounts monitors and draws; `syncService.ts` raises the Reconcile interest and viewmodels run outside React. Both sides use the same accessor. `getRuntime()` returns **the** lazily-created singleton store+runtime (not a per-caller fallback), so a service firing before first paint raises onto the exact store the shell later draws — there is never a second instance.
 
 Monitors are mounted lazily by the shell via `start()`/`stop()`: `start()` re-arms connectivity + storage subscriptions and `stop()` tears them down symmetrically, so repeated start from StrictMode remounts never stacks duplicate monitors. Shell-only concerns (`registerSW`, error-reporter funnel) stay in the React layer and call the same runtime's `setReconcileHandler(...)`/`start()`.
 
 ```ts
 // in auth.ts — outside React:
-import { getRuntime } from "@/core/runtime/coordinator";
-getRuntime().raiseAuthExpired({ title: "Your Google connection expired", ... });
+throw ErrorClassifier.fromAuthWorkerError(err); // app-auth expiry → funnel → blocking re-auth modal
+// in syncService.ts:
+getRuntime().raiseSyncConflict({ body }); // Drive 409 → Reconcile banner
 ```
+
+The auth-vs-drive split, driven through the same classifier:
+
+- **Drive-data `401`** (stale access token) — silently refreshed via the Worker; never surfaced.
+- **App session expired** (`/refresh` `no_refresh_token`, i.e. app-auth `401`) → `auth-expired` → re-auth.
+- **Drive-data `403`** (denied grant, valid session) → `auth-denied` → reconnect Drive only.
+- **App-auth `403`** → `auth-denied` → re-auth (permission scope re-granted when Drive-sync opted in).
 
 ---
 
@@ -130,11 +142,10 @@ getRuntime().raiseAuthExpired({ title: "Your Google connection expired", ... });
 
 ### Outbound — who consumes `core/runtime`
 
-| Consumer                       | What it uses                                                                    | When                                              |
-| ------------------------------ | ------------------------------------------------------------------------------- | ------------------------------------------------- |
-| `src/auth/auth.ts`             | `getRuntime().raiseAuthExpired`                                                 | an expired Drive token → blocking re-auth modal   |
-| `src/sync/syncService.ts`      | `getRuntime().raiseSyncConflict`                                                | a Drive 409 → the Reconcile banner                |
-| `src/shells/runtime/react.tsx` | `getRuntime` (start/stop/setReconcileHandler), `crossTabBus`, `Runtime`   | the provider mounts the coordinator's single runtime + wires PWA |
+| Consumer                       | What it uses                                                            | When                                                             |
+| ------------------------------ | ----------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `src/sync/syncService.ts`      | `getRuntime().raiseSyncConflict`                                        | a Drive 409 → the Reconcile banner                               |
+| `src/shells/runtime/react.tsx` | `getRuntime` (start/stop/setReconcileHandler), `crossTabBus`, `Runtime` | the provider mounts the coordinator's single runtime + wires PWA |
 
 ---
 
