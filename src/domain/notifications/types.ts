@@ -64,6 +64,7 @@ export interface RuntimeMessage {
  */
 export interface RuntimeInterest {
   key: string;
+  errorKind?: string;
   tone: MessageTone;
   surface: MessageSurface;
   title: string;
