@@ -24,6 +24,12 @@ describe("ErrorClassifier", () => {
     expect(ErrorClassifier.fromDriveApiError(err).kind).toBe("auth-expired");
   });
 
+  it("maps Drive 403 to auth-denied (distinct from expired)", () => {
+    const err = { status: 403 } as unknown;
+    expect(ErrorClassifier.fromDriveApiError(err).kind).toBe("auth-denied");
+    expect(ErrorClassifier.fromDriveApiError(err).message).toContain("access");
+  });
+
   it("maps Drive 409 to sync-conflict", () => {
     const err = { status: 409 } as unknown;
     expect(ErrorClassifier.fromDriveApiError(err).kind).toBe("sync-conflict");

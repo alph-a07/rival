@@ -93,7 +93,7 @@ async get(id: string): Promise<Result<Endeavour>> {
 1. Classifies unknowns (`isAppError(input) ? input : ErrorClassifier.fromUnknown`).
 2. Filters known-noise (`IGNORED_PATTERNS` — `ResizeObserver loop`, non-Error rejections) → logs only, never surfaces.
 3. Logs via `Logger`.
-4. Maps the `AppError` → a `RuntimeInterest` — **copying `tone` and `surface` straight through** (no re-derivation, no split): `tone` stays as-is, `surface` is one closed `MessageSurface` union (the `silent` branch already returned above), plus a wired Retry action when `retryable && retry`.
+4. Maps the `AppError` → a `RuntimeInterest` — **copying `tone` and `surface` straight through** (no re-derivation, no split): `tone` stays as-is, `surface` is one closed `MessageSurface` union (the `silent` branch already returned above), carrying the classified `errorKind`, plus a wired Retry action when `retryable && retry`.
 5. Raises it on the notification bridge (set by `setReporter`).
 
 ---
@@ -102,12 +102,12 @@ async get(id: string): Promise<Result<Endeavour>> {
 
 ### Inbound — what `domain/errors` imports
 
-| Package                                      | Symbol(s)                          | Why                                                                                                            |
-| -------------------------------------------- | ---------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `@/domain/notifications/types`               | `MessageSurface`, `RuntimeMessage` | `AppError.surface` is a `MessageSurface` (+ log-only `silent`); `reporter` maps into a `RuntimeInterest` shape |
-| `@/domain/notifications/client`              | `Bridge`                           | the live target `reporter` pushes surfaced errors onto                                                         |
-| `@/domain/notifications/actions/retryAction` | `createRetryAction`                | `reporter` wraps a retryable failure as a Retry CTA                                                            |
-| `@/core/logging/logger`                      | `Logger`                           | the app-wide logging sink                                                                                      |
+| Package                                      | Symbol(s)                          | Why                                                                                                                                                                         |
+| -------------------------------------------- | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@/domain/notifications/types`               | `MessageSurface`, `RuntimeMessage` | `AppError.surface` is a `MessageSurface` (+ log-only `silent`); `reporter` maps into a `RuntimeInterest` shape and leaves runtime-specific action policy to the coordinator |
+| `@/domain/notifications/client`              | `Bridge`                           | the live target `reporter` pushes surfaced errors onto                                                                                                                      |
+| `@/domain/notifications/actions/retryAction` | `createRetryAction`                | `reporter` wraps a retryable failure as a Retry CTA                                                                                                                         |
+| `@/core/logging/logger`                      | `Logger`                           | the app-wide logging sink                                                                                                                                                   |
 
 ### Outbound — who consumes `domain/errors`
 

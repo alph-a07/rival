@@ -108,14 +108,32 @@ export class ErrorClassifier {
       return build("offline", e, { context });
     }
     const status = (e as { status?: number })?.status;
-    if (status === 401 || status === 403) {
+    if (status === 401) {
       return build("auth-expired", e, { context });
+    }
+    if (status === 403) {
+      return build("auth-denied", e, { context });
     }
     if (status === 409) {
       return build("sync-conflict", e, { context });
     }
     if (status === 429 || (typeof status === "number" && status >= 500)) {
       return build("network", e, { context, retryable: true });
+    }
+    return build("unknown", e, { context });
+  }
+
+  /** Classify an auth Worker /refresh failure into a canonical `AppError`. */
+  static fromAuthWorkerError(e: unknown, context?: Record<string, unknown>): AppError {
+    if (isOffline()) {
+      return build("offline", e, { context });
+    }
+    // The Worker reports a dead durable session via the `no_refresh_token` code
+    if ((e as { code?: string })?.code === "no_refresh_token") {
+      return build("auth-expired", e, {
+        context,
+        message: "Your Google connection expired. Please sign in again.",
+      });
     }
     return build("unknown", e, { context });
   }

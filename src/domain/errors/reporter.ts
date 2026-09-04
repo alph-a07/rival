@@ -58,6 +58,7 @@ export function reportError(input: unknown, opts: ReportOptions = {}): string | 
   const key = `${BRIDGE_KEY}:${error.kind}:${messageSeq++}`;
   const interest: RuntimeInterest = {
     key,
+    errorKind: error.kind,
     tone: error.tone,
     // The silent branch already returned above, so this narrows to MessageSurface.
     surface: error.surface,
