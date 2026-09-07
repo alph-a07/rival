@@ -114,7 +114,7 @@ export class ErrorClassifier {
     if (status === 403) {
       return build("auth-denied", e, { context });
     }
-    if (status === 409) {
+    if (status === 409 || status === 412) {
       return build("sync-conflict", e, { context });
     }
     if (status === 429 || (typeof status === "number" && status >= 500)) {
