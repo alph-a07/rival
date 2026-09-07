@@ -1,6 +1,9 @@
 import { beforeEach, expect, test, describe } from "vitest";
 import { AppDatabase } from "@/data/db";
-import { MicroCheckInRepository } from "./MicroCheckInRepository";
+import {
+  createMicroCheckInRepository,
+  type MicroCheckInRepository,
+} from "./MicroCheckInRepository";
 import { unwrap } from "@/domain/errors/Result";
 
 describe("MicroCheckInRepository", () => {
@@ -10,7 +13,7 @@ describe("MicroCheckInRepository", () => {
   beforeEach(async () => {
     db = new AppDatabase();
     await Promise.all(db.tables.map((t) => t.clear()));
-    repo = new MicroCheckInRepository(db);
+    repo = createMicroCheckInRepository(db);
   });
 
   test("logs a mood and returns an id", async () => {

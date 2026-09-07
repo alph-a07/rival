@@ -1,7 +1,7 @@
 import { beforeEach, expect, test, describe } from "vitest";
 import { AppDatabase } from "@/data/db";
-import { EndeavourRepository } from "./EndeavourRepository";
-import { SnapshotRepository } from "./SnapshotRepository";
+import { createEndeavourRepository, type EndeavourRepository } from "./EndeavourRepository";
+import { createSnapshotRepository } from "./SnapshotRepository";
 import { unwrap } from "@/domain/errors/Result";
 import { activeSegment, type Endeavour } from "@/domain/models/Endeavour";
 import type { Snapshot } from "@/domain/models/Snapshot";
@@ -14,7 +14,7 @@ describe("EndeavourRepository", () => {
   beforeEach(async () => {
     db = new AppDatabase();
     await Promise.all(db.tables.map((t) => t.clear()));
-    repo = new EndeavourRepository(db, new SnapshotRepository(db));
+    repo = createEndeavourRepository(db, createSnapshotRepository(db));
     seq = 0;
   });
 
@@ -93,6 +93,28 @@ describe("EndeavourRepository", () => {
     });
   });
 
+  describe("delete", () => {
+    test("deletes the endeavour and owned check-ins and snapshots atomically", async () => {
+      const e = endeavour();
+      await db.endeavours.add(e);
+      await db.checkIns.add({
+        id: "checkin-1",
+        endeavourId: e.id,
+        timestamp: "2026-01-02T00:00:00.000Z",
+        responses: [],
+        rawScore: 50,
+      });
+      await db.snapshots.add(snapshot(e.id, "2026-01-02T00:00:00.000Z"));
+
+      const result = await repo.delete(e.id);
+
+      expect(result.ok).toBe(true);
+      expect(await db.endeavours.get(e.id)).toBeUndefined();
+      expect(await db.checkIns.where({ endeavourId: e.id }).count()).toBe(0);
+      expect(await db.snapshots.where({ endeavourId: e.id }).count()).toBe(0);
+    });
+  });
+
   describe("switchDomain", () => {
     test("closes the current segment and opens a new one", async () => {
       const e = endeavour("building");
@@ -126,6 +148,21 @@ describe("EndeavourRepository", () => {
     test("returns an error when the endeavour does not exist", async () => {
       const result = await repo.switchDomain("nope", "habit");
       expect(result.ok).toBe(false);
+    });
+
+    test("serializes concurrent domain transitions without losing history", async () => {
+      const e = endeavour("building");
+      await db.endeavours.add(e);
+
+      const results = await Promise.all([
+        repo.switchDomain(e.id, "habit"),
+        repo.switchDomain(e.id, "structured_learning"),
+      ]);
+
+      expect(results.every((result) => result.ok)).toBe(true);
+      const updated = await db.endeavours.get(e.id);
+      expect(updated?.domainHistory).toHaveLength(3);
+      expect(updated?.domainHistory.at(-1)?.endDate).toBeNull();
     });
   });
 

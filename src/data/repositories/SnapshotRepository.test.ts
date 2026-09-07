@@ -1,6 +1,6 @@
 import { beforeEach, expect, test, describe } from "vitest";
 import { AppDatabase } from "@/data/db";
-import { SnapshotRepository } from "./SnapshotRepository";
+import { createSnapshotRepository, type SnapshotRepository } from "./SnapshotRepository";
 import { unwrap } from "@/domain/errors/Result";
 import type { Snapshot } from "@/domain/models/Snapshot";
 
@@ -12,7 +12,7 @@ describe("SnapshotRepository", () => {
   beforeEach(async () => {
     db = new AppDatabase();
     await Promise.all(db.tables.map((t) => t.clear()));
-    repo = new SnapshotRepository(db);
+    repo = createSnapshotRepository(db);
     seq = 0;
   });
 
