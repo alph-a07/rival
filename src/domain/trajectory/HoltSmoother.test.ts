@@ -1,5 +1,5 @@
 import { expect, test, describe } from "vitest";
-import { holtStep } from "./HoltSmoother";
+import { holtStep } from "./holtSmoother";
 import { RIVAL_MATH_CONFIG } from "@/domain/config/tuningConstants";
 
 describe("holtStep Adaptive Algorithm", () => {

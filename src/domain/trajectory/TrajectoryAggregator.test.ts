@@ -1,5 +1,10 @@
 import { expect, test, describe } from "vitest";
-import { zScore, domainRollup, overallTrajectory, type TrajectoryReading } from "./TrajectoryAggregator";
+import {
+  zScore,
+  domainRollup,
+  overallTrajectory,
+  type TrajectoryReading,
+} from "./trajectoryAggregator";
 
 describe("trajectory aggregate fns", () => {
   describe("zScore", () => {
@@ -78,11 +83,7 @@ describe("trajectory aggregate fns", () => {
 
   describe("overallTrajectory", () => {
     test("averages domain rollups directly, deriving the label from the average", () => {
-      const overall = overallTrajectory([
-        reading(1.5),
-        reading(-0.5),
-        reading(0.5),
-      ]);
+      const overall = overallTrajectory([reading(1.5), reading(-0.5), reading(0.5)]);
 
       expect(overall.hasBaseline).toBe(true);
       // (1.5 + -0.5 + 0.5) / 3 = 0.5 -> exactly at CLIMB => climbing
@@ -99,11 +100,7 @@ describe("trajectory aggregate fns", () => {
     });
 
     test("excludes domains without a baseline from the average calculation", () => {
-      const overall = overallTrajectory([
-        reading(1.5),
-        noBaseline(),
-        reading(0.5),
-      ]);
+      const overall = overallTrajectory([reading(1.5), noBaseline(), reading(0.5)]);
 
       // The average should be (1.5 + 0.5) / 2 = 1.0.
       // If the false baseline was incorrectly included as a 0, it would be (1.5 + 0 + 0.5) / 3 = 0.66

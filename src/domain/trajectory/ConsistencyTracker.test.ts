@@ -1,5 +1,9 @@
 import { expect, test, describe } from "vitest";
-import { evaluateConsistency, flagWorstResidual, type ConsistencyStatus } from "./ConsistencyTracker";
+import {
+  evaluateConsistency,
+  flagWorstResidual,
+  type ConsistencyStatus,
+} from "./consistencyTracker";
 import { RIVAL_MATH_CONFIG } from "@/domain/config/tuningConstants";
 import type { Snapshot } from "@/domain/models/Snapshot";
 
