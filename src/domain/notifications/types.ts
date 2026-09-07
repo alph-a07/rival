@@ -38,7 +38,7 @@ export interface RuntimeAction<Kind extends ActionKind = ActionKind> {
   label: string;
   presentationKind: "primary" | "secondary" | "danger";
   /** What the action does when fired. Idempotent by design. */
-  run: () => void;
+  run: () => void | Promise<void>;
 }
 
 /** An immutable, UI-facing notice emitted by the runtime layer. */
