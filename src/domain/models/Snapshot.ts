@@ -1,4 +1,4 @@
-import type { ConsistencyStatus } from "@/domain/trajectory/ConsistencyTracker";
+import type { ConsistencyStatus } from "@/domain/trajectory/consistencyTracker";
 
 /** A Snapshot is the data model that stores the results of all the mathematical calculations for a single user check-in. */
 export interface Snapshot {
