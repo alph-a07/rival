@@ -43,7 +43,7 @@ The separation matters: the same `AppError` kind can present differently dependi
 | `Result.ts`          | The load-bearing return type — expected failures are values, not throws                        | `Ok()`, `Err()`, `unwrap()`, `mapResult()`, `Result<T,E>`                                                    |
 | `ErrorClassifier.ts` | The _only_ place that inspects vendor error shapes (`Dexie name`, `Drive status`)              | `ErrorClassifier.fromDexieError()`, `.fromDriveApiError()`, `.validation()`, `.notFound()`, `.fromUnknown()` |
 | `withRetry.ts`       | Silent exponential backoff for system-initiated ops, racing against reconnection               | `withRetry()`, `wakeRetryQueue()`, `isOffline()`                                                             |
-| `reporter.ts`        | The single error funnel — `AppError` → `RuntimeInterest`, noise-filtered, logged               | `reportError()`, `notifyDirect()`, `setReporter()`                                                           |
+| `reporter.ts`        | The single error funnel — `AppError` → `RuntimeInterest`, noise-filtered, logged               | `reportError()`, `notifyDirect()`, `setReporter()`, `ReportOptions`                                          |
 
 ---
 
@@ -70,13 +70,14 @@ flowchart LR
 **`Result<T, E = AppError>`** is the contract every data/service method returns for an _expected_ failure. It encodes the design rule: _expected failures are values you return; unexpected failures (bugs) still throw and hit the error boundary._ A method that throws for something that happens in normal operation should have been classified and returned as a `Result`.
 
 ```ts
-async get(id: string): Promise<Result<Endeavour>> {
+// A repository over the Dexie handle — factory-created, row-mapped
+async function get(id: string): Promise<Result<Endeavour | undefined>> {
   try {
-    const row = await this.db.endeavours.get(id);
-    if (!row) return Err(ErrorClassifier.notFound("Endeavour", id));
-    return Ok(row);
+    const row = await db.endeavours.get(id);
+    return Ok(row ? rowToEndeavour(row) : undefined);
   } catch (e) {
-    return Err(ErrorClassifier.fromDexieError(e, { id })); // quota → storage-quota, DataError → storage-corrupt
+    return Err(ErrorClassifier.fromDexieError(e, { entity: "Endeavour", id }));
+    // quota → storage-quota · DataError/InvalidState → storage-corrupt
   }
 }
 ```
@@ -132,3 +133,4 @@ async get(id: string): Promise<Result<Endeavour>> {
 ```bash
 npx vitest run --config vite.config.ts src/domain/errors
 ```
+
