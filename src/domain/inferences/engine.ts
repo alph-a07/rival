@@ -18,8 +18,8 @@ import type {
 } from "./types";
 import { RIVAL_MATH_CONFIG } from "@/domain/config/tuningConstants";
 import { Logger } from "@/core/logging/logger";
-import { conditionHolds } from "./ConditionEvaluator";
-import type { EvaluatorLookups } from "./ConditionEvaluator";
+import { conditionHolds } from "./conditionEvaluator";
+import type { EvaluatorLookups } from "./conditionEvaluator";
 import {
   buildExplanation,
   clampScore,
@@ -184,8 +184,7 @@ export function evaluateQuestionRelevance(
 ): EvaluatedQuestionRelevance[] {
   return evaluators.map((evaluator) => {
     let score =
-      defaultScoreByQuestion.get(evaluator.questionId) ??
-      RIVAL_MATH_CONFIG.DEFAULT_QUESTION_SCORE;
+      defaultScoreByQuestion.get(evaluator.questionId) ?? RIVAL_MATH_CONFIG.DEFAULT_QUESTION_SCORE;
     const explanations: ExplanationRecord[] = [];
     const evidence = new Set<EvidenceType>();
     const applied: { reason: string; adjustment: number }[] = [];
@@ -211,8 +210,7 @@ export function evaluateQuestionRelevance(
     const finalScore = clampScore(score);
 
     const startingScore =
-      defaultScoreByQuestion.get(evaluator.questionId) ??
-      RIVAL_MATH_CONFIG.DEFAULT_QUESTION_SCORE;
+      defaultScoreByQuestion.get(evaluator.questionId) ?? RIVAL_MATH_CONFIG.DEFAULT_QUESTION_SCORE;
 
     Logger.behavior.group(
       `Relevance • ${evaluator.questionId}`,
@@ -368,10 +366,7 @@ export function evaluateCheckInArchetypes(
         evidence,
       );
 
-      matchedByArchId.set(
-        archetype.id,
-        matchedConditions(archetype.conditions, context, lookups),
-      );
+      matchedByArchId.set(archetype.id, matchedConditions(archetype.conditions, context, lookups));
 
       return {
         id: archetype.id,

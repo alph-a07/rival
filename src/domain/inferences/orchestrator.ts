@@ -1,7 +1,7 @@
 import { RIVAL_MATH_CONFIG } from "@/domain/config/tuningConstants";
 import { Logger } from "@/core/logging/logger";
 import { clampScore, generateMutualExclusionContradictions } from "./utils";
-import { buildLookups, conditionHolds, conditionIsApplicable } from "./ConditionEvaluator";
+import { buildLookups, conditionHolds, conditionIsApplicable } from "./conditionEvaluator";
 import {
   evaluateAnswerInferences,
   evaluateBeliefs,
@@ -10,7 +10,7 @@ import {
   evaluateQuestionRelevance,
   evaluateCheckInArchetypes,
 } from "./engine";
-import { deriveQuestionPresentation } from "./PresentationPolicy";
+import { deriveQuestionPresentation } from "./presentationPolicy";
 import {
   ANSWER_INFERENCE_RULES,
   CONTRADICTION_RULES,
@@ -51,9 +51,7 @@ export function evaluateCheckIn(
   // -- Scope each rule family to the participating question/GIS set --
   const scopedAnswerRules: AnswerInferenceRule[] = rules.answerInferenceRules
     .filter((rule) =>
-      rule.conditions.every((condition) =>
-        conditionIsApplicable(condition, context, lookups),
-      ),
+      rule.conditions.every((condition) => conditionIsApplicable(condition, context, lookups)),
     )
     .map((rule) => ({
       ...rule,
@@ -74,17 +72,13 @@ export function evaluateCheckIn(
 
   const contradictionRules: ContradictionRule[] = [
     ...rules.contradictionRules.filter((rule) =>
-      rule.conditions.every((condition) =>
-        conditionIsApplicable(condition, context, lookups),
-      ),
+      rule.conditions.every((condition) => conditionIsApplicable(condition, context, lookups)),
     ),
     ...generateMutualExclusionContradictions(enabledGis),
   ];
 
   const scopedArchetypes: CheckInArchetype[] = rules.sessionArchetypes.filter((archetype) =>
-    archetype.conditions.every((condition) =>
-      conditionIsApplicable(condition, context, lookups),
-    ),
+    archetype.conditions.every((condition) => conditionIsApplicable(condition, context, lookups)),
   );
 
   // -- Deductions, beliefs, relevance --

@@ -44,10 +44,7 @@ describe("behavioral rules (golden)", () => {
       { questionId: "depth_of_focus_q1", optionId: "depth_of_focus_flow" },
     ];
 
-    const inferences = evaluateAnswerInferences(
-      ANSWER_INFERENCE_RULES,
-      context(answeredSoFar),
-    );
+    const inferences = evaluateAnswerInferences(ANSWER_INFERENCE_RULES, context(answeredSoFar));
 
     const golden = inferences.map((item) => ({
       sourceRuleId: item.sourceRuleId,

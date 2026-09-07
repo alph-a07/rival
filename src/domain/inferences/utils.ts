@@ -1,6 +1,6 @@
 import { RIVAL_MATH_CONFIG } from "@/domain/config/tuningConstants";
 import type { Gis } from "@/domain/models/Gis";
-import { conditionHolds } from "./ConditionEvaluator";
+import { conditionHolds } from "./conditionEvaluator";
 import type {
   CheckInContext,
   Condition,
@@ -8,7 +8,7 @@ import type {
   EvidenceType,
   ExplanationRecord,
 } from "./types";
-import type { EvaluatorLookups } from "./ConditionEvaluator";
+import type { EvaluatorLookups } from "./conditionEvaluator";
 
 /** Clamps a relevance/confidence/support score to the normalized [0, 1] range. */
 export function clampScore(value: number): number {
@@ -115,9 +115,7 @@ export function matchedConditions(
   context: CheckInContext,
   lookups?: EvaluatorLookups,
 ): string {
-  const held = conditions.filter((condition) =>
-    conditionHolds(condition, context, lookups),
-  );
+  const held = conditions.filter((condition) => conditionHolds(condition, context, lookups));
   if (held.length === 0) {
     return "";
   }

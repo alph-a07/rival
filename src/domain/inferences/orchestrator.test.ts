@@ -3,7 +3,7 @@ import { GisRegistry } from "@/domain/gis/gisDefinitions";
 import { RIVAL_MATH_CONFIG } from "@/domain/config/tuningConstants";
 import type { GisTier } from "@/domain/models/Gis";
 import { evaluateCheckIn } from "./orchestrator";
-import { deriveQuestionPresentation } from "./PresentationPolicy";
+import { deriveQuestionPresentation } from "./presentationPolicy";
 import type { AnsweredOption, CheckInContext, CheckInRuleSets, CheckInArchetype } from "./types";
 
 const VALID_PRESENTATION_STATES = [

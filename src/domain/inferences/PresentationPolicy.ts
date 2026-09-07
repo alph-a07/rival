@@ -41,9 +41,7 @@ export function deriveQuestionPresentation(
   const remainingOptionIds = optionIds.filter((id) => !disabledOptionIds.has(id));
   const soleRemainingOptionId = remainingOptionIds.length === 1 ? remainingOptionIds[0] : null;
 
-  const score = evaluatedQuestion
-    ? clampScore(evaluatedQuestion.score)
-    : clampScore(defaultScore);
+  const score = evaluatedQuestion ? clampScore(evaluatedQuestion.score) : clampScore(defaultScore);
 
   const sorted = [...belief.beliefs].sort((a, b) => b.support - a.support);
   const top = sorted[0];

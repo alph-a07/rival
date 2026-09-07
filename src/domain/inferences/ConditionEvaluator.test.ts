@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { GisRegistry } from "@/domain/gis/gisDefinitions";
-import { conditionHolds, conditionIsApplicable } from "./ConditionEvaluator";
+import { conditionHolds, conditionIsApplicable } from "./conditionEvaluator";
 import type { CheckInContext, Condition } from "./types";
 
 describe("condition evaluation fns", () => {
@@ -35,16 +35,10 @@ describe("condition evaluation fns", () => {
   /** Tests whether GIS attached and detached checks are met */
   test("matches gis attached and detached checks", () => {
     expect(
-      conditionHolds(
-        { type: "gis", gisId: "depth_of_focus", attached: true },
-        baseContext,
-      ),
+      conditionHolds({ type: "gis", gisId: "depth_of_focus", attached: true }, baseContext),
     ).toBe(true);
     expect(
-      conditionHolds(
-        { type: "gis", gisId: "recovery_quality", attached: false },
-        baseContext,
-      ),
+      conditionHolds({ type: "gis", gisId: "recovery_quality", attached: false }, baseContext),
     ).toBe(true);
   });
 
@@ -84,16 +78,10 @@ describe("condition evaluation fns", () => {
   test("matches domain conditions", () => {
     const buildingContext: CheckInContext = { ...baseContext, selectedDomainId: "building" };
     expect(
-      conditionHolds(
-        { type: "domain", domainId: "building", attached: true },
-        buildingContext,
-      ),
+      conditionHolds({ type: "domain", domainId: "building", attached: true }, buildingContext),
     ).toBe(true);
     expect(
-      conditionHolds(
-        { type: "domain", domainId: "maintaining", attached: false },
-        buildingContext,
-      ),
+      conditionHolds({ type: "domain", domainId: "maintaining", attached: false }, buildingContext),
     ).toBe(true);
   });
 
