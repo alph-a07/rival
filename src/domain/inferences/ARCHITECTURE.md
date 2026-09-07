@@ -40,22 +40,19 @@ User action → update CheckInContext → evaluateCheckIn(context)
 The package is best read in dependency order — each layer depends only on the ones above it:
 
 ```
-types → utils (helpers) → ConditionEvaluator → engines → ruleDefinitions
+types → utils (helpers) → conditionEvaluator → engines → ruleDefinitions
      → orchestrator (evaluateCheckIn)  (no public barrel — deep-import entry points)
 ```
 
 - **`types.ts`** — the contracts/vocabulary (below). Understanding the types _is_ understanding the design.
 - **`utils.ts`** — shared helpers: `clampScore`, the evidence-resolution functions (`deriveEvidence`, `resolveEvidence`), `buildExplanation`, `sortExplanations`, `matchedConditions`, `generateMutualExclusionContradictions`.
-- **`ConditionEvaluator.ts`** — the single interpreter of `Condition`.
+- **`conditionEvaluator.ts`** — the single interpreter of `Condition`.
 - **`engine.ts`** — the knowledge functions (`evaluateAnswerInferences`, `evaluateBeliefs`, `evaluateQuestionRelevance`, `detectContradictions`, `deriveClarifications`, `evaluateCheckInArchetypes`).
 - **`ruleDefinitions.ts`** — the authored behavioral knowledge.
 - **`orchestrator.ts`** — `evaluateCheckIn`, the public entry point.
-- **`PresentationPolicy.ts`** — the single UI-deciding component.
+- **`presentationPolicy.ts`** — the single UI-deciding component.
 
-(The package has **no front-door `index.ts`** — consumers deep-import what they
-need, e.g. `@/domain/inferences/orchestrator` for `evaluateCheckIn` and
-`@/domain/inferences/types` for the contracts. There is intentionally no barrel
-so the API surface stays explicit and tree-shakeable.)
+(The package has **no front-door `index.ts`** — consumers deep-import what they need, e.g. `@/domain/inferences/orchestrator` for `evaluateCheckIn` and `@/domain/inferences/types` for the contracts. There is intentionally no barrel so the API surface stays explicit and tree-shakeable.)
 
 ---
 
@@ -71,10 +68,7 @@ Built by the caller (the viewmodel) from the persisted check-in + active endeavo
 | `answerValueByGisId` | fractional per-GIS score (0..1); feeds `weight` conditions                          |
 | `selectedDomainId`   | the domain, feeds `domain` conditions                                               |
 
-The caller (a viewmodel) builds `answeredSoFar` — the flat `AnsweredOption[]`
-the context wants — inline while collecting the user's responses. This is the
-only translation between the persistence model and the engine's flat input
-model.
+The caller (a viewmodel) builds `answeredSoFar` — the flat `AnsweredOption[]` the context wants — inline while collecting the user's responses. This is the only translation between the persistence model and the engine's flat input model.
 
 ---
 
@@ -102,15 +96,13 @@ deriveEvidence(confidence):
   otherwise           → "Hypothesis"
 ```
 
-Because the bands are non-overlapping and derived from the confidence, a tier can never drift out of sync with the number that produced it. The old model had authors set **both** `evidence` and `confidence` by hand, and they routinely disagreed (a `WeakHeuristic` rule at `0.7` outranking a `StrongHeuristic` at `0.64`); that is now structurally impossible.
+Because the bands are non-overlapping and derived from the confidence, a tier can never drift out of sync with the number that produced it. Rule authors set exactly one thing — either `evidence: "Definition"` (logically certain, no dial) or a heuristic `confidence` — so tier and confidence cannot disagree by construction.
 
-`resolveEvidence(rule)` resolves a rule/modifier into `{ confidence, evidence }`:
-Definition → `(1, "Definition")`; a heuristic → `(clamped confidence, derived tier)`.
-This is the single resolution function every engine uses.
+`resolveEvidence(rule)` resolves a rule/modifier into `{ confidence, evidence }`: Definition → `(1, "Definition")`; a heuristic → `(clamped confidence, derived tier)`. This is the single resolution function every engine uses.
 
 ### No double-counting
 
-The old design multiplied confidence by a tier weight (`signalStrength = confidence × EVIDENCE_TIER_WEIGHT[evidence]`). That **double-counted** the same concept: two dials (tier and confidence) fighting for the same "how much does this matter" axis. Now belief support and relevance adjustments use the **raw resolved confidence** directly — a `0.9` heuristic contributes `0.9`, a Definition contributes `1.0`. The evidence tier is a derived **label** for display/audit; it no longer shapes the math.
+Confidence is the single "how much" number. Belief support and relevance adjustments use the **raw resolved confidence** directly — a `0.9` heuristic contributes `0.9`, a Definition contributes `1.0`. The evidence tier is a derived **label** for display/audit; it never shapes the math, so the same concept is never counted twice.
 
 ---
 
@@ -118,7 +110,7 @@ The old design multiplied confidence by a tier weight (`signalStrength = confide
 
 ### The evidence & explanation core
 
-- **`EvidenceType`** = `"Definition" | "StrongHeuristic" | "WeakHeuristic" | "Hypothesis"`. `Definition` is author-set (logical certainty); the other three are derived from a rule's confidence (see above). `Hypothesis` is currently empty — no rule is below `0.5` — which is a genuine signal (nobody is writing speculative rules), not dead surface area: if a sub-`0.5` rule is ever added, it is labeled automatically.
+- **`EvidenceType`** = `"Definition" | "StrongHeuristic" | "WeakHeuristic" | "Hypothesis"`. `Definition` is author-set (logical certainty); the other three are derived from a rule's confidence (see above). `Hypothesis` is the band below `0.5` — no authored rule lands there today, and any such rule would be labeled automatically.
 - **`ExplanationRecord`** `{ reason, confidence, evidence }`. The atom of explainability. Every decision emits one or more of these so the UI can say _why_.
 
 ### Conditions & answers (what the engines match on)
@@ -129,11 +121,7 @@ The old design multiplied confidence by a tier weight (`signalStrength = confide
   - `weight { gisId, comparator: gte|lte, value }` — "does this GIS's fractional score clear a threshold?"
   - `domain { domainId, attached }` — "is this the selected domain?"
 
-  **Significance:** this is the single input vocabulary shared by every engine and
-  rule. Rules are just lists of conditions + effects; the conditions are interpreted
-  by exactly one place (`conditionHolds`). The `weight` and `gis` types are fully
-  implemented but currently unused in the catalog — latent capability worth
-  expanding very carefully (see Rule authoring).
+  **Significance:** this is the single input vocabulary shared by every engine and   rule. Rules are just lists of conditions + effects; the conditions are interpreted   by exactly one place (`conditionHolds`). The `weight` and `gis` conditions are   implemented and available to any authored rule.
 
 - **`AnsweredOption`** `{ questionId, optionId }` — one selected option; the flat
   primitive representation of "the user said X" that `answeredSoFar` is made of.
@@ -143,8 +131,7 @@ The old design multiplied confidence by a tier weight (`signalStrength = confide
 - **`BehaviorRule`** — a discriminated union that makes an invalid state
   _unrepresentable_:
 
-  ```ts
-  type BehaviorRule =
+  ```ts   type BehaviorRule =
     | { evidence: "Definition"; confidence?: never; ... }   // certain, no dial
     | { confidence: number; ... };                          // heuristic: one confidence
   ```
@@ -197,7 +184,7 @@ The old design multiplied confidence by a tier weight (`signalStrength = confide
 
 ## Brain: who does what
 
-Knowledge functions live in `engine.ts`. Each has **exactly one responsibility** and is a plain exported function (no class in the public surface). Functions produce _knowledge_; only `deriveQuestionPresentation` decides _UI_, and it lives in its own module (`PresentationPolicy.ts`) precisely so the knowledge layer and the single UI-deciding component stay physically separated.
+Knowledge functions live in `engine.ts`. Each has **exactly one responsibility** and is a plain exported function (no class in the public surface). Functions produce _knowledge_; only `deriveQuestionPresentation` decides _UI_, and it lives in its own module (`presentationPolicy.ts`) precisely so the knowledge layer and the single UI-deciding component stay physically separated.
 
 ### `conditionHolds` + `conditionIsApplicable` (the single interpreter of `Condition`)
 
@@ -231,7 +218,7 @@ A stateless class of static methods that every engine and rule relies on:
 
 ### `evaluateBeliefs` (winner-take-all is gone)
 
-`evaluateBeliefs` is the fix for the old flaw where `deriveQuestionPresentation` reduced a flat list of suggestions to a single `Math.max` winner — throwing away everything else and letting one raw confidence silently float over another.
+`evaluateBeliefs` turns the inference list into per-option beliefs instead of reducing suggestions to a single `Math.max` winner — agreement is expressed as a noisy-OR combination and every contributor is retained.
 
 **Why noisy-OR and not `max`?** `max` throws away everything but the winner and can't express _agreement_. Noisy-OR is the probabilistic way to say "more independent sources agreeing ⇒ more confident," which is exactly how a human gets more sure. And because each belief retains its contributors, it stays auditable.
 
@@ -254,7 +241,7 @@ Scores each question's relevance: start at the base score (GIS tier default blen
 
 `deriveClarifications` is **a pure transform** — no second filter pass. It takes already-detected contradictions and maps each into a `Clarification`, computing `reaskQuestionId` by picking the _most recently given_ conflicting answer (the most likely slip).
 
-**Why merged?** The old `deriveClarifications` re-filtered the same rules it had already filtered in `detectContradictions` — two independent passes computing the same "does this fire" predicate. Now detection happens once and clarification is a cheap mapping over its output.
+**Why merged?** `detectContradictions` fires rules whose conditions all `holds`; `deriveClarifications` is a mapping over those already-detected results (no second filter pass computing the same predicate).
 
 ### `evaluateCheckInArchetypes`
 
@@ -287,20 +274,15 @@ For each archetype, counts how many conditions `holds`. Surfaces it only if full
 
 ### The margin-based resolve (and the `competing` state)
 
-`resolveOption` is the replacement for "resolved because one float was bigger":
+`resolveOption` decides when accumulated belief is strong enough to auto-resolve:
 
 ```
-sorted beliefs by support
-margin = top.support - (runnerUp?.support ?? 0)
+sorted beliefs by support margin = top.support - (runnerUp?.support ?? 0)
 
-if top.support >= MIN_RESOLVE_SUPPORT && margin >= MIN_RESOLVE_MARGIN → resolved
-else if runnerUp.support > COMPETING_FLOOR                           → competing
-else                                                                 → suggested
+if top.support >= MIN_RESOLVE_SUPPORT && margin >= MIN_RESOLVE_MARGIN → resolved else if runnerUp.support > COMPETING_FLOOR                           → competing else                                                                 → suggested
 ```
 
-The resolve bar is a **single threshold on `support`** (`MIN_RESOLVE_SUPPORT` = `0.95`), keyed on the actual accumulated confidence rather than a per-tier table. Because `support` is a noisy-OR of confidences, this is intentionally conservative: a lone heuristic (≤ `0.9`) never auto-resolves; only a Definition rule (support `1.0`) or two strong agreeing signals (e.g. `0.9 + 0.9 → ~0.99`) clear it.
-
-The old bug — `overreach_suggests_under_recovered` (0.68 StrongHeuristic → strength 0.476) silently winning over `flow_suggests_recovered` (0.62 WeakHeuristic → strength 0.248) purely because one float was bigger — is gone: the numbers are now honest confidences, and a thin margin becomes an honest `competing` state instead of a fake-confident resolve.
+The resolve bar is a **single threshold on `support`** (`MIN_RESOLVE_SUPPORT` = `0.95`), keyed on the actual accumulated confidence rather than a per-tier table. Because `support` is a noisy-OR of confidences, this is intentionally conservative: a lone heuristic (≤ `0.9`) never auto-resolves; only a Definition rule (support `1.0`) or two strong agreeing signals (e.g. `0.9 + 0.9 → ~0.99`) clear it. Confidences are compared as-is, so a thin margin surfaces as an honest `competing` state instead of a fake-confident resolve.
 
 **`competing` is deliberately non-blocking.** Curated contradictions go through the full `clarify` reconfirm flow because they are hand-picked, narratively surprising pairs worth interrupting for. A competing belief is different: it's the system honestly saying "two decent signals disagree, here's our best guess and the alternative" — a small "we're not totally sure — also consider X" chip next to the prefilled pick, never a modal.
 
@@ -325,7 +307,7 @@ The product's behavioral understanding, authored once: `ANSWER_INFERENCE_RULES` 
 These are three genuinely different strengths:
 
 1. **Hard exclude** (`exclude_answer`, Definition-tier, confidence forced to 1.0) → the option is removed from the UI outright. No ambiguity, no belief math. The belief engine hard-zeros it.
-2. **Curated `ContradictionRule`** → hand-authored, narratively surprising, and **worth interrupting for** — facts about _combinations_ the belief engine can't infer on its own (e.g. "recovered but derailed"). This list should stay small: pairs already handled by a hard exclude or by same-question belief competition are not re-authored here. (The old `contradiction_flow_major_friction` was exactly such dead code — `flow_excludes_major_friction` already made it unreachable — and was removed.)
+2. **Curated `ContradictionRule`** → hand-authored, narratively surprising, and **worth interrupting for** — facts about _combinations_ the belief engine can't infer on its own (e.g. "recovered but derailed"). The list stays small: pairs already handled by a hard exclude or by same-question belief competition are not re-authored here.
 3. **Competing belief** (generic, auto-derived) → falls out of the belief engine for free whenever two options of the same question both clear the competing floor. No hand-authoring needed — there are combinatorially too many possible co-occurring suggestion pairs to ever hand-write.
 
 ### `BehaviorRule` is a discriminated union
@@ -338,9 +320,7 @@ type BehaviorRule =
   | { confidence: number; ... };                               // heuristic: one confidence, tier derived
 ```
 
-`Definition` rules cannot declare a confidence dial; heuristics declare a single
-confidence and the tier is derived. `QuestionRelevanceModifier` follows the same
-discipline.
+`Definition` rules cannot declare a confidence dial; heuristics declare a single confidence and the tier is derived. `QuestionRelevanceModifier` follows the same discipline.
 
 ---
 
@@ -405,13 +385,13 @@ Nothing outside the viewmodel calls the engines directly. The package has no sin
 
 ## Design note: evidence and confidence are one dial
 
-The old model treated evidence and confidence as two complementary axes and combined them (`confidence × tierWeight`). That was redundant and let them drift: `WeakHeuristic` rules routinely outranked `StrongHeuristic` ones, and `Definition` rules carried stray confidence values. The model now collapses them:
+Evidence and confidence are a single axis, not two: authors set one `confidence` number for a heuristic, and the evidence tier is **derived** from it. There is no separate tier scaling, so a tier label can never fight its own confidence number:
 
 - **Confidence is the single number authors set** (for heuristics). It is the "how much" — both the belief `support` contribution and the relevance adjustment.
 - **Evidence is a derived label** from that confidence (via `deriveEvidence`), used for display, audit, and logging — it never shapes the math.
 - **`Definition` is the one special flag**: logical certainty, confidence forbidden, always effective `1.0`.
 
-This removes the double-counting and makes the overlap impossible. `Hypothesis` is now a derived (currently empty) band rather than an author-chosen dead weight.
+`Hypothesis` is the derived band below `0.5`; no authored rule lands there today, and any such rule would be labeled automatically.
 
 ---
 
@@ -423,13 +403,13 @@ This removes the double-counting and makes the overlap impossible. `Hypothesis` 
 4. Define rules bidirectionally where the relationship is symmetric (e.g. flow ↔ friction), so behavior is order-independent.
 5. Do not hand-author a contradiction for a pair already handled by a hard exclude or by same-question belief competition — reserve curated contradictions for genuinely surprising combinations worth interrupting for.
 6. Let `ruleDefinitions.integrity.test.ts` validate referential integrity, unique ids, Definition-tier exclusions, exclusion uniqueness, and well-formed confidence/Definition flags.
-7. **Use the latent condition types carefully.** `weight` and `gis` are implemented but unused; the `weight` condition is a natural fit for rule _variants_ that react to accumulated GIS score rather than a single option's exact wording — a richer, less brittle signal. Expand the catalog deliberately, one rule at a time.
+7. **Pick condition types to match the signal.** `weight` conditions react to an accumulated per-GIS score rather than one option's exact wording — the right tool when a rule should respond to how the session is scoring overall.
 
 ---
 
 ## Testing strategy
 
-- `ConditionEvaluator.test.ts` — condition semantics against real GIS ids.
+- `conditionEvaluator.test.ts` — condition semantics against real GIS ids.
 - `engine.test.ts` — noisy-OR compounding, disagreeing signals surviving, hard-zero exclusions, dominant-tier evidence.
 - `orchestrator.test.ts` — end-to-end `evaluateCheckIn` behavior (scoping, deductions, one-option-left, tier/baseWeight defaults, evidence-derived resolve, competing state, compound resolve, emerging archetypes, VOI pull, mutual exclusions, clarifications, determinism).
 - `ruleDefinitions.golden.test.ts` — stable golden outputs for canonical scenarios.
@@ -438,7 +418,7 @@ This removes the double-counting and makes the overlap impossible. `Hypothesis` 
 Recommended command:
 
 ```bash
-npx vitest run --config vite.config.ts src/domain/config/inferences
+npx vitest run --config vite.config.ts src/domain/inferences
 ```
 
 ---
@@ -447,7 +427,7 @@ npx vitest run --config vite.config.ts src/domain/config/inferences
 
 ```
 User answers  →  viewmodel builds AnsweredOption[]  →  CheckInContext
-                                                   │
+                                                      │
         ┌──────────────────────────────────────────┼──────────────────────────────┐
         ▼                                          ▼                              ▼
   scoped answer rules                        scoped evaluators               scoped archetypes
@@ -468,3 +448,4 @@ User answers  →  viewmodel builds AnsweredOption[]  →  CheckInContext
 ```
 
 Every box is pure and deterministic; the same context always yields the same understanding. That determinism, the explainability (`reason`/`confidence`/ `evidence`/`contributingRuleIds` everywhere), the single confidence dial, and the conservative margin-guarded resolve are what make Rival an _intelligent, trustworthy companion_ rather than a static questionnaire.
+
