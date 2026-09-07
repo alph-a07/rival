@@ -84,7 +84,7 @@ flowchart TD
 
 2. **Once / re-arm** — a `once` message, once dismissed, is added to a `spent` set and suppressed until `reArm(key)`. `raise` short-circuits spent keys, so a once-blocking modal can't re-fire on the next render.
 
-3. **Arbitration** — `arbitrate()` picks the single active blocker from all blocking candidates: **highest priority, earliest-raised on ties**, and it _preempts_ a currently-shown lower-priority one (corruption outranks auth the moment it arrives). Every non-winning message stays a passive notice, queued behind it. This is the exact fix for the "two blocking modals, no rule" gap.
+3. **Arbitration** — `arbitrate()` picks the single active blocker from all blocking candidates: **highest priority, earliest-raised on ties**, and it _preempts_ a currently-shown lower-priority one (corruption outranks auth the moment it arrives). Every non-winning message stays a passive notice, queued behind it.
 
 ```ts
 // arbitration.ts — the whole policy in a few lines
@@ -129,3 +129,4 @@ Both the coordinator (monitor-driven) and `reporter` (error-driven) build `Runti
 ```bash
 npx vitest run --config vite.config.ts src/domain/notifications
 ```
+

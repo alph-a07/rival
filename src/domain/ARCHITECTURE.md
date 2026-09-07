@@ -28,17 +28,17 @@ The **pure, UI-agnostic brain** of Rival. Everything that is true about the prod
 
 ## Sub-package map
 
-| Sub-package      | Responsibility                                                                   | Key files                                                                                              |
-| ---------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `models/`        | The base entity contracts — `Domain`, `Gis`, `Option`, `GisTier`, `QuestionType`, plus the persisted aggregate shapes `CheckIn`, `Response`, `Snapshot`, `Endeavour`, `DomainSegment` (with `activeSegment`) | `Domain.ts`, `Gis.ts`, `CheckIn.ts`, `Snapshot.ts`, `Endeavour.ts`                                                                                  |
-| `config/`        | **One place** for every math/behavior threshold                                  | `tuningConstants.ts`                                                                                   |
-| `gis/`           | The authored Growth Indicative Strategies (questions per GIS)                    | `gisDefinitions.ts`                                                                                    |
-| `domains/`       | The authored Domain definitions + their GIS map                                  | `domainDefinitions.ts`                                                                                 |
-| `checkin/`       | Turns a completed check-in into a persisted `Snapshot` (scoring)                 | `CheckInProcessor.ts`, `CheckInScoringEngine.ts`                                                       |
-| `trajectory/`    | Smoothes scores over time + reads a direction label                              | `HoltSmoother.ts`, `ConsistencyTracker.ts`, `TrajectoryAggregator.ts`                                  |
-| `inferences/`    | The check-in reasoning engine — `evaluateCheckIn`                                | `orchestrator.ts`, `engine.ts`, `ruleDefinitions.ts`, `ConditionEvaluator.ts`, `PresentationPolicy.ts` |
-| `errors/`        | Error taxonomy, `Result`, classification, retry, reporter                        | `AppError.ts`, `Result.ts`, `ErrorClassifier.ts`, `withRetry.ts`, `reporter.ts`                        |
-| `notifications/` | The message lifecycle — store, bridge, arbitration, typed action builders         | `types.ts`, `store.ts`, `client.ts`, `arbitration.ts`, `actions/`                                        |
+| Sub-package      | Responsibility                                                                                                                                                                                                                                                                                                  | Key files                                                                                              |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `models/`        | The base entity contracts — `Domain`, `Gis`, `Option`, `GisTier`, `QuestionType`, plus the aggregate value objects `CheckIn`, `Snapshot`, `Endeavour`, `DomainSegment` (with `activeSegment`) and leaf value vocab (e.g. `MicroMood`); persistence maps them to `data/schema/*Row` DTOs at the storage boundary | `Domain.ts`, `Gis.ts`, `CheckIn.ts`, `Snapshot.ts`, `Endeavour.ts`, `MicroMood.ts`                     |
+| `config/`        | **One place** for every math/behavior threshold + the calc-provenance version labels                                                                                                                                                                                                                            | `tuningConstants.ts`, `versions.ts`                                                                    | `tuningConstants.ts` |
+| `gis/`           | The authored Growth Indicative Strategies (questions per GIS)                                                                                                                                                                                                                                                   | `gisDefinitions.ts`                                                                                    |
+| `domains/`       | The authored Domain definitions + their GIS map                                                                                                                                                                                                                                                                 | `domainDefinitions.ts`                                                                                 |
+| `checkin/`       | Turns a completed check-in into a persisted `Snapshot` (scoring) + the raw-score invariant                                                                                                                                                                                                                      | `CheckInProcessor.ts`, `checkInScoringEngine.ts`, `rawScore.ts`                                        |
+| `trajectory/`    | Smoothes scores over time + reads a direction label                                                                                                                                                                                                                                                             | `holtSmoother.ts`, `consistencyTracker.ts`, `trajectoryAggregator.ts`                                  |
+| `inferences/`    | The check-in reasoning engine — `evaluateCheckIn`                                                                                                                                                                                                                                                               | `orchestrator.ts`, `engine.ts`, `ruleDefinitions.ts`, `conditionEvaluator.ts`, `presentationPolicy.ts` |
+| `errors/`        | Error taxonomy, `Result`, classification, retry, reporter                                                                                                                                                                                                                                                       | `AppError.ts`, `Result.ts`, `ErrorClassifier.ts`, `withRetry.ts`, `reporter.ts`                        |
+| `notifications/` | The message lifecycle — store, bridge, arbitration, typed action builders                                                                                                                                                                                                                                       | `types.ts`, `store.ts`, `client.ts`, `arbitration.ts`, `actions/`                                      |
 
 ---
 
@@ -51,7 +51,7 @@ flowchart LR
     M[models: Domain · Gis · Option] --> DEF[config + gis + domains: authored knowledge]
     DEF --> C[checkin: scoring fns]
     DEF --> T[trajectory: holtStep · evaluateConsistency · aggregator]
-    C --> CP[applyCheckIn]
+    C --> CP[buildSnapshotFromCheckIn]
     T --> CP
     CP --> SNAPSHOT[Snapshot]
     M --> INF[inferences: evaluateCheckIn]
@@ -77,14 +77,14 @@ flowchart LR
 
 ### Outbound — who consumes `domain`
 
-| Consumer             | What it uses                                                                                                 |
-| -------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Consumer             | What it uses                                                                                                            |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | `src/data`           | entity contracts (`Snapshot`, `CheckIn`, `Endeavour`, `DomainSegment`) from `domain/models`; repos call `domain/errors` |
-| `src/viewmodels`     | `domain/checkin` (applyCheckIn, scoring fns), `domain/inferences` (evaluateCheckIn), `domain/config`                  |
-| `src/core/runtime`   | `domain/notifications` + `domain/errors` (bridge, classification, withRetry)                                 |
-| `src/sync`           | `domain/errors` (classify Drive errors)                                                                      |
-| `src/shells/runtime` | `domain/errors` + `domain/notifications` (reportError, bridge)                                               |
-| `src/components`     | `domain/models` (`GisTier`) + `design-system/icons`                                                          |
+| `src/viewmodels`     | `domain/checkin` (buildSnapshotFromCheckIn, scoring fns), `domain/inferences` (evaluateCheckIn), `domain/config`        |
+| `src/core/runtime`   | `domain/notifications` + `domain/errors` (bridge, classification, withRetry)                                            |
+| `src/sync`           | `domain/errors` (classify Drive errors)                                                                                 |
+| `src/shells/runtime` | `domain/errors` + `domain/notifications` (reportError, bridge)                                                          |
+| `src/components`     | `domain/models` (`GisTier`) + `design-system/icons`                                                                     |
 
 Each sub-package that has real internal structure has its own `ARCHITECTURE.md`: `inferences/`, `errors/`, `notifications/`.
 
@@ -99,3 +99,4 @@ Run them together:
 ```bash
 npx vitest run --config vite.config.ts src/domain
 ```
+
