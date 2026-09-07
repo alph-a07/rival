@@ -28,7 +28,8 @@ export type ActionKind =
   | "reconcile" // sync conflict: reconcile changed data
   | "retry" // retryable failure: re-run the failed operation
   | "reload" // new build staged: reload for the update
-  | "re-auth" // expired session: sign in again
+  | "reconnect-drive" // drive grant denied: reconnect Drive
+  | "defer-auth" // drive grant denied: pause sync, defer reconnect
   | "enable-sync"; // storage pressure: turn on Drive sync
 
 /** A message's single, optional action: `kind` is the closed `ActionKind` identity, `presentationKind` its UI tone. */
