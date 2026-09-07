@@ -2,12 +2,20 @@ import type { Gis, GisTier } from "@/domain/models/Gis";
 import type { CheckIn } from "@/domain/models/CheckIn";
 import type { DomainSegment } from "@/domain/models/Endeavour";
 import type { Snapshot } from "@/domain/models/Snapshot";
-import { calculateRawScore } from "@/domain/checkin/CheckInScoringEngine";
-import { holtStep } from "@/domain/trajectory/HoltSmoother";
-import { evaluateConsistency } from "@/domain/trajectory/ConsistencyTracker";
+import { calculateRawScore } from "@/domain/checkin/checkInScoringEngine";
+import { holtStep } from "@/domain/trajectory/holtSmoother";
+import { evaluateConsistency } from "@/domain/trajectory/consistencyTracker";
+import {
+  CALC_ALGORITHM_VERSION,
+  RULE_SET_VERSION,
+  TUNING_CONFIG_VERSION,
+} from "@/domain/config/versions";
+
+/** The config signature stamped on every freshly derived snapshot. */
+export const CURRENT_CALC_VERSION = `calc-${CALC_ALGORITHM_VERSION}:rules-${RULE_SET_VERSION}:tuning-${TUNING_CONFIG_VERSION}`;
 
 /** The single entry point that turns a completed check-in into a persisted `Snapshot`. */
-export function applyCheckIn(
+export function buildSnapshotFromCheckIn(
   checkIn: CheckIn,
   segment: DomainSegment,
   activeGis: Map<Gis, GisTier>,
@@ -28,10 +36,7 @@ export function applyCheckIn(
     segmentChanged ? null : priorSnapshot.trend,
   );
 
-  const consistencyStatus = evaluateConsistency(
-    segmentChanged ? [] : recentResiduals,
-    n,
-  );
+  const consistencyStatus = evaluateConsistency(segmentChanged ? [] : recentResiduals, n);
 
   return {
     id: checkIn.id,
@@ -47,5 +52,6 @@ export function applyCheckIn(
     level: holt.level,
     trend: holt.trend,
     consistencyStatus,
+    calcVersion: CURRENT_CALC_VERSION,
   };
 }
