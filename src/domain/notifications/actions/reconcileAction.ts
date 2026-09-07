@@ -9,8 +9,8 @@ export interface ReconcileOptions {
 }
 
 export function createReconcileAction(opts: ReconcileOptions): RuntimeAction<"reconcile"> {
-  return createAction("reconcile", opts.label ?? "Reconcile", () => {
+  return createAction("reconcile", opts.label ?? "Reconcile", async () => {
     opts.onStart?.();
-    void opts.onReconcile();
+    await opts.onReconcile();
   });
 }

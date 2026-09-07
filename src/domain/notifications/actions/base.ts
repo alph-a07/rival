@@ -7,7 +7,7 @@ import type { ActionKind, RuntimeAction } from "@/domain/notifications/types";
 export function createAction<Kind extends ActionKind>(
   kind: Kind,
   label: string,
-  run: () => void,
+  run: () => void | Promise<void>,
   presentationKind: RuntimeAction["presentationKind"] = "primary",
 ): RuntimeAction<Kind> {
   return { kind, label, presentationKind, run };
