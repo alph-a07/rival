@@ -1,5 +1,5 @@
 import type { GisTier } from "@/domain/models/Gis";
-import type { ConsistencyStatus } from "@/domain/trajectory/ConsistencyTracker";
+import type { ConsistencyStatus } from "@/domain/trajectory/consistencyTracker";
 
 export const RIVAL_MATH_CONFIG = {
   DEFAULT_QUESTION_SCORE: 0.5,
