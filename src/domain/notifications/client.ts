@@ -34,6 +34,7 @@ export function createBridge(store: RuntimeStore): Bridge {
       body: input.body,
       once: input.once,
       action: input.action,
+      secondary: input.secondary,
       busy: input.busy,
     };
   }
