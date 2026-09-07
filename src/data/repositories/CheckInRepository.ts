@@ -1,81 +1,85 @@
 import { db as defaultDb } from "@/data/db";
 import type { AppDatabase } from "@/data/db";
+import { checkInToRow, rowToCheckIn } from "@/data/schema/CheckInRow";
 import type { CheckIn } from "@/domain/models/CheckIn";
 import type { Snapshot } from "@/domain/models/Snapshot";
-import {
-  snapshotRepository as defaultSnapshotRepository,
-  SnapshotRepository,
-} from "./SnapshotRepository";
+import type { SnapshotRepository } from "./SnapshotRepository";
+import { snapshotRepository as defaultSnapshotRepository } from "./SnapshotRepository";
 import { Ok, Err, type Result } from "@/domain/errors/Result";
 import { ErrorClassifier } from "@/domain/errors/ErrorClassifier";
 import type { AppError } from "@/domain/errors/AppError";
+import { crossTabBus } from "@/core/runtime/crossTab";
 
-/** CheckInRepository — data access for check-ins and their snapshots. */
-export class CheckInRepository {
-  private readonly db: AppDatabase;
-  private readonly snapshots: SnapshotRepository;
-
-  constructor(
-    db: AppDatabase = defaultDb,
-    snapshots: SnapshotRepository = defaultSnapshotRepository,
-  ) {
-    this.db = db;
-    this.snapshots = snapshots;
-  }
-
-  async create(checkIn: CheckIn): Promise<Result<string>> {
-    try {
-      return Ok(await this.db.checkIns.add(checkIn));
-    } catch (e) {
-      return Err(ErrorClassifier.fromDexieError(e, { entity: "CheckIn" }));
-    }
-  }
-
-  async get(id: string): Promise<Result<CheckIn | undefined>> {
-    try {
-      return Ok(await this.db.checkIns.get(id));
-    } catch (e) {
-      return Err(ErrorClassifier.fromDexieError(e, { entity: "CheckIn", id }));
-    }
-  }
-
-  async getByEndeavour(endeavourId: string): Promise<Result<CheckIn[]>> {
-    try {
-      return Ok(await this.db.checkIns.where({ endeavourId }).sortBy("timestamp"));
-    } catch (e) {
-      return Err(ErrorClassifier.fromDexieError(e, { entity: "CheckIn", endeavourId }));
-    }
-  }
-
-  async delete(id: string): Promise<Result<void>> {
-    try {
-      await this.db.checkIns.delete(id);
-      return Ok(undefined);
-    } catch (e) {
-      return Err(ErrorClassifier.fromDexieError(e, { entity: "CheckIn", id }));
-    }
-  }
-
-  /** Persists a completed check-in and its resulting Snapshot in a single transaction. */
-  async record(checkIn: CheckIn, snapshot: Snapshot): Promise<Result<void>> {
-    try {
-      let snapshotErr: AppError | null = null;
-      await this.db.transaction("rw", this.db.checkIns, this.db.snapshots, async () => {
-        await this.db.checkIns.add(checkIn);
-        const created = await this.snapshots.create(snapshot);
-        if (!created.ok) {
-          snapshotErr = created.error;
-        }
-      });
-      if (snapshotErr) {
-        return Err(snapshotErr);
-      }
-      return Ok(undefined);
-    } catch (e) {
-      return Err(ErrorClassifier.fromDexieError(e, { entity: "CheckIn", context: "record" }));
-    }
-  }
+/**
+ * Data-access surface for check-ins (+ their snapshot writes). Public API
+ * speaks domain values; the boundary maps to/from their persisted row DTOs.
+ */
+export interface CheckInRepository {
+  create(checkIn: CheckIn): Promise<Result<string>>;
+  get(id: string): Promise<Result<CheckIn | undefined>>;
+  getByEndeavour(endeavourId: string): Promise<Result<CheckIn[]>>;
+  delete(id: string): Promise<Result<void>>;
+  record(checkIn: CheckIn, snapshot: Snapshot): Promise<Result<void>>;
 }
 
-/** App-wide singleton `CheckInRepository` instance. */
-export const checkInRepository = new CheckInRepository();
+/** Creates a check-in repository against a Dexie database. */
+export function createCheckInRepository(
+  db: AppDatabase = defaultDb,
+  snapshots: SnapshotRepository = defaultSnapshotRepository,
+): CheckInRepository {
+  return {
+    async create(checkIn) {
+      try {
+        return Ok(await db.checkIns.add(checkInToRow(checkIn)));
+      } catch (e) {
+        return Err(ErrorClassifier.fromDexieError(e, { entity: "CheckIn" }));
+      }
+    },
+    async get(id) {
+      try {
+        const row = await db.checkIns.get(id);
+        return Ok(row ? rowToCheckIn(row) : undefined);
+      } catch (e) {
+        return Err(ErrorClassifier.fromDexieError(e, { entity: "CheckIn", id }));
+      }
+    },
+    async getByEndeavour(endeavourId) {
+      try {
+        const rows = await db.checkIns.where({ endeavourId }).sortBy("timestamp");
+        return Ok(rows.map(rowToCheckIn));
+      } catch (e) {
+        return Err(ErrorClassifier.fromDexieError(e, { entity: "CheckIn", endeavourId }));
+      }
+    },
+    async delete(id) {
+      try {
+        await db.checkIns.delete(id);
+        return Ok(undefined);
+      } catch (e) {
+        return Err(ErrorClassifier.fromDexieError(e, { entity: "CheckIn", id }));
+      }
+    },
+    async record(checkIn, snapshot) {
+      try {
+        let snapshotErr: AppError | null = null;
+        await db.transaction("rw", db.checkIns, db.snapshots, async () => {
+          await db.checkIns.add(checkInToRow(checkIn));
+          const created = await snapshots.create(snapshot);
+          if (!created.ok) {
+            snapshotErr = created.error;
+          }
+        });
+        if (snapshotErr) {
+          return Err(snapshotErr);
+        }
+        crossTabBus.post("app:data-changed", { changedAt: Date.now() });
+        return Ok(undefined);
+      } catch (e) {
+        return Err(ErrorClassifier.fromDexieError(e, { entity: "CheckIn", context: "record" }));
+      }
+    },
+  };
+}
+
+/** App-wide singleton instance backing the hooks/UI path. */
+export const checkInRepository: CheckInRepository = createCheckInRepository();
