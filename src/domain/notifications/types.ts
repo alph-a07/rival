@@ -52,6 +52,8 @@ export interface RuntimeMessage {
   once?: boolean;
   /** Optional action wired to this message (e.g. Retry, Reconcile, Reload). */
   action?: RuntimeAction;
+  /** Optional secondary, lower-emphasis action (e.g. a decline/"Cancel" CTA). */
+  secondary?: RuntimeAction;
   /** True while the message is in its "processing" state (e.g. syncing). */
   busy?: boolean;
 }
@@ -72,6 +74,8 @@ export interface RuntimeInterest {
   body?: string;
   once?: boolean;
   action?: RuntimeAction;
+  /** Optional secondary, lower-emphasis action (e.g. a decline/"Cancel" CTA). */
+  secondary?: RuntimeAction;
   /** True while the underlying operation is processing (e.g. reconciling). */
   busy?: boolean;
 }
