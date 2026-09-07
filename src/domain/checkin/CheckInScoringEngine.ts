@@ -1,5 +1,5 @@
 import type { Gis, GisTier } from "@/domain/models/Gis";
-import type { Response } from "@/domain/models/CheckIn";
+import type { CheckInResponse } from "@/domain/models/CheckIn";
 import { RIVAL_MATH_CONFIG } from "@/domain/config/tuningConstants";
 import { GisRegistry } from "@/domain/gis/gisDefinitions";
 
@@ -11,7 +11,7 @@ const TIER_WEIGHT_MULTIPLIER: Record<GisTier, number> = {
 
 /** The per-GIS fraction answer value (0..1), keyed by `gisId`, for a set of responses. */
 export function computeByGisId(
-  responses: Response[],
+  responses: CheckInResponse[],
   gisRegistry: readonly Gis[] = GisRegistry.all(),
 ): Record<string, number> {
   const byId = new Map(gisRegistry.map((gis) => [gis.id, gis] as const));
@@ -44,7 +44,7 @@ export function computeByGisId(
 /** Calculates a check-in's normalized raw score (0-100). */
 export function calculateRawScore(
   activeGis: Map<Gis, GisTier>,
-  responses: Response[],
+  responses: CheckInResponse[],
   modifier: number = 1.0,
 ): number {
   let sessionPotentialWeight = 0;
@@ -84,7 +84,7 @@ export function calculateRawScore(
 }
 
 /** Resolves a single Response into a fractional value (0.0-1.0). */
-function resolveAnswerValue(gis: Gis, response: Response): number | undefined {
+function resolveAnswerValue(gis: Gis, response: CheckInResponse): number | undefined {
   const question = gis.questions.find((q) => q.id === response.questionId);
   if (!question) {
     return undefined;

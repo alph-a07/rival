@@ -1,6 +1,6 @@
 import { expect, test, describe } from "vitest";
-import { calculateRawScore, computeByGisId } from "./CheckInScoringEngine";
-import type { Response } from "@/domain/models/CheckIn";
+import { calculateRawScore, computeByGisId } from "./checkInScoringEngine";
+import type { CheckInResponse } from "@/domain/models/CheckIn";
 import type { Gis, GisTier } from "@/domain/models/Gis";
 
 describe("check-in scoring fns", () => {
@@ -117,7 +117,7 @@ describe("check-in scoring fns", () => {
         [mockGisB, "recommended"],
       ]);
       // Total possible weight = 13.75
-      const responses: Response[] = [
+      const responses: CheckInResponse[] = [
         { gisId: "gis_a", questionId: "q1", optionIds: ["a1"] }, // earns 10
         { gisId: "gis_b", questionId: "q2", optionIds: ["b2"] }, // earns 0
       ];
@@ -129,7 +129,9 @@ describe("check-in scoring fns", () => {
 
     test("ignores unanswered GIS safely (friction budget trim)", () => {
       const activeGis: Map<Gis, GisTier> = new Map([[mockGisB, "optional"]]);
-      const responses: Response[] = [{ gisId: "gis_b", questionId: "q2", optionIds: ["b1"] }];
+      const responses: CheckInResponse[] = [
+        { gisId: "gis_b", questionId: "q2", optionIds: ["b1"] },
+      ];
 
       const score = calculateRawScore(activeGis, responses);
       expect(score).toBe(100);
@@ -140,7 +142,7 @@ describe("check-in scoring fns", () => {
         [mockGisA, "mandatory"],
         [mockGisB, "mandatory"],
       ]);
-      const responses: Response[] = [
+      const responses: CheckInResponse[] = [
         { gisId: "gis_a", questionId: "q1", optionIds: ["a1"] },
         // no response for gis_b at all
       ];
@@ -152,7 +154,9 @@ describe("check-in scoring fns", () => {
 
     test("applies hybrid modifiers and caps at 100", () => {
       const activeGis: Map<Gis, GisTier> = new Map([[mockGisA, "mandatory"]]);
-      const responses: Response[] = [{ gisId: "gis_a", questionId: "q1", optionIds: ["a1"] }];
+      const responses: CheckInResponse[] = [
+        { gisId: "gis_a", questionId: "q1", optionIds: ["a1"] },
+      ];
 
       const score = calculateRawScore(activeGis, responses, 1.2);
       expect(score).toBe(100);
@@ -167,7 +171,7 @@ describe("check-in scoring fns", () => {
 
     test("sums values of multiple selected options", () => {
       const activeGis: Map<Gis, GisTier> = new Map([[mockGisC, "mandatory"]]);
-      const responses: Response[] = [
+      const responses: CheckInResponse[] = [
         { gisId: "gis_c", questionId: "q3", optionIds: ["c1", "c3"] }, // 0.6 + 0.3 = 0.9
       ];
 
@@ -177,7 +181,7 @@ describe("check-in scoring fns", () => {
 
     test("caps combined value at 1.0 when selections exceed it", () => {
       const activeGis: Map<Gis, GisTier> = new Map([[mockGisC, "mandatory"]]);
-      const responses: Response[] = [
+      const responses: CheckInResponse[] = [
         { gisId: "gis_c", questionId: "q3", optionIds: ["c1", "c2"] }, // 0.6 + 0.5 = 1.1 -> capped to 1.0
       ];
 
@@ -187,7 +191,7 @@ describe("check-in scoring fns", () => {
 
     test("ignores unknown option ids within a multi-select response", () => {
       const activeGis: Map<Gis, GisTier> = new Map([[mockGisC, "mandatory"]]);
-      const responses: Response[] = [
+      const responses: CheckInResponse[] = [
         { gisId: "gis_c", questionId: "q3", optionIds: ["c1", "does_not_exist"] },
       ];
 
@@ -197,7 +201,7 @@ describe("check-in scoring fns", () => {
 
     test("treats a response with no valid option ids as unanswered", () => {
       const activeGis: Map<Gis, GisTier> = new Map([[mockGisA, "mandatory"]]);
-      const responses: Response[] = [
+      const responses: CheckInResponse[] = [
         { gisId: "gis_a", questionId: "q1", optionIds: ["not_a_real_option"] },
       ];
 
@@ -207,7 +211,7 @@ describe("check-in scoring fns", () => {
 
     test("treats a response referencing an unknown questionId as unanswered", () => {
       const activeGis: Map<Gis, GisTier> = new Map([[mockGisA, "mandatory"]]);
-      const responses: Response[] = [
+      const responses: CheckInResponse[] = [
         { gisId: "gis_a", questionId: "not_a_real_question", optionIds: ["a1"] },
       ];
 
@@ -218,7 +222,7 @@ describe("check-in scoring fns", () => {
     test("averages responses for a GIS with multiple questions", () => {
       const activeGis = new Map<Gis, GisTier>([[mockGisD, "mandatory"]]);
 
-      const responses: Response[] = [
+      const responses: CheckInResponse[] = [
         { gisId: "gis_d", questionId: "q_first", optionIds: ["opt1"] }, // 1.0
         { gisId: "gis_d", questionId: "q_second", optionIds: ["opt4"] }, // 0.5
       ];
@@ -231,7 +235,7 @@ describe("check-in scoring fns", () => {
     test("averages responses for a GIS mixing single-select and multi-select questions", () => {
       const activeGis = new Map<Gis, GisTier>([[mockGisMixedTypes, "mandatory"]]);
 
-      const responses: Response[] = [
+      const responses: CheckInResponse[] = [
         { gisId: "gis_mixed", questionId: "q_single", optionIds: ["opt_s2"] },
         {
           gisId: "gis_mixed",
@@ -248,7 +252,7 @@ describe("check-in scoring fns", () => {
     test("penalizes partial completion of a multi-question GIS", () => {
       const activeGis = new Map<Gis, GisTier>([[mockGisD, "mandatory"]]);
 
-      const responses: Response[] = [
+      const responses: CheckInResponse[] = [
         { gisId: "gis_d", questionId: "q_first", optionIds: ["opt1"] }, // scores 1.0
         // q_second is missing entirely
       ];
@@ -260,7 +264,9 @@ describe("check-in scoring fns", () => {
 
     test("clamps the score at the floor of 0", () => {
       const activeGis = new Map<Gis, GisTier>([[mockGisA, "mandatory"]]);
-      const responses: Response[] = [{ gisId: "gis_a", questionId: "q1", optionIds: ["a1"] }];
+      const responses: CheckInResponse[] = [
+        { gisId: "gis_a", questionId: "q1", optionIds: ["a1"] },
+      ];
 
       const score = calculateRawScore(activeGis, responses, 0);
       expect(score).toBe(0);
