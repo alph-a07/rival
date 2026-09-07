@@ -15,4 +15,6 @@ export interface Snapshot {
   level: number; // Smoothed level (Holt's method)
   trend: number; // Smoothed trend (Holt's method)
   consistencyStatus: ConsistencyStatus;
+  /** Provenance signature of the calc config this record was derived under. */
+  calcVersion?: string;
 }
