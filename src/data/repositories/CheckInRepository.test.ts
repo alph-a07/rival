@@ -1,7 +1,7 @@
 import { beforeEach, expect, test, describe } from "vitest";
 import { AppDatabase } from "@/data/db";
-import { CheckInRepository } from "./CheckInRepository";
-import { SnapshotRepository } from "./SnapshotRepository";
+import { createCheckInRepository, type CheckInRepository } from "./CheckInRepository";
+import { createSnapshotRepository } from "./SnapshotRepository";
 import type { CheckIn } from "@/domain/models/CheckIn";
 import type { Snapshot } from "@/domain/models/Snapshot";
 
@@ -15,7 +15,7 @@ describe("CheckInRepository", () => {
     await Promise.all(db.tables.map((t) => t.clear()));
     // Share the same in-memory db across both repositories so `record`'s
     // delegated snapshot write lands in the correct store.
-    repo = new CheckInRepository(db, new SnapshotRepository(db));
+    repo = createCheckInRepository(db, createSnapshotRepository(db));
     seq = 0;
   });
 
