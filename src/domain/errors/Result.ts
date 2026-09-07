@@ -21,8 +21,3 @@ export function unwrap<T>(r: Result<T>): T {
 export function mapResult<T, U>(r: Result<T>, fn: (v: T) => U): Result<U> {
   return r.ok ? Ok(fn(r.value)) : r;
 }
-
-/** Unwraps a `Result<T[]>` to the array, or `[]` on error — for reactive reads. */
-export function unwrapOrEmpty<T>(r: Result<T[]>): T[] {
-  return r.ok ? r.value : [];
-}
