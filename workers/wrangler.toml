@@ -1,0 +1,8 @@
+name = "rival-drive-token-refresh"
+main = "src/index.ts"
+compatibility_date = "2025-04-01"
+
+[[d1_databases]]
+binding = "DRIVE_TOKENS"
+database_name = "rival-drive-tokens"
+database_id = "2813cd3c-fd83-4af9-b9dc-84f704e6952d"

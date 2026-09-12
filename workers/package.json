@@ -1,0 +1,23 @@
+{
+  "name": "rival-drive-token-worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "kv:create": "wrangler kv namespace create DRIVE_TOKENS",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "hono": "^4.6.0",
+    "jose": "^5.9.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260820.1",
+    "typescript": "~5.6.0",
+    "vitest": "^4.1.11",
+    "wrangler": "^4.125.0"
+  }
+}
