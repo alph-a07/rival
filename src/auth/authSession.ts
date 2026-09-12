@@ -27,6 +27,12 @@ export interface StoredIdentity {
   picture: string | null;
 }
 
+/** Why a presented id_token failed validation. */
+export type IdTokenRejection = "malformed" | "wrong-audience" | "wrong-issuer" | "expired";
+
+/** Result of validating an id_token's claims at the sign-in boundary. */
+export type IdTokenValidation = { ok: true } | { ok: false; reason: IdTokenRejection };
+
 // Identity for the Worker is the long-lived server-issued `sessionToken`.
 // The GSI `idToken` is kept only to decode display profile; it may expire on
 // Google's side but the client never needs a fresh one once signed in.
@@ -38,6 +44,8 @@ const IDENTITY_KEY = "rival.drive.identity";
 const sessionTokenSlot = makeStorageSlot(SESSION_TOKEN_KEY);
 const idTokenSlot = makeStorageSlot(ID_TOKEN_KEY);
 const identitySlot = makeStorageSlot(IDENTITY_KEY);
+
+const GOOGLE_ISSUERS = ["https://accounts.google.com", "accounts.google.com"];
 
 const authListeners = new Set<() => void>();
 
@@ -79,27 +87,59 @@ export function setStoredIdToken(token: string | null): void {
 /**
  * Decodes the unverified JWT payload (only non-sensitive claims are used).
  * Returns `{ sub: "" }` when the token is malformed.
- *
- * Uses a manual base64url decode rather than pulling `jose` into the client bundle.
  */
 export function decodeIdToken(token: string): DecodedIdToken {
-  try {
-    const payload = token.split(".")[1];
-    const decoded = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/"))) as {
-      sub?: string;
-      email?: string;
-      name?: string;
-      picture?: string;
-    };
-    return {
-      sub: decoded.sub ?? "",
-      email: decoded.email,
-      name: decoded.name,
-      picture: decoded.picture,
-    };
-  } catch {
-    return { sub: "" };
+  const payload = decodeJwtPayload(token);
+  return {
+    sub: typeof payload?.sub === "string" ? payload.sub : "",
+    email: typeof payload?.email === "string" ? payload.email : undefined,
+    name: typeof payload?.name === "string" ? payload.name : undefined,
+    picture: typeof payload?.picture === "string" ? payload.picture : undefined,
+  };
+}
+
+/**
+ * Validates the claims of a Google id_token at the sign-in boundary.
+ * `aud` is checked only when a client id is configured.
+ * `iss` is checked against a list of known Google issuers.
+ * `exp` is seconds-since-epoch.
+ */
+export function validateIdTokenClaims(
+  token: string,
+  expected: { clientId?: string | null; nowMs?: number },
+): IdTokenValidation {
+  const payload = decodeJwtPayload(token);
+
+  if (!payload) {
+    return { ok: false, reason: "malformed" };
   }
+
+  if (typeof payload.sub !== "string" || payload.sub.length === 0) {
+    return { ok: false, reason: "malformed" };
+  }
+
+  if (!GOOGLE_ISSUERS.includes(payload.iss as string)) {
+    return { ok: false, reason: "wrong-issuer" };
+  }
+
+  const aud = payload.aud;
+  const audMatches =
+    Array.isArray(aud) && typeof expected.clientId === "string"
+      ? aud.includes(expected.clientId)
+      : aud === expected.clientId;
+
+  if (expected.clientId && !audMatches) {
+    return { ok: false, reason: "wrong-audience" };
+  }
+
+  const exp = payload.exp;
+  const nowMs = expected.nowMs ?? Date.now();
+
+  if (typeof exp !== "number" || exp * 1000 <= nowMs) {
+    return { ok: false, reason: "expired" };
+  }
+
+  return { ok: true };
 }
 
 /** Maps an id_token + optional drive access token to a `GoogleUser`. */
@@ -156,6 +196,25 @@ export function toGoogleUserFromProfile(
     photoUrl: identity.picture,
     accessToken,
   };
+}
+
+/**
+ * Decodes a JWT payload to a claim record, or null when the token is malformed.
+ * Uses a manual base64url decode rather than pulling `jose` into the client bundle.
+ */
+function decodeJwtPayload(token: string): Record<string, unknown> | null {
+  try {
+    const encoded = token.split(".")[1];
+    if (!encoded) {
+      return null;
+    }
+    const parsed = JSON.parse(atob(encoded.replace(/-/g, "+").replace(/_/g, "/"))) as unknown;
+    return typeof parsed === "object" && parsed !== null
+      ? (parsed as Record<string, unknown>)
+      : null;
+  } catch {
+    return null;
+  }
 }
 
 /**

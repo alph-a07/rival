@@ -7,6 +7,7 @@ import {
   toGoogleUserFromProfile,
   getStoredSessionToken,
   setStoredSessionToken,
+  validateIdTokenClaims,
 } from "./authSession";
 
 /** Builds a base64url JWT payload with the given claims (no signature needed for display decoding). */
@@ -43,6 +44,93 @@ describe("decodeIdToken", () => {
   test("returns empty sub for malformed tokens", () => {
     expect(decodeIdToken("not-a-token")).toEqual({ sub: "" });
     expect(decodeIdToken("a.b.c")).toEqual({ sub: "" });
+  });
+});
+
+const nowSeconds = () => Math.floor(Date.now() / 1000);
+const validClaims = () => ({
+  sub: "123",
+  aud: "client-123",
+  iss: "https://accounts.google.com",
+  exp: nowSeconds() + 3600,
+});
+
+describe("validateIdTokenClaims", () => {
+  test("accepts a token with matching audience, Google issuer, and a live expiry", () => {
+    expect(validateIdTokenClaims(fakeIdToken(validClaims()), { clientId: "client-123" })).toEqual({
+      ok: true,
+    });
+  });
+
+  test("accepts the accounts.google.com issuer without the scheme prefix", () => {
+    expect(
+      validateIdTokenClaims(fakeIdToken({ ...validClaims(), iss: "accounts.google.com" }), {
+        clientId: "client-123",
+      }),
+    ).toEqual({ ok: true });
+  });
+
+  test("rejects a malformed token", () => {
+    expect(validateIdTokenClaims("not-a-jwt", { clientId: "client-123" })).toEqual({
+      ok: false,
+      reason: "malformed",
+    });
+  });
+
+  test("rejects a payload without a subject", () => {
+    const { sub: _sub, ...noSub } = validClaims();
+    expect(validateIdTokenClaims(fakeIdToken(noSub), { clientId: "client-123" })).toEqual({
+      ok: false,
+      reason: "malformed",
+    });
+  });
+
+  test("rejects a token minted for another client", () => {
+    expect(
+      validateIdTokenClaims(fakeIdToken({ ...validClaims(), aud: "other-client" }), {
+        clientId: "client-123",
+      }),
+    ).toEqual({ ok: false, reason: "wrong-audience" });
+  });
+
+  test("accepts an audience array containing the client id", () => {
+    expect(
+      validateIdTokenClaims(fakeIdToken({ ...validClaims(), aud: ["client-123", "legacy"] }), {
+        clientId: "client-123",
+      }),
+    ).toEqual({ ok: true });
+  });
+
+  test("rejects a token from a foreign issuer", () => {
+    expect(
+      validateIdTokenClaims(fakeIdToken({ ...validClaims(), iss: "https://evil.example" }), {
+        clientId: "client-123",
+      }),
+    ).toEqual({ ok: false, reason: "wrong-issuer" });
+  });
+
+  test("rejects an expired token", () => {
+    expect(
+      validateIdTokenClaims(fakeIdToken({ ...validClaims(), exp: nowSeconds() - 10 }), {
+        clientId: "client-123",
+      }),
+    ).toEqual({ ok: false, reason: "expired" });
+  });
+
+  test("rejects a payload with a non-numeric expiry", () => {
+    expect(
+      validateIdTokenClaims(fakeIdToken({ ...validClaims(), exp: "soon" }), {
+        clientId: "client-123",
+      }),
+    ).toEqual({ ok: false, reason: "expired" });
+  });
+
+  test("skips the audience check when no client id is configured", () => {
+    expect(
+      validateIdTokenClaims(fakeIdToken({ ...validClaims(), aud: "unconfigured" }), {
+        clientId: null,
+      }),
+    ).toEqual({ ok: true });
   });
 });
 
