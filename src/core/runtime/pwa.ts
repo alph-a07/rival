@@ -28,6 +28,7 @@ export function createPwaUpdater(hook: PwaUpdateHook, opts: PwaUpdaterOpts): Pwa
       return;
     }
     started = true;
+    bus.start();
 
     hook.onNeedRefresh(() => {
       Logger.analytics.debug("PWA need-refresh event fired, broadcasting to other tabs");
