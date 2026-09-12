@@ -25,17 +25,17 @@ The **framework-free infrastructure** of Rival: environment access, the logging 
 
 | Path                    | Responsibility                                                 | Public surface                                                                            |
 | ----------------------- | -------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| `env.ts`                | Read-only typed env access — mode, OAuth client id, Worker URL | `getEnvMode()`, `googleClientId()`, `driveTokenFunctionUrl()`, `getEnvString()`           |
+| `env.ts`                | Read-only typed env access — mode, OAuth client id + allowed origins, Worker URL | `getEnvMode()`, `googleClientId()`, `authorizedGoogleOrigins()`, `isAuthorizedGoogleOrigin()`, `driveTokenFunctionUrl()`, `getEnvString()`           |
 | `logging/config.ts`     | Log level plumbing + mutable active config                     | `LogLevel`, `LOG_LEVEL_ORDER`, `activeConfig`, `resolveEnvironmentDefault()`              |
 | `logging/categories.ts` | The closed set of log categories                               | `CategoryId`, `CategoryDefinition`, `CATEGORIES`                                          |
 | `logging/logger.ts`     | Scoped loggers + performance wrapper                           | `Logger.{behavior,checkIn,sync,storage,network,auth,ui,navigation,analytics,performance}` |
-| `runtime/`              | The feedback framework — see its own `ARCHITECTURE.md`         | `createRuntime`, `getRuntime`, monitors, cross-tab, coordinator                           |
+| `runtime/`              | The feedback framework — see its own `ARCHITECTURE.md`         | `getRuntime()`, `Runtime`, monitors, cross-tab bus, PWA updater                           |
 
 ---
 
 ## The logging layer
 
-`core/logging` is the **single logging sink** in the app. Every layer (domain, are a closed set (`storage`, `network`, `auth`, `sync`, ...) with per-category data, sync, auth, runtime) logs through it, never `console` directly. Categories minimum levels and a `PerformanceLogger` for timing.
+`core/logging` is the **single logging sink** in the app. Every layer (domain, data, sync, auth, runtime, shells) logs through it, never `console` directly. Categories are a closed set (`storage`, `network`, `auth`, `sync`, `checkIn`, …) with a per-category minimum level, and a `performance` wrapper for timing.
 
 ```mermaid
 flowchart LR
@@ -84,3 +84,4 @@ See `runtime/ARCHITECTURE.md` for the full detail.
 ```bash
 npx vitest run --config vite.config.ts src/core
 ```
+
