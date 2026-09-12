@@ -151,6 +151,11 @@ export class ErrorClassifier {
     });
   }
 
+  /** Build a canonical `AppError` for a denied auth request (e.g. an origin that isn't registered). */
+  static authDenied(message: string, overrides?: Partial<AppError>): AppError {
+    return build("auth-denied", undefined, { message, ...overrides });
+  }
+
   /** Build a canonical `AppError` for any unknown errors. */
   static fromUnknown(e: unknown, context?: Record<string, unknown>): AppError {
     if (isOffline()) {

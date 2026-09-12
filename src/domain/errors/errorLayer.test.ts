@@ -51,6 +51,16 @@ describe("ErrorClassifier", () => {
       vi.unstubAllGlobals();
     }
   });
+
+  it("authDenied builds an auth-denied AppError with the given message", () => {
+    const app = ErrorClassifier.authDenied("Not available at this address.", {
+      surface: { surface: "toast" },
+    });
+    expect(app.kind).toBe("auth-denied");
+    expect(app.message).toBe("Not available at this address.");
+    expect(app.surface).toEqual({ surface: "toast" });
+    expect(app.retryable).toBe(false);
+  });
 });
 
 describe("Result", () => {
