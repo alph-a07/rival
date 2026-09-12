@@ -24,7 +24,7 @@ export function createDriveAuthActions(handler: DriveAuthHandler): DriveAuthActi
   if (!handler.onDefer) {
     return { primary };
   }
-  
+
   const secondary: RuntimeAction = createAction(
     "defer-auth",
     "Not now",
