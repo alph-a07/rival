@@ -1,9 +1,23 @@
-# Local-only secrets for `wrangler dev`. Copy this file to `.dev.vars`
+# Local-only vars for `wrangler dev`. Copy this file to `.dev.vars`
 # and fill in real values; `.dev.vars` is git-ignored.
 #
-# The same Google OAuth client is shared with the app (`VITE_GOOGLE_CLIENT_ID`
-# in the repo root `.env.local`). `GOOGLE_CLIENT_SECRET` is a server-only
-# secret and must never be committed — in production it lives in the Cloudflare
-# dashboard (Worker Settings -> Variables and Secrets), not in this repo.
+# Every field of `Env` (see src/types.ts) except the `DRIVE_TOKENS` D1 binding
+# (declared in wrangler.toml, never an env var) is settable here locally.
+
+# The Google OAuth client shared with the app (`VITE_GOOGLE_CLIENT_ID` in the
+# repo root `.env.local`). Same value in both.
 GOOGLE_CLIENT_ID=
+
+# Server-only secret; must never be committed. In production it lives in the
+# Cloudflare dashboard (Worker Settings -> Variables and Secrets).
 GOOGLE_CLIENT_SECRET=
+
+# Comma-separated CORS origin allowlist — the source of truth in both modes
+# when set. Leave blank for local dev to use the built-in localhost origins.
+# Set it to mirror deployed origins when testing prod-like CORS locally.
+#ALLOWED_ORIGINS=
+
+# Runtime mode: "development" (default) or "production". Production requires
+# ALLOWED_ORIGINS and disables the localhost fallback. Omit locally to keep the
+# dev CORS behavior.
+#ENVIRONMENT=development
