@@ -4,8 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
+    "dev": "npm run migrations && wrangler dev",
+    "deploy": "npm run migrations:remote && wrangler deploy",
+    "migrations": "wrangler d1 migrations apply DRIVE_TOKENS",
+    "migrations:remote": "wrangler d1 migrations apply DRIVE_TOKENS --remote",
     "kv:create": "wrangler kv namespace create DRIVE_TOKENS",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
