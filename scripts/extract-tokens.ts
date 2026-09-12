@@ -91,5 +91,5 @@ tokens.forEach((token: string) => {
   }
 });
 
-fs.writeFileSync(outputFilePath, JSON.stringify(tokenMap, null, 2));
+fs.writeFileSync(outputFilePath, JSON.stringify(tokenMap, null, 2) + "\n");
 console.log("✅ Token map successfully generated!");
