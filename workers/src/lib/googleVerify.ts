@@ -5,8 +5,11 @@ const GOOGLE_ISSUERS = ["accounts.google.com", "https://accounts.google.com"];
 
 const jwks = createRemoteJWKSet(new URL(GOOGLE_JWKS_URL));
 
-/** The identity + profile claims we surface from a verified Google id_token. */
-export interface VerifiedGoogleClaims {
+/**
+ * The display profile (PII) served back on /refresh so a client whose local
+ * id_token/PII cache was wiped can rebuild its identity from server truth.
+ */
+export interface SessionProfile {
   sub: string;
   email: string | null;
   name: string | null;
@@ -26,15 +29,12 @@ export async function verifyGoogleIdToken(idToken: string, clientId: string): Pr
 export async function verifyGoogleClaims(
   idToken: string,
   clientId: string,
-): Promise<VerifiedGoogleClaims> {
+): Promise<SessionProfile> {
   const claims = await verifyGoogleClaimsRaw(idToken, clientId);
   return claims;
 }
 
-async function verifyGoogleClaimsRaw(
-  idToken: string,
-  clientId: string,
-): Promise<VerifiedGoogleClaims> {
+async function verifyGoogleClaimsRaw(idToken: string, clientId: string): Promise<SessionProfile> {
   if (!clientId) {
     throw new Error("GOOGLE_CLIENT_ID is not configured on the Worker.");
   }
