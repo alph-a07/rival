@@ -29,19 +29,19 @@ The **framework-free, browser-coupled infrastructure** of the runtime feedback f
 
 ## File-by-file map
 
-| File              | Responsibility                                                                                                                                        | Public surface                                                             |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| `connectivity.ts` | Boot-offline connectivity monitor — emits **current** state, then transitions                                                                         | `createConnectivityMonitor()`, `ConnectivityEvent`, `ConnectivityListener` |
-| `storage.ts`      | Proactive storage-pressure monitor — samples `estimate()` at boot + on a timer                                                                        | `createStorageMonitor()`, `StoragePressureSignal`, `StorageMonitorOpts`    |
-| `crossTab.ts`     | Typed `BroadcastChannel` transport with a `storage`-event fallback                                                                                    | `createCrossTabBus()`, `CrossTabEventBus`, `RuntimeChannelEventMap`        |
-| `pwa.ts`          | New-build updater — broadcasts across tabs, each tab offers Reload                                                                                    | `createPwaUpdater()`, `PwaUpdateHook`, `PwaUpdaterOpts`, `crossTabBus`     |
-| `coordinator.ts`  | The **single owner** of the app runtime — `createRuntime` wires monitors onto the bridge; `getRuntime()` returns the one lazily-created store+runtime | `createRuntime()`, `getRuntime()`, `Runtime`, `RuntimeOpts`                |
+| File              | Responsibility                                                                                                                                                   | Public surface                                                             |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `connectivity.ts` | Boot-offline connectivity monitor — emits **current** state, then transitions                                                                                    | `createConnectivityMonitor()`, `ConnectivityEvent`, `ConnectivityListener` |
+| `storage.ts`      | Proactive storage-pressure monitor — samples `estimate()` at boot + on a timer                                                                                   | `createStorageMonitor()`, `StoragePressureSignal`, `StorageMonitorOpts`    |
+| `crossTab.ts`     | Typed `BroadcastChannel` transport with a `storage`-event fallback                                                                                               | `createCrossTabBus()`, `CrossTabEventBus`, `RuntimeChannelEventMap`        |
+| `pwa.ts`          | New-build updater — broadcasts across tabs, each tab offers Reload                                                                                               | `createPwaUpdater()`, `PwaUpdateHook`, `PwaUpdaterOpts`, `crossTabBus`     |
+| `coordinator.ts`  | The **single owner** of the app runtime — `getRuntime()` lazily creates the one Runtime wiring monitors onto the bridge; `createRuntime(opts)` is module-private | `getRuntime()`, `Runtime`, `RuntimeOpts`                                   |
 
 ## The monitors
 
 ### `createConnectivityMonitor`
 
-The fix for "if the app boots offline, the banner never shows until the next state change." `start()` reads the **current** `navigator.onLine` and emits it immediately, then reacts to `online`/`offline` transitions. The coordinator clears the `conn` banner on `online` and raises it on `offline` — and **wakes `withRetry`'s queue** on reconnect so silent backoffs fire instantly.
+`start()` reads the **current** `navigator.onLine` and emits it immediately, then reacts to `online`/`offline` transitions — so an offline boot raises the banner instead of waiting for a state change. The coordinator clears the `conn` banner on `online` and raises it on `offline` — and **wakes `withRetry`'s queue** on reconnect so silent backoffs fire instantly.
 
 ```mermaid
 flowchart LR
@@ -71,7 +71,7 @@ monitor.start();
 
 ### `createCrossTabBus`
 
-A typed, structured-clone-safe `BroadcastChannel` with a `storage`-event fallback when the channel is unavailable. Events are `RuntimeChannelEventMap`-typed (`app:update`, `app:data-changed`, `app:sync`). Crucially, **functions never cross the bus** — so each tab builds its own actions locally rather than leaking losures across the seam. Each bus is a distinct "tab" (`instanceId`), and delivery is guarded by `sourceInstance` so a tab never hears its own broadcast.
+A typed, structured-clone-safe `BroadcastChannel` with a `storage`-event fallback when the channel is unavailable. Events are `RuntimeChannelEventMap`-typed (`app:update`, `app:data-changed`, `app:sync`). Crucially, **functions never cross the bus** — so each tab builds its own actions locally rather than leaking closures across the seam. Each bus is a distinct "tab" (`instanceId`), and delivery is guarded by `sourceInstance` so a tab never hears its own broadcast.
 
 ### `createPwaUpdater`
 
@@ -81,7 +81,7 @@ Wraps vite-plugin-pwa's `onNeedRefresh` lifecycle: when a new build is staged, i
 
 ## The coordinator — the single glue
 
-`createRuntime(opts)` is the one place that knows how monitors, the bridge, and the store fit together. It returns a `Runtime` exposing the app-facing raise methods (so services never touch the bridge directly):
+`getRuntime()` is the one place that knows how monitors, the bridge, and the store fit together; `createRuntime(opts)` is module-private and invoked once, lazily, by the accessor. The returned `Runtime` exposes the app-facing methods (so services never touch the bridge directly):
 
 ```mermaid
 flowchart LR
@@ -94,12 +94,15 @@ flowchart LR
     end
 ```
 
-| Method                | Kind         | Blocking                                    | Wired by   |
-| --------------------- | ------------ | ------------------------------------------- | ---------- |
-| `raiseStorageCorrupt` | `corruption` | blocking, priority `CORRUPTION` (2), `once` | data layer |
-| `raiseSyncConflict`   | `sync`       | passive banner                              | sync layer |
-| `clearSyncConflict`   | —            | clears the conflict after resolution        | sync layer |
-| `setReconcileHandler` | —            | wires the Reconcile action's callback       | shells     |
+| Method                                       | Kind         | Blocking                                                      | Wired by       |
+| -------------------------------------------- | ------------ | ------------------------------------------------------------- | -------------- |
+| `raiseStorageCorrupt`                        | `corruption` | blocking, priority `CORRUPTION` (2), `once`                   | data layer     |
+| `raiseSyncConflict`                          | `sync`       | passive banner                                                | sync layer     |
+| `clearSyncConflict`                          | —            | clears the conflict after resolution                          | sync layer     |
+| `setReconcileHandler`                        | —            | wires the Reconcile action's callback                         | shells         |
+| `setAuthRecovery` / `setAuthDeferred`        | —            | wires the Drive-denied blocker's recover/defer CTAs           | shells/runtime |
+| `setSessionExpiredHandler`                   | —            | app-session expiry → shell signs out to `/auth`               | shells/runtime |
+| `setDriveSyncEnabled` / `isDriveSyncEnabled` | —            | durable Drive opt-in flag gating ambient surfaces + auto-sync | syncService    |
 
 App-auth failures no longer raise through the coordinator: `auth.ts` classifies a dead session
 (`auth-expired`) and `sync` classifies a denied grant (`auth-denied`), and the single error funnel
@@ -160,3 +163,4 @@ The auth-vs-drive split, driven through the same classifier:
 ```bash
 npx vitest run --config vite.config.ts src/core/runtime
 ```
+

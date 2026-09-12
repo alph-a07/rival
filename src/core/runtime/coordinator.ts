@@ -2,9 +2,10 @@ import { createConnectivityMonitor, type ConnectivityMonitor } from "./connectiv
 import type { ConnectivityEnv } from "./connectivity";
 import { createBridge, type Bridge } from "@/domain/notifications/client";
 import { createReconcileAction } from "@/domain/notifications/actions/reconcileAction";
-import { createReAuthAction } from "@/domain/notifications/actions/reAuthAction";
+import { createDriveAuthActions } from "@/domain/notifications/actions/driveAuthActions";
 import { createStorageMonitor } from "./storage";
 import type { StorageProvider } from "./storage";
+import type { ErrorKind } from "@/domain/errors/AppError";
 import { wakeRetryQueue } from "@/domain/errors/withRetry";
 import { createRuntimeStore, type RuntimeStore } from "@/domain/notifications/store";
 import type {
@@ -37,7 +38,16 @@ export interface Runtime {
   clearSyncConflict(): void;
   /** Wire/refresh the reconciled action (in case the callback changes). */
   setReconcileHandler(onReconcile: () => void | Promise<void>): void;
+  /** Drive reconnect used by the "Drive denied" blocker. */
   setAuthRecovery(onRecover: (() => void | Promise<void>) | null): void;
+  /** Drive defer (pause) used by the "Drive denied" blocker's cancel CTA. */
+  setAuthDeferred(onDefer: (() => void | Promise<void>) | null): void;
+  /** App-session expiry → shell signs out and routes to /auth. */
+  setSessionExpiredHandler(onExpired: (() => void | Promise<void>) | null): void;
+  /** Whether Drive backup is opted in; gates ambient offline/conn surfaces / auto-sync. */
+  setDriveSyncEnabled(enabled: boolean): void;
+  /** Live flip of the Drive opt-in flag set via `setDriveSyncEnabled`. */
+  isDriveSyncEnabled(): boolean;
 }
 
 let singleton: Runtime | null = null;
@@ -54,17 +64,37 @@ function createRuntime(opts: RuntimeOpts): Runtime {
   const { store, storage = fallbackStorageProvider(), onReconcileConflict } = opts;
   const baseBridge = createBridge(store);
   let authRecovery: (() => void | Promise<void>) | null = null;
+  let authDeferred: (() => void | Promise<void>) | null = null;
+  let sessionExpiredHandler: (() => void | Promise<void>) | null = null;
+  let driveSyncEnabled = false;
+
   const bridge: Bridge = {
     ...baseBridge,
     raise(input) {
-      const action =
-        input.action ??
-        (input.surface.surface === "blocking" &&
-        (input.errorKind === "auth-expired" || input.errorKind === "auth-denied") &&
-        authRecovery
-          ? createReAuthAction(authRecovery)
-          : undefined);
-      baseBridge.raise(action ? { ...input, action } : input);
+      let next: RuntimeInterest = input;
+
+      if (!input.action && input.surface.surface === "blocking") {
+        const kind = input.errorKind as ErrorKind | undefined;
+        if (kind === "auth-expired") {
+          // App session is gone: route to /auth instead of surfacing a modal.
+          if (sessionExpiredHandler) {
+            void sessionExpiredHandler();
+            return;
+          }
+        } else if (kind === "auth-denied" && authRecovery) {
+          // Drive grant refused while the app session is intact: keep the
+          // user on a blocking modal they can reconnect from or defer.
+          const pair = createDriveAuthActions({
+            onReconnect: authRecovery,
+            onDefer: authDeferred ?? undefined,
+          });
+          next = pair.secondary
+            ? { ...input, action: pair.primary, secondary: pair.secondary }
+            : { ...input, action: pair.primary };
+        }
+      }
+
+      baseBridge.raise(next);
     },
   };
 
@@ -88,6 +118,25 @@ function createRuntime(opts: RuntimeOpts): Runtime {
 
     setAuthRecovery(handler) {
       authRecovery = handler;
+    },
+
+    setAuthDeferred(handler) {
+      authDeferred = handler;
+    },
+
+    setSessionExpiredHandler(handler) {
+      sessionExpiredHandler = handler;
+    },
+
+    setDriveSyncEnabled(enabled) {
+      driveSyncEnabled = enabled;
+      if (!enabled) {
+        bridge.clear("conn");
+      }
+    },
+
+    isDriveSyncEnabled() {
+      return driveSyncEnabled;
     },
 
     raiseStorageCorrupt({ title, body, action }) {
@@ -146,7 +195,7 @@ function createRuntime(opts: RuntimeOpts): Runtime {
           if (ev.online) {
             bridge.clear("conn");
             wakeRetryQueue();
-          } else {
+          } else if (driveSyncEnabled) {
             bridge.raise(
               interest(
                 "conn",
