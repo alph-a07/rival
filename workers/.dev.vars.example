@@ -1,0 +1,9 @@
+# Local-only secrets for `wrangler dev`. Copy this file to `.dev.vars`
+# and fill in real values; `.dev.vars` is git-ignored.
+#
+# The same Google OAuth client is shared with the app (`VITE_GOOGLE_CLIENT_ID`
+# in the repo root `.env.local`). `GOOGLE_CLIENT_SECRET` is a server-only
+# secret and must never be committed — in production it lives in the Cloudflare
+# dashboard (Worker Settings -> Variables and Secrets), not in this repo.
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
