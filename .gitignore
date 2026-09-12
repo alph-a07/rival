@@ -29,3 +29,6 @@ scratch/
 .env
 .env.local
 .env.*.local
+
+# Cloudflare Worker local dev state
+workers/.wrangler/

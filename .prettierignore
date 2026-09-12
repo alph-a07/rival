@@ -1,0 +1,9 @@
+# Authored docs — paragraphs are single-line (editor soft-wraps); oxfmt's
+# markdown printer would re-wrap them at a fixed width, so docs are excluded.
+AGENTS.md
+README.md
+LICENSE.md
+**/ARCHITECTURE.md
+
+# Generated artifact — formatting is owned by scripts/extract-tokens.ts.
+src/design-system/generated-tokens.json
