@@ -33,6 +33,32 @@ export function googleClientId(): string | null {
   return getEnvString("VITE_GOOGLE_CLIENT_ID");
 }
 
+/**
+ * Origins the app accepts Google sign-in from.
+ * Comma-separated `VITE_AUTHORIZED_ORIGINS`; defaults to the pinned dev origin.
+ * Must stay in sync with the OAuth client's Authorized JavaScript origins.
+ */
+export function authorizedGoogleOrigins(): string[] {
+  const raw = getEnvString("VITE_AUTHORIZED_ORIGINS");
+
+  if (!raw) {
+    return ["http://localhost:5173"];
+  }
+
+  return raw
+    .split(",")
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+}
+
+/** Whether Google auth may run on the given origin (exact scheme + host + port match). */
+export function isAuthorizedGoogleOrigin(
+  origin: string,
+  allowed: readonly string[] = authorizedGoogleOrigins(),
+): boolean {
+  return allowed.includes(origin);
+}
+
 /** Base URL of the Cloudflare Worker (token refresh), or null when unset. */
 export function driveTokenFunctionUrl(): string | null {
   return getEnvUrl("VITE_DRIVE_TOKEN_FUNCTION");
