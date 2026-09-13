@@ -10,6 +10,11 @@ export default defineConfig(({ mode }) => {
   loadEnv(mode, process.cwd(), "");
 
   return {
+    server: {
+      port: 5173,
+      strictPort: true,
+      allowedHosts: ["192-168-31-179.nip.io", "localhost"],
+    },
     resolve: {
       alias: {
         "@": fileURLToPath(new URL("./src", import.meta.url)),
