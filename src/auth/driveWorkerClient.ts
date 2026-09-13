@@ -1,6 +1,6 @@
 import { driveTokenFunctionUrl } from "@/core/env";
 import { Logger } from "@/core/logging/logger";
-import { getStoredIdToken } from "./authSession";
+import { getStoredIdToken, getStoredSessionToken } from "./authSession";
 
 /** The result of a successful `/store-token` call. */
 export interface StoreTokenResult {
@@ -135,4 +135,35 @@ function workerBase(): string {
   }
 
   return url.replace(/\/+$/, "");
+}
+
+/**
+ * `PUT /drive-opt-in` with the session token.
+ * Best-effort persistence of the durable Drive opt-in flag; never throws so an
+ * offline/unreachable worker can't break the sync flow.
+ */
+export async function pushDriveSyncOptIn(optIn: boolean): Promise<void> {
+  const sessionToken = getStoredSessionToken();
+  if (!sessionToken) {
+    return;
+  }
+  try {
+    const res = await fetch(`${workerBase()}/drive-opt-in`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionToken}`,
+      },
+      body: JSON.stringify({ driveSyncOptIn: optIn }),
+    });
+    if (!res.ok) {
+      Logger.sync.debug("pushDriveSyncOptIn — remote rejected the write", {
+        status: res.status,
+      });
+    }
+  } catch (err) {
+    Logger.sync.debug("pushDriveSyncOptIn — network failure, skipping", {
+      message: err instanceof Error ? err.message : String(err),
+    });
+  }
 }
