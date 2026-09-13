@@ -60,7 +60,7 @@ export function createAppServices(db: AppDatabase = createAppDatabase()): AppSer
     repository: microCheckInRepository,
     markLocalDataChanged: () => pendingSyncStore.markDirty(),
   });
-  const syncEnv: SyncServiceEnv = { settings: settingsRepository, pendingSync: pendingSyncStore };
+  const syncEnv: SyncServiceEnv = { settingsRepository: settingsRepository, pendingSync: pendingSyncStore };
   const syncService = createSyncService(syncEnv);
 
   return {
