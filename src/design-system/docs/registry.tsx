@@ -14,8 +14,7 @@ import { shapeDoc } from "./content/foundations/shape-radius/shape-radius.doc";
 import { inputDoc } from "./content/components/input/input.doc";
 import { cardDoc } from "./content/components/card.doc";
 import { badgeDoc } from "./content/components/badge/badge.doc";
-import { alertToastDoc } from "./content/components/alert-toast.doc";
-import { dialogDoc } from "./content/components/dialog.doc";
+import { dialogDoc } from "./content/components/dialog/dialog.doc";
 import { dividerDoc } from "./content/components/divider.doc";
 import { progressDotsDoc } from "./content/components/progress-dots.doc";
 import { sheetDoc } from "./content/components/sheet.doc";
@@ -25,6 +24,9 @@ import { stepperDoc } from "./content/components/input/stepper.doc";
 import { loaderDoc } from "./content/components/loader.doc";
 import { logoDoc } from "./content/components/logo.doc";
 import { consistencyBadgeDoc } from "./content/components/badge/consistency-badge.doc";
+import { blockingDialogDoc } from "./content/components/dialog/blocking-dialog.doc";
+import { alertDoc } from "./content/components/alert.doc";
+import { toastDoc } from "./content/components/toast.doc";
 
 export const designSystemRegistry: RegistryEntry[] = [
   // Foundations
@@ -52,6 +54,8 @@ export const designSystemRegistry: RegistryEntry[] = [
 
   // Overlays, Layouts & System Messages
   dialogDoc,
+  blockingDialogDoc,
   sheetDoc,
-  alertToastDoc,
+  alertDoc,
+  toastDoc,
 ];
