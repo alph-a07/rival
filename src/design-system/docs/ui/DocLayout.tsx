@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Outlet, NavLink, useLocation } from "react-router-dom";
+import { DemoBannerProvider, DemoBannerSlot } from "@/design-system/docs/ui/DemoBanner";
 import { Sun, Moon, Menu, ChevronRight, ChevronDown } from "lucide-react";
 import { cx } from "@/components/utils";
 import { useTheme } from "@/theme/ThemeContext";
@@ -83,87 +84,90 @@ export const DocLayout = () => {
   const closeSidebar = () => setIsSidebarOpen(false);
 
   return (
-    <div className={styles.layout}>
-      <header className={styles.mobileHeader}>
-        <h2 className={styles.brand}>System</h2>
-        <div className={styles.mobileActions}>
-          <button
-            type="button"
-            className={styles.themeToggle}
-            onClick={toggleTheme}
-            aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-          >
-            {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
-          <button
-            type="button"
-            className={styles.hamburgerBtn}
-            onClick={toggleSidebar}
-            aria-label="Toggle Menu"
-          >
-            <Menu size={20} />
-          </button>
-        </div>
-      </header>
+    <DemoBannerProvider>
+      <div className={styles.layout}>
+        <DemoBannerSlot />
+        <header className={styles.mobileHeader}>
+          <h2 className={styles.brand}>System</h2>
+          <div className={styles.mobileActions}>
+            <button
+              type="button"
+              className={styles.themeToggle}
+              onClick={toggleTheme}
+              aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+            >
+              {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+            <button
+              type="button"
+              className={styles.hamburgerBtn}
+              onClick={toggleSidebar}
+              aria-label="Toggle Menu"
+            >
+              <Menu size={20} />
+            </button>
+          </div>
+        </header>
 
-      <div
-        className={cx(styles.overlay, isSidebarOpen && styles.overlayOpen)}
-        onClick={closeSidebar}
-        aria-hidden="true"
-      />
+        <div
+          className={cx(styles.overlay, isSidebarOpen && styles.overlayOpen)}
+          onClick={closeSidebar}
+          aria-hidden="true"
+        />
 
-      <aside className={cx(styles.sidebar, isSidebarOpen && styles.sidebarOpen)}>
-        <div className={styles.sidebarHeader}>
-          <h2 className={styles.brand}>Design System</h2>
-          <button
-            type="button"
-            className={styles.themeToggle}
-            onClick={toggleTheme}
-            aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-          >
-            {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
-        </div>
+        <aside className={cx(styles.sidebar, isSidebarOpen && styles.sidebarOpen)}>
+          <div className={styles.sidebarHeader}>
+            <h2 className={styles.brand}>Design System</h2>
+            <button
+              type="button"
+              className={styles.themeToggle}
+              onClick={toggleTheme}
+              aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+            >
+              {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+          </div>
 
-        <nav className={styles.navContainer}>
-          {categoryOrder.map((category) => {
-            const allCategoryItems = designSystemRegistry.filter(
-              (item) => item.category === category,
-            );
-            // Only map through items that DO NOT have a parent
-            const topLevelItems = allCategoryItems.filter((item) => !item.parent);
+          <nav className={styles.navContainer}>
+            {categoryOrder.map((category) => {
+              const allCategoryItems = designSystemRegistry.filter(
+                (item) => item.category === category,
+              );
+              // Only map through items that DO NOT have a parent
+              const topLevelItems = allCategoryItems.filter((item) => !item.parent);
 
-            if (topLevelItems.length === 0) {
-              return null;
-            }
+              if (topLevelItems.length === 0) {
+                return null;
+              }
 
-            return (
-              <div key={category} className={styles.navGroup}>
-                <h4 className={styles.navHeading}>{category}</h4>
-                <div className={styles.navItems}>
-                  {topLevelItems.map((item) => {
-                    // Find any items that declare this item as their parent
-                    const subItems = allCategoryItems.filter((sub) => sub.parent === item.id);
+              return (
+                <div key={category} className={styles.navGroup}>
+                  <h4 className={styles.navHeading}>{category}</h4>
+                  <div className={styles.navItems}>
+                    {topLevelItems.map((item) => {
+                      // Find any items that declare this item as their parent
+                      const subItems = allCategoryItems.filter((sub) => sub.parent === item.id);
 
-                    return (
-                      <NavItem
-                        key={item.id}
-                        item={item}
-                        subItems={subItems}
-                        onCloseSidebar={closeSidebar}
-                      />
-                    );
-                  })}
+                      return (
+                        <NavItem
+                          key={item.id}
+                          item={item}
+                          subItems={subItems}
+                          onCloseSidebar={closeSidebar}
+                        />
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-        </nav>
-      </aside>
+              );
+            })}
+          </nav>
+        </aside>
 
-      <main className={styles.mainContent}>
-        <Outlet />
-      </main>
-    </div>
+        <main className={styles.mainContent}>
+          <Outlet />
+        </main>
+      </div>
+    </DemoBannerProvider>
   );
 };

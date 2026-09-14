@@ -229,6 +229,7 @@
 @media (--bp-md) {
   .layout {
     flex-direction: column;
+    overflow-y: auto;
   }
 
   .mobileHeader {
