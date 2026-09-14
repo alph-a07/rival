@@ -6,7 +6,8 @@ import type { IconName } from "@/design-system/icons";
 
 export type AlertVariant = "info" | "warning" | "error" | "success";
 
-/** Presentation type for the alert.
+/**
+ * Presentation type for the alert.
  * - `inline`: The alert is displayed inline with the content.
  * - `banner`: The alert is displayed as a banner at the top of the page for mobile devices, and inline for wider viewports.
  */
