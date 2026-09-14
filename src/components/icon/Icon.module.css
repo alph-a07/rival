@@ -19,7 +19,7 @@
 }
 
 .tintInherit {
-  color: currentColor;
+  color: currentcolor;
 }
 
 .tintMain {
@@ -38,7 +38,8 @@
   color: var(--text-brand-accent);
 }
 
-.tintDanger {
+.tintDanger,
+.tintError {
   color: var(--text-brand-danger);
 }
 

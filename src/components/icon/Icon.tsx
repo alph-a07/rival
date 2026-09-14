@@ -11,6 +11,7 @@ export type IconTint =
   | "primary"
   | "accent"
   | "danger"
+  | "error"
   | "success"
   | "warning"
   | "info"
@@ -36,6 +37,7 @@ const tintClass: Record<IconTint, string> = {
   primary: styles.tintPrimary,
   accent: styles.tintAccent,
   danger: styles.tintDanger,
+  error: styles.tintError,
   success: styles.tintSuccess,
   warning: styles.tintWarning,
   info: styles.tintInfo,
