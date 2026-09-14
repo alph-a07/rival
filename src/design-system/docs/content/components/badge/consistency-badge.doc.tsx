@@ -1,7 +1,7 @@
 import type { DocControl, RegistryEntry } from "@/design-system/docs/types/registry.types";
 import { ConsistencyBadge } from "@/components/badge/ConsistencyBadge";
 import type { BadgeVariant, BadgeSize } from "@/components/badge/Badge";
-import type { ConsistencyStatus } from "@/domain/trajectory/ConsistencyTracker";
+import type { ConsistencyStatus } from "@/domain/trajectory/consistencyTracker";
 
 interface ConsistencyBadgeState {
   status: ConsistencyStatus;
