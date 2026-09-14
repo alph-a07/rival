@@ -31,6 +31,7 @@
   filter: grayscale(100%) brightness(var(--logo-brightness, 1));
 }
 
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
 :global([data-theme="dark"]) .monochrome {
   --logo-brightness: 2.5;
 }

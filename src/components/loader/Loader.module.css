@@ -17,13 +17,15 @@
 /* Theme & Fill Mappings */
 
 .fillSecondaryLight {
-  fill: url(#loader-secondary-light);
+  fill: url("#loader-secondary-light");
 }
+
 .fillSecondaryDark {
-  fill: url(#loader-secondary-dark);
+  fill: url("#loader-secondary-dark");
 }
+
 .fillPrimaryColored {
-  fill: url(#loader-primary-colored);
+  fill: url("#loader-primary-colored");
 }
 
 .fillMonochromeSecondary {
@@ -36,7 +38,9 @@
   filter: grayscale(100%) brightness(calc(var(--loader-brightness, 1) + 0.3));
 }
 
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
 :global([data-theme="dark"]) .fillMonochromeSecondary,
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
 :global([data-theme="dark"]) .fillMonochromePrimary {
   --loader-brightness: 2.2;
 }
@@ -80,6 +84,7 @@
   .physicsWrapperPrimary {
     transform: none !important;
   }
+
   .flameSecondary,
   .flamePrimary {
     filter: none !important;

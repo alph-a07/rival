@@ -26,9 +26,11 @@
 .sizeSm {
   max-width: 400px;
 }
+
 .sizeMd {
   max-width: 560px;
 }
+
 .sizeLg {
   max-width: 800px;
 }
@@ -63,6 +65,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -73,6 +76,7 @@
     opacity: 0;
     transform: translateY(16px) scale(0.98);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
