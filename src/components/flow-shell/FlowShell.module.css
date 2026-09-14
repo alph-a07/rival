@@ -1,0 +1,76 @@
+.shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh; /* Adapts dynamically to mobile browser bars */
+  background-color: var(--bg-background);
+  color: var(--text-main);
+  position: relative;
+}
+
+/** Sticky Header Bar */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--border-surface);
+  backdrop-filter: blur(8px);
+
+  /* Respect device notches on mobile */
+  padding-top: max(1rem, env(safe-area-inset-top));
+}
+
+.headerLeft,
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 44px; /* Matches minimum touch target width */
+}
+
+.titleContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  flex-grow: 1;
+  padding: 0 1rem;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: var(--weight-bold-display);
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/** Body / Content Area */
+.body {
+  flex-grow: 1;
+  width: 100%;
+  max-width: 640px; /* Constrains wizard width nicely on desktops */
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  box-sizing: border-box;
+
+  /* Respect hardware home indicators on mobile */
+  padding-bottom: max(2rem, env(safe-area-inset-bottom));
+}
+
+/* Tablet / Desktop expansion */
+@media (--bp-up-md) {
+  .body {
+    padding: 3rem 2rem;
+  }
+}
