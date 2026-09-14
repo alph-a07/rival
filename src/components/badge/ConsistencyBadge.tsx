@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
 import { Badge, type BadgeColor, type BadgeProps } from "./Badge";
-import type { ConsistencyStatus } from "@/domain/trajectory/ConsistencyTracker";
+import type { ConsistencyStatus } from "@/domain/trajectory/consistencyTracker";
 
 export interface ConsistencyBadgeProps extends Omit<BadgeProps, "color" | "font"> {
   status: ConsistencyStatus;
