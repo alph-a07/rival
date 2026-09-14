@@ -5,6 +5,8 @@
   border-radius: var(--radius-md);
   border: 1px solid transparent;
   font-family: var(--font-body);
+  background-color: var(--alert-bg);
+  border-color: color-mix(in srgb, var(--alert-tint) 25%, transparent);
 }
 
 .variantInfo {
@@ -22,18 +24,13 @@
 .variantError {
   --alert-tint: var(--color-error);
   --alert-bg: var(--op-danger-10);
-  --alert-text: var(--text-brand-error);
+  --alert-text: var(--text-brand-danger);
 }
 
 .variantSuccess {
   --alert-tint: var(--color-success);
   --alert-bg: var(--op-success-10);
   --alert-text: var(--text-brand-success);
-}
-
-.alert {
-  background-color: var(--alert-bg);
-  border-color: color-mix(in srgb, var(--alert-tint) 25%, transparent);
 }
 
 .icon {
@@ -44,9 +41,19 @@
 
 .content {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.textBlock {
+  display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  flex-grow: 1;
+  flex: 1 1 220px;
+  min-width: 0;
 }
 
 .title {
@@ -64,5 +71,33 @@
 }
 
 .action {
-  margin-top: 0.5rem;
+  flex: 0 0 auto;
+}
+
+@media (width < 48em) {
+  .banner {
+    width: 100%;
+    border: none;
+    border-radius: 0;
+    box-shadow: var(--shadow-elevation-md);
+    margin-top: calc(-1 * env(safe-area-inset-top));
+    padding-top: calc(env(safe-area-inset-top) + 1rem);
+    animation: rv-banner-enter var(--duration-expand) var(--ease-emphasized) forwards;
+  }
+}
+
+@keyframes rv-banner-enter {
+  from {
+    transform: translateY(-100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .banner {
+    animation: none !important;
+  }
 }
