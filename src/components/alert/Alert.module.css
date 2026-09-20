@@ -1,7 +1,7 @@
 .alert {
   display: flex;
-  gap: 0.75rem;
-  padding: 1rem;
+  gap: var(--space-3);
+  padding: var(--space-4);
   border-radius: var(--radius-md);
   border: 1px solid transparent;
   font-family: var(--font-body);
@@ -36,14 +36,14 @@
 .icon {
   flex-shrink: 0;
   color: var(--alert-text);
-  margin-top: 0.125rem;
+  margin-top: var(--space-1);
 }
 
 .content {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem 1rem;
+  gap: var(--space-2) var(--space-4);
   flex-grow: 1;
   min-width: 0;
 }
@@ -51,21 +51,21 @@
 .textBlock {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--space-1);
   flex: 1 1 220px;
   min-width: 0;
 }
 
 .title {
   font-weight: var(--weight-bold-display);
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   color: var(--text-main);
   margin: 0;
 }
 
 .message {
-  font-size: 0.875rem;
-  line-height: 1.5;
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
   color: var(--text-muted);
   margin: 0;
 }
@@ -81,7 +81,7 @@
     border-radius: 0;
     box-shadow: var(--shadow-elevation-md);
     margin-top: calc(-1 * env(safe-area-inset-top));
-    padding-top: calc(env(safe-area-inset-top) + 1rem);
+    padding-top: calc(env(safe-area-inset-top) + var(--space-4));
     animation: rv-banner-enter var(--duration-expand) var(--ease-emphasized) forwards;
   }
 }

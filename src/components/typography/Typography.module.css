@@ -39,30 +39,30 @@
 }
 
 .h1 {
-  font-size: 2.5rem;
-  line-height: 1.1;
+  font-size: var(--font-size-5xl);
+  line-height: var(--line-height-tight);
   letter-spacing: -0.02em;
 }
 
 .h2 {
-  font-size: 2rem;
-  line-height: 1.2;
+  font-size: var(--font-size-4xl);
+  line-height: var(--line-height-snug);
   letter-spacing: -0.01em;
 }
 
 .h3 {
-  font-size: 1.5rem;
-  line-height: 1.2;
+  font-size: var(--font-size-2xl);
+  line-height: var(--line-height-snug);
 }
 
 .h4 {
-  font-size: 1.25rem;
-  line-height: 1.3;
+  font-size: var(--font-size-xl);
+  line-height: var(--line-height-snug);
 }
 
 .h5 {
-  font-size: 1rem;
-  line-height: 1.4;
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-normal);
 }
 
 .weightClashReading {
@@ -75,15 +75,15 @@
 
 @media (--bp-sm) {
   .h1 {
-    font-size: 2rem;
+    font-size: var(--font-size-4xl);
   }
 
   .h2 {
-    font-size: 1.75rem;
+    font-size: var(--font-size-3xl);
   }
 
   .h3 {
-    font-size: 1.25rem;
+    font-size: var(--font-size-xl);
   }
 }
 
@@ -94,23 +94,23 @@
 }
 
 .textLg {
-  font-size: 1.125rem;
-  line-height: 1.6;
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-normal);
 }
 
 .textMd {
-  font-size: 1rem;
-  line-height: 1.5;
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-normal);
 }
 
 .textSm {
-  font-size: 0.875rem;
-  line-height: 1.5;
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
 }
 
 .textXs {
-  font-size: 0.75rem;
-  line-height: 1.4;
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-snug);
 }
 
 .weightSatoshiReading {
@@ -143,7 +143,7 @@
 
 .label {
   font-family: var(--font-body);
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   font-weight: var(--weight-medium);
   display: inline-block;
 }

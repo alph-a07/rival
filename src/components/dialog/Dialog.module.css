@@ -2,13 +2,13 @@
 .overlay {
   position: fixed;
   inset: 0;
-  z-index: 100;
+  z-index: var(--z-overlay);
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: rgb(0 0 0 / 40%);
   backdrop-filter: blur(4px);
-  padding: 1rem;
+  padding: var(--space-4);
   animation: rv-fade-in var(--duration-expand) var(--ease-standard);
 }
 
@@ -41,20 +41,20 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.25rem 1.5rem;
+  padding: var(--space-5);
   border-bottom: 1px solid var(--border-surface);
 }
 
 .title {
   margin: 0;
   font-family: var(--font-display);
-  font-size: 1.25rem;
+  font-size: var(--font-size-xl);
   font-weight: var(--weight-bold-display);
   color: var(--text-main);
 }
 
 .body {
-  padding: 1.5rem;
+  padding: var(--space-5);
   overflow-y: auto;
   overscroll-behavior: contain;
 }

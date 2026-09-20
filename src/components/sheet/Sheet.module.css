@@ -2,7 +2,7 @@
 .overlay {
   position: fixed;
   inset: 0;
-  z-index: 100;
+  z-index: var(--z-overlay);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -15,7 +15,7 @@
 /* Sheet Container */
 .sheet {
   width: 100%;
-  max-width: 100%;
+  max-width: 35em;
   max-height: calc(100vh - 2rem);
   background-color: var(--bg-card);
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
@@ -26,14 +26,10 @@
   animation: rv-slide-up-sheet var(--duration-expand) var(--ease-emphasized);
 }
 
-/* 
- * Interaction & Dimension Handling 
- * On landscape tablets or large screens, constrain the width so it doesn't stretch 100vw.
- * It will act like a bottom-anchored modal.
- */
-@media (--bp-up-sm) {
+/* Narrow: allow sheet to fill width on small screens */
+@media (--bp-sm) {
   .sheet {
-    max-width: 35em;
+    max-width: 100%;
   }
 }
 
@@ -42,7 +38,7 @@
   width: 100%;
   display: flex;
   justify-content: center;
-  padding: 0.75rem 0 0.25rem;
+  padding: var(--space-3) 0 var(--space-1);
   cursor: grab;
   flex-shrink: 0;
 }
@@ -65,7 +61,7 @@
   }
 
   .header {
-    padding-top: 1.5rem !important; /* Restore padding if handle is hidden */
+    padding-top: var(--space-5) !important; /* Restore padding if handle is hidden */
   }
 }
 
@@ -75,20 +71,20 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.5rem 1.5rem 1rem;
+  padding: var(--space-2) var(--space-5) var(--space-4);
   border-bottom: 1px solid var(--border-surface);
 }
 
 .title {
   margin: 0;
   font-family: var(--font-display);
-  font-size: 1.25rem;
+  font-size: var(--font-size-xl);
   font-weight: var(--weight-bold-display);
   color: var(--text-main);
 }
 
 .body {
-  padding: 1.5rem;
+  padding: var(--space-5);
   overflow-y: auto;
   overscroll-behavior: contain;
 }

@@ -3,7 +3,7 @@
 .wrapper {
   display: flex;
   flex-direction: column;
-  gap: 0.375rem;
+  gap: var(--space-2);
   font-family: var(--font-body);
   width: fit-content;
 }
@@ -20,15 +20,15 @@
 }
 
 .labelSm {
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
 }
 
 .labelMd {
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
 }
 
 .labelLg {
-  font-size: 1rem;
+  font-size: var(--font-size-md);
 }
 
 /* Input Container */
@@ -36,7 +36,7 @@
 .inputContainer {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-2);
   background: var(--bg-surface);
   border: 1px solid var(--border-interactive);
   transition:
@@ -52,26 +52,26 @@
 
 .sizeSm {
   height: 2rem;
-  padding: 0 0.5rem;
-  font-size: 0.75rem;
+  padding: 0 var(--space-2);
+  font-size: var(--font-size-xs);
 }
 
 .sizeMd {
   height: 2.5rem;
-  padding: 0 0.75rem;
-  font-size: 0.875rem;
+  padding: 0 var(--space-3);
+  font-size: var(--font-size-sm);
 }
 
 .sizeLg {
   height: 3rem;
-  padding: 0 1rem;
-  font-size: 1rem;
+  padding: 0 var(--space-4);
+  font-size: var(--font-size-md);
 }
 
 @media (--bp-md) {
   .sizeSm,
   .sizeMd {
-    font-size: 1rem;
+    font-size: var(--font-size-md);
   }
 }
 
@@ -208,7 +208,7 @@
 
 .messageWrapper.hasMessage {
   grid-template-rows: 1fr;
-  margin-top: 0.25rem;
+  margin-top: var(--space-1);
 }
 
 .messageInner {
@@ -220,7 +220,7 @@
 
 /* Message Sizing & Styles */
 .message {
-  line-height: 1.2;
+  line-height: var(--line-height-snug);
   opacity: 0;
   transform: translateY(-4px);
   transition:
@@ -230,15 +230,15 @@
 }
 
 .messageSm {
-  font-size: 0.6875rem;
+  font-size: var(--font-size-xs);
 }
 
 .messageMd {
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
 }
 
 .messageLg {
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
 }
 
 .messageVisible {

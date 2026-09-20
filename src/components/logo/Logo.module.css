@@ -18,13 +18,13 @@
 .hasBackground {
   background-color: var(--bg-surface);
   border: 1px solid var(--border-surface);
-  border-radius: 22%;
+  border-radius: 20%;
   box-shadow: var(--shadow-elevation-sm);
 }
 
 .hasBackground .image {
-  width: 64%;
-  height: 64%;
+  width: 80%;
+  height: 80%;
 }
 
 .monochrome {

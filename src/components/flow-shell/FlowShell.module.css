@@ -16,20 +16,20 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 1.5rem;
+  padding: var(--space-4) var(--space-5);
   background-color: var(--bg-surface);
   border-bottom: 1px solid var(--border-surface);
   backdrop-filter: blur(8px);
 
   /* Respect device notches on mobile */
-  padding-top: max(1rem, env(safe-area-inset-top));
+  padding-top: max(var(--space-4), env(safe-area-inset-top));
 }
 
 .headerLeft,
 .headerRight {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--space-3);
   min-width: 44px; /* Matches minimum touch target width */
 }
 
@@ -39,18 +39,18 @@
   align-items: center;
   text-align: center;
   flex-grow: 1;
-  padding: 0 1rem;
+  padding: 0 var(--space-4);
 }
 
 .title {
   font-family: var(--font-display);
-  font-size: 1rem;
+  font-size: var(--font-size-md);
   font-weight: var(--weight-bold-display);
   margin: 0;
 }
 
 .subtitle {
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   color: var(--text-muted);
   margin: 0;
 }
@@ -61,16 +61,16 @@
   width: 100%;
   max-width: 640px; /* Constrains wizard width nicely on desktops */
   margin: 0 auto;
-  padding: 2rem 1.5rem;
+  padding: var(--space-6) var(--space-5);
   box-sizing: border-box;
 
   /* Respect hardware home indicators on mobile */
-  padding-bottom: max(2rem, env(safe-area-inset-bottom));
+  padding-bottom: max(var(--space-6), env(safe-area-inset-bottom));
 }
 
-/* Tablet / Desktop expansion */
-@media (--bp-up-md) {
+/* Narrow: tighten padding so content doesn't feel cramped */
+@media (--bp-md) {
   .body {
-    padding: 3rem 2rem;
+    padding: var(--space-6) var(--space-5);
   }
 }

@@ -43,15 +43,15 @@
 }
 
 .paddingSm {
-  padding: 1rem;
+  padding: var(--space-4);
 }
 
 .paddingMd {
-  padding: 1.5rem;
+  padding: var(--space-5);
 }
 
 .paddingLg {
-  padding: 2rem;
+  padding: var(--space-6);
 }
 
 .interactive:hover {

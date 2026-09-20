@@ -14,7 +14,7 @@
 
 .variantSecondaryFilled {
   background: var(--bg-floating);
-  padding: 0.5rem;
+  padding: var(--space-2);
   border-radius: var(--radius-sm);
 }
 
