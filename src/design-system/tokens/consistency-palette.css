@@ -1,0 +1,84 @@
+:root {
+  --raw-consistency-warming-up-dark: #94a3b8;
+  --raw-consistency-warming-up-light: #64748b;
+  --raw-consistency-dialed-in-dark: #10b981;
+  --raw-consistency-dialed-in-light: #059669;
+  --raw-consistency-on-track-dark: #22c55e;
+  --raw-consistency-on-track-light: #16a34a;
+  --raw-consistency-finding-footing-dark: #f59e0b;
+  --raw-consistency-finding-footing-light: #d97706;
+  --raw-consistency-uneven-ground-dark: #f97316;
+  --raw-consistency-uneven-ground-light: #ea580c;
+  --raw-consistency-choppy-waters-dark: var(--raw-accent-dark);
+  --raw-consistency-choppy-waters-light: var(--raw-accent-light);
+  --raw-consistency-off-course-dark: var(--raw-danger-dark);
+  --raw-consistency-off-course-light: var(--raw-danger-light);
+  --raw-consistency-in-the-storm-dark: #b91c1c;
+  --raw-consistency-in-the-storm-light: #991b1b;
+
+  --color-consistency-warming-up: light-dark(
+    var(--raw-consistency-warming-up-light),
+    var(--raw-consistency-warming-up-dark)
+  );
+  --color-consistency-dialed-in: light-dark(
+    var(--raw-consistency-dialed-in-light),
+    var(--raw-consistency-dialed-in-dark)
+  );
+  --color-consistency-on-track: light-dark(
+    var(--raw-consistency-on-track-light),
+    var(--raw-consistency-on-track-dark)
+  );
+  --color-consistency-finding-footing: light-dark(
+    var(--raw-consistency-finding-footing-light),
+    var(--raw-consistency-finding-footing-dark)
+  );
+  --color-consistency-uneven-ground: light-dark(
+    var(--raw-consistency-uneven-ground-light),
+    var(--raw-consistency-uneven-ground-dark)
+  );
+  --color-consistency-choppy-waters: light-dark(
+    var(--raw-consistency-choppy-waters-light),
+    var(--raw-consistency-choppy-waters-dark)
+  );
+  --color-consistency-off-course: light-dark(
+    var(--raw-consistency-off-course-light),
+    var(--raw-consistency-off-course-dark)
+  );
+  --color-consistency-in-the-storm: light-dark(
+    var(--raw-consistency-in-the-storm-light),
+    var(--raw-consistency-in-the-storm-dark)
+  );
+
+  --text-consistency-warming-up: light-dark(
+    color-mix(in srgb, var(--raw-consistency-warming-up-light) 85%, black),
+    color-mix(in srgb, var(--raw-consistency-warming-up-dark) 60%, white)
+  );
+  --text-consistency-dialed-in: light-dark(
+    color-mix(in srgb, var(--raw-consistency-dialed-in-light) 85%, black),
+    color-mix(in srgb, var(--raw-consistency-dialed-in-dark) 60%, white)
+  );
+  --text-consistency-on-track: light-dark(
+    color-mix(in srgb, var(--raw-consistency-on-track-light) 85%, black),
+    color-mix(in srgb, var(--raw-consistency-on-track-dark) 60%, white)
+  );
+  --text-consistency-finding-footing: light-dark(
+    color-mix(in srgb, var(--raw-consistency-finding-footing-light) 85%, black),
+    color-mix(in srgb, var(--raw-consistency-finding-footing-dark) 60%, white)
+  );
+  --text-consistency-uneven-ground: light-dark(
+    color-mix(in srgb, var(--raw-consistency-uneven-ground-light) 85%, black),
+    color-mix(in srgb, var(--raw-consistency-uneven-ground-dark) 60%, white)
+  );
+  --text-consistency-choppy-waters: light-dark(
+    color-mix(in srgb, var(--raw-consistency-choppy-waters-light) 85%, black),
+    color-mix(in srgb, var(--raw-consistency-choppy-waters-dark) 60%, white)
+  );
+  --text-consistency-off-course: light-dark(
+    color-mix(in srgb, var(--raw-consistency-off-course-light) 85%, black),
+    color-mix(in srgb, var(--raw-consistency-off-course-dark) 60%, white)
+  );
+  --text-consistency-in-the-storm: light-dark(
+    color-mix(in srgb, var(--raw-consistency-in-the-storm-light) 85%, black),
+    color-mix(in srgb, var(--raw-consistency-in-the-storm-dark) 60%, white)
+  );
+}

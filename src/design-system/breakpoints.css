@@ -1,9 +1,4 @@
-/* Maximum width breakpoints (Desktop first scaling down) */
+/* Breakpoints: desktop-first (max-width). */
 @custom-media --bp-sm (max-width: 37.5em);
 @custom-media --bp-md (max-width: 50em);
 @custom-media --bp-lg (max-width: 64em);
-
-/* Minimum width breakpoints (Mobile first scaling up) */
-@custom-media --bp-up-sm (min-width: 37.5em);
-@custom-media --bp-up-md (min-width: 50em);
-@custom-media --bp-up-lg (min-width: 64em);

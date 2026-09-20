@@ -1,0 +1,148 @@
+:root {
+  color-scheme: light dark;
+
+  /* Backgrounds */
+  --bg-background: light-dark(var(--raw-bg-light), var(--raw-bg-dark));
+  --bg-surface: light-dark(var(--raw-surface-light), var(--raw-surface-dark));
+  --bg-floating: light-dark(var(--raw-floating-light), var(--raw-floating-dark));
+  --bg-card: light-dark(var(--raw-surface-light), var(--raw-surface-dark));
+  --bg-galaxy: light-dark(var(--raw-galaxy-bg-light), var(--raw-galaxy-bg-dark));
+  --fog-galaxy: light-dark(var(--raw-galaxy-fog-light), var(--raw-galaxy-fog-dark));
+  --bg-disabled: var(--scrim-2);
+
+  /* Brand / status */
+  --color-primary: light-dark(var(--raw-primary-light), var(--raw-primary-dark));
+  --color-accent: light-dark(var(--raw-accent-light), var(--raw-accent-dark));
+  --color-danger: light-dark(var(--raw-danger-light), var(--raw-danger-dark));
+  --color-success: light-dark(var(--raw-success-light), var(--raw-success-dark));
+  --color-warning: light-dark(var(--raw-warning-light), var(--raw-warning-dark));
+  --color-info: light-dark(var(--raw-info-light), var(--raw-info-dark));
+  --color-error: var(--color-danger);
+
+  /* Centralized interactive state mixes */
+  --color-primary-hover: color-mix(in srgb, var(--color-primary) 92%, white);
+  --color-primary-active: color-mix(in srgb, var(--color-primary) 82%, black);
+  --color-accent-hover: color-mix(in srgb, var(--color-accent) 92%, white);
+  --color-accent-active: color-mix(in srgb, var(--color-accent) 82%, black);
+  --color-danger-hover: color-mix(in srgb, var(--color-danger) 92%, white);
+  --color-danger-active: color-mix(in srgb, var(--color-danger) 82%, black);
+
+  /* Opacities (ignored by extraction script) */
+  --op-primary-5: color-mix(in srgb, var(--color-primary) 5%, transparent);
+  --op-primary-10: color-mix(in srgb, var(--color-primary) 10%, transparent);
+  --op-primary-20: color-mix(in srgb, var(--color-primary) 20%, transparent);
+  --op-primary-40: color-mix(in srgb, var(--color-primary) 40%, transparent);
+  --op-accent-10: color-mix(in srgb, var(--color-accent) 10%, transparent);
+  --op-accent-20: color-mix(in srgb, var(--color-accent) 20%, transparent);
+  --op-danger-10: color-mix(in srgb, var(--color-danger) 10%, transparent);
+  --op-danger-20: color-mix(in srgb, var(--color-danger) 20%, transparent);
+  --op-success-10: color-mix(in srgb, var(--color-success) 10%, transparent);
+  --op-success-20: color-mix(in srgb, var(--color-success) 20%, transparent);
+  --op-warning-10: color-mix(in srgb, var(--color-warning) 10%, transparent);
+  --op-warning-20: color-mix(in srgb, var(--color-warning) 20%, transparent);
+  --op-info-10: color-mix(in srgb, var(--color-info) 10%, transparent);
+  --op-info-20: color-mix(in srgb, var(--color-info) 20%, transparent);
+
+  /* Glows */
+  --glow-primary: 0 0 20px var(--op-primary-40);
+  --glow-primary-strong: 0 0 28px var(--op-primary-40), 0 0 0 3px var(--op-primary-20);
+  --glow-accent: 0 0 20px var(--op-accent-20);
+  --glow-accent-strong: 0 0 28px var(--op-accent-20), 0 0 0 3px var(--op-accent-10);
+  --glow-danger: 0 0 20px var(--op-danger-20);
+  --glow-danger-strong: 0 0 28px var(--op-danger-20), 0 0 0 3px var(--op-danger-10);
+
+  /* Scrims */
+  --scrim-1: light-dark(rgb(0 0 0 / 2%), rgb(255 255 255 / 4%));
+  --scrim-2: light-dark(rgb(0 0 0 / 5%), rgb(255 255 255 / 8%));
+  --scrim-3: light-dark(rgb(0 0 0 / 8%), rgb(255 255 255 / 12%));
+  --scrim-4: light-dark(rgb(0 0 0 / 15%), rgb(255 255 255 / 20%));
+
+  /* Text */
+  --text-main: light-dark(var(--raw-black), var(--raw-white));
+  --text-muted: light-dark(#5b5567, #9b96a8);
+  --text-on-brand: var(--raw-white);
+  --text-disabled: light-dark(rgb(10 8 18 / 35%), rgb(255 255 255 / 35%));
+  --text-brand-primary: light-dark(
+    color-mix(in srgb, var(--raw-primary-light) 85%, black),
+    color-mix(in srgb, var(--raw-primary-dark) 60%, white)
+  );
+  --text-brand-accent: light-dark(
+    color-mix(in srgb, var(--raw-accent-light) 85%, black),
+    color-mix(in srgb, var(--raw-accent-dark) 60%, white)
+  );
+  --text-brand-danger: light-dark(
+    color-mix(in srgb, var(--raw-danger-light) 85%, black),
+    color-mix(in srgb, var(--raw-danger-dark) 60%, white)
+  );
+  --text-brand-success: light-dark(
+    color-mix(in srgb, var(--raw-success-light) 85%, black),
+    color-mix(in srgb, var(--raw-success-dark) 60%, white)
+  );
+  --text-brand-warning: light-dark(
+    color-mix(in srgb, var(--raw-warning-light) 85%, black),
+    color-mix(in srgb, var(--raw-warning-dark) 60%, white)
+  );
+  --text-brand-info: light-dark(
+    color-mix(in srgb, var(--raw-info-light) 85%, black),
+    color-mix(in srgb, var(--raw-info-dark) 60%, white)
+  );
+  --text-syntax-component: light-dark(#be185d, #f472b6);
+  --text-syntax-prop: light-dark(#0284c7, #38bdf8);
+  --text-syntax-string: light-dark(#4d7c0f, #a3e635);
+
+  /* Borders */
+  --border-surface: light-dark(#d4c7ed, var(--scrim-2));
+  --border-strong: light-dark(#b7a3dd, var(--scrim-4)); /* thin decorative dividers */
+  --border-interactive: light-dark(rgb(10 8 18 / 25%), rgb(255 255 255 / 25%));
+  --border-focus: var(--color-primary); /* solid, high-contrast outline */
+  --border-card: var(--border-surface);
+  --border-disabled: var(--scrim-3);
+  --ring-focus: 0 0 0 3px var(--border-focus);
+
+  /* Shadows / elevation. */
+  --raw-shadow-elevation-sm: 0 1px 3px rgb(10 8 18 / 12%);
+  --raw-shadow-elevation-md: 0 12px 28px rgb(10 8 18 / 20%);
+  --raw-shadow-elevation-lg: 0 20px 44px rgb(10 8 18 / 26%);
+  --raw-shadow-elevation-xl: 0 28px 60px rgb(10 8 18 / 32%);
+  --shadow-elevation-sm: var(--raw-shadow-elevation-sm);
+  --shadow-elevation-md: var(--raw-shadow-elevation-md);
+  --shadow-elevation-lg: var(--raw-shadow-elevation-lg);
+  --shadow-elevation-xl: var(--raw-shadow-elevation-xl);
+  --shadow-card: var(--shadow-elevation-sm);
+  --shadow-tooltip: var(--shadow-elevation-sm);
+  --shadow-popover: var(--shadow-elevation-md);
+  --shadow-modal: var(--shadow-elevation-lg);
+  --shadow-toast: var(--shadow-elevation-lg);
+  --surface-primary: light-dark(var(--raw-primary-light), var(--raw-floating-dark));
+  --surface-primary-glow: light-dark(
+    color-mix(in srgb, var(--raw-primary-light) 35%, white),
+    var(--raw-primary-dark)
+  );
+
+  /* Theme-invariant by original design — a white gloss overlay used on
+     floating/card surfaces regardless of which theme is active. */
+  --sheen-soft: rgb(255 255 255 / 12%);
+  --sheen-strong: rgb(255 255 255 / 22%);
+
+  /* Icon tints */
+  --icon-default: var(--text-muted);
+  --icon-strong: var(--text-main);
+  --icon-on-brand: var(--text-on-brand);
+  --icon-disabled: var(--text-disabled);
+  --icon-brand-primary: var(--color-primary);
+  --icon-brand-accent: var(--color-accent);
+  --icon-brand-danger: var(--color-danger);
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --raw-shadow-elevation-sm: 0 1px 2px rgb(0 0 0 / 40%), inset 0 1px 0 rgb(255 255 255 / 6%);
+  --raw-shadow-elevation-md: 0 12px 32px rgb(0 0 0 / 50%), inset 0 1px 0 rgb(255 255 255 / 8%);
+  --raw-shadow-elevation-lg: 0 20px 48px rgb(0 0 0 / 55%), inset 0 1px 0 rgb(255 255 255 / 10%);
+  --raw-shadow-elevation-xl: 0 28px 64px rgb(0 0 0 / 60%), inset 0 1px 0 rgb(255 255 255 / 12%);
+}

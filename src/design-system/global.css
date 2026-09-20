@@ -1,4 +1,4 @@
-@import url("./design-tokens.css");
+@import url("./tokens/index.css");
 @import url("./breakpoints.css");
 
 @font-face {

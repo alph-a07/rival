@@ -1,0 +1,124 @@
+:root {
+  /* Type: family & weight */
+  --font-display: "Clash Display", sans-serif;
+  --font-body: "Satoshi", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  --weight-reading: 400;
+  --weight-medium: 500;
+  --weight-bold-display: 600;
+  --weight-bold: 700;
+
+  /* Type: size scale (16px base). Pair with the line-height scale below —
+     don't set line-height ad hoc alongside a font-size token. */
+  --font-size-xs: 0.75rem; /* 12px — captions, metadata */
+  --font-size-sm: 0.875rem; /* 14px — secondary body, form labels */
+  --font-size-md: 1rem; /* 16px — body default */
+  --font-size-lg: 1.125rem; /* 18px — lead paragraph */
+  --font-size-xl: 1.25rem; /* 20px — card titles, small headings */
+  --font-size-2xl: 1.5rem; /* 24px — section headings */
+  --font-size-3xl: 1.875rem; /* 30px — page headings */
+  --font-size-4xl: 2.25rem; /* 36px — hero subheads */
+  --font-size-5xl: 3rem; /* 48px — hero headline */
+
+  /* Type: line-height scale */
+  --line-height-tight: 1.1; /* large display type */
+  --line-height-snug: 1.25; /* headings */
+  --line-height-normal: 1.5; /* body copy */
+  --line-height-relaxed: 1.65; /* long-form reading */
+
+  /* Spacing scale (4px base unit). Every margin/padding/gap in the app
+     should cite one of these rather than a literal px/rem value. */
+  --space-0: 0;
+  --space-1: 0.25rem; /* 4px */
+  --space-2: 0.5rem; /* 8px */
+  --space-3: 0.75rem; /* 12px */
+  --space-4: 1rem; /* 16px */
+  --space-5: 1.5rem; /* 24px */
+  --space-6: 2rem; /* 32px */
+  --space-7: 2.5rem; /* 40px */
+  --space-8: 3rem; /* 48px */
+  --space-9: 4rem; /* 64px */
+  --space-10: 5rem; /* 80px */
+
+  /* Icon sizes — pair with the font-size scale above (icon-sm next to body
+     text, icon-md next to a heading, and so on) so icon and type never
+     drift out of proportion with each other. */
+  --icon-size-xs: 0.75rem; /* 12px */
+  --icon-size-sm: 1rem; /* 16px */
+  --icon-size-md: 1.25rem; /* 20px */
+  --icon-size-lg: 1.5rem; /* 24px */
+  --icon-size-xl: 2rem; /* 32px */
+  --icon-stroke-width: 1.5; /* for stroke-based icon sets, e.g. Lucide/Feather */
+
+  /* Z-index scale. */
+  --z-base: 0;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-overlay: 300;
+  --z-modal: 400;
+  --z-toast: 500;
+  --z-tooltip: 600;
+
+  /* Shape */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-pill: 999px;
+
+  /* Motion: easing. Standard/emphasized are general-purpose; enter/exit
+     are directional and should be preferred for anything that appears or
+     dismisses (modals, toasts, menus, tooltips) — see motion.css for the
+     full pairing guidance and the keyframes built from these. */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --ease-enter: cubic-bezier(0, 0, 0.2, 1); /* decelerate — arriving on screen */
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1); /* accelerate — leaving the screen */
+
+  /* Motion: duration */
+  --duration-tap: 150ms;
+  --duration-hover: 150ms;
+  --duration-expand: 250ms;
+  --duration-nav: 300ms;
+  --duration-hero: 600ms;
+  --duration-stagger: 40ms; /* per-item delay step for list/card entrances */
+
+  /* Base Neutrals */
+  --raw-black: #0a0812;
+  --raw-white: #fff;
+
+  /* Base Backgrounds */
+  --raw-bg-dark: #0a0812;
+  --raw-bg-light: #f5f2fb;
+  --raw-surface-dark: #14111c;
+  --raw-surface-light: #fff;
+  --raw-floating-dark: #1b1826;
+  --raw-floating-light: #fff;
+
+  /** TrendChart3D specific tokens */
+  --raw-galaxy-bg-dark: #0a0812;
+  --raw-galaxy-fog-dark: #0a0812;
+  --raw-galaxy-bg-light: radial-gradient(
+    ellipse at 50% 38%,
+    #fdfaff 0%,
+    #eee3fc 28%,
+    #d3bdf3 58%,
+    #ac86e6 100%
+  );
+  --raw-galaxy-fog-light: #cdb6ef;
+
+  /* Base Brand */
+  --raw-primary-dark: #9061f9;
+  --raw-primary-light: #803dff;
+  --raw-accent-dark: #e64a00;
+  --raw-accent-light: #d94b26;
+  --raw-danger-dark: #ef4444;
+  --raw-danger-light: #dc2626;
+  --raw-success-dark: #10b981;
+  --raw-success-light: #059669;
+  --raw-warning-dark: #f59e0b;
+  --raw-warning-light: #d97706;
+  --raw-info-dark: #3b82f6;
+  --raw-info-light: #2563eb;
+}

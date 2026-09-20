@@ -1,0 +1,54 @@
+:root {
+  --raw-building-dark: #f2a93b;
+  --raw-building-light: #b8790f;
+  --raw-learning-dark: #3b82f6;
+  --raw-learning-light: #2563eb;
+  --raw-exploring-dark: #14b8a6;
+  --raw-exploring-light: #0d9488;
+  --raw-practicing-dark: #22c55e;
+  --raw-practicing-light: #16a34a;
+  --raw-habit-dark: #ec4899;
+  --raw-habit-light: #db2777;
+  --raw-maintaining-dark: #94a3b8;
+  --raw-maintaining-light: #64748b;
+
+  --color-building: light-dark(var(--raw-building-light), var(--raw-building-dark));
+  --color-learning: light-dark(var(--raw-learning-light), var(--raw-learning-dark));
+  --color-exploring: light-dark(var(--raw-exploring-light), var(--raw-exploring-dark));
+  --color-practicing: light-dark(var(--raw-practicing-light), var(--raw-practicing-dark));
+  --color-habit: light-dark(var(--raw-habit-light), var(--raw-habit-dark));
+  --color-maintaining: light-dark(var(--raw-maintaining-light), var(--raw-maintaining-dark));
+
+  --text-domain-learning: light-dark(
+    color-mix(in srgb, var(--raw-learning-light) 85%, black),
+    color-mix(in srgb, var(--raw-learning-dark) 60%, white)
+  );
+  --text-domain-building: light-dark(
+    color-mix(in srgb, var(--raw-building-light) 85%, black),
+    color-mix(in srgb, var(--raw-building-dark) 60%, white)
+  );
+  --text-domain-exploring: light-dark(
+    color-mix(in srgb, var(--raw-exploring-light) 85%, black),
+    color-mix(in srgb, var(--raw-exploring-dark) 60%, white)
+  );
+  --text-domain-practicing: light-dark(
+    color-mix(in srgb, var(--raw-practicing-light) 85%, black),
+    color-mix(in srgb, var(--raw-practicing-dark) 60%, white)
+  );
+  --text-domain-habit: light-dark(
+    color-mix(in srgb, var(--raw-habit-light) 85%, black),
+    color-mix(in srgb, var(--raw-habit-dark) 60%, white)
+  );
+  --text-domain-maintaining: light-dark(
+    color-mix(in srgb, var(--raw-maintaining-light) 85%, black),
+    color-mix(in srgb, var(--raw-maintaining-dark) 60%, white)
+  );
+
+  /* Icon tint per domain. */
+  --icon-domain-building: var(--color-building);
+  --icon-domain-learning: var(--color-learning);
+  --icon-domain-exploring: var(--color-exploring);
+  --icon-domain-practicing: var(--color-practicing);
+  --icon-domain-habit: var(--color-habit);
+  --icon-domain-maintaining: var(--color-maintaining);
+}
