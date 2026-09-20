@@ -1,5 +1,5 @@
 import { useState } from "react";
-import generatedTokens from "@/design-system/generated-tokens.json";
+import { createTokenCatalog } from "@/design-system/docs/tokens/tokenCatalog";
 import styles from "./ColorPreview.module.css";
 import { TokenBadge } from "@/design-system/docs/ui/TokenBadge";
 
@@ -44,13 +44,17 @@ export const ColorPreview = () => {
     );
   };
 
+  const tokens = createTokenCatalog();
+
   return (
     <div className={styles.foundationContainer}>
-      <SwatchGroup title="Brand Roles" tokens={generatedTokens.brandRoles} />
-      <SwatchGroup title="Domain Palette" tokens={generatedTokens.domainRoles} />
-      <SwatchGroup title="Surfaces" tokens={generatedTokens.surfaces} />
-      <SwatchGroup title="Text & Content" tokens={generatedTokens.text} />
-      <SwatchGroup title="Borders" tokens={generatedTokens.borders} />
+      <SwatchGroup title="Brand Roles" tokens={tokens.brandRoles} />
+      <SwatchGroup title="Domain Palette" tokens={tokens.domainRoles} />
+      <SwatchGroup title="Consistency Palette" tokens={tokens.consistencyRoles} />
+      <SwatchGroup title="Surfaces" tokens={tokens.surfaces} />
+      <SwatchGroup title="Text & Content" tokens={tokens.text} />
+      <SwatchGroup title="Borders" tokens={tokens.borders} />
+      <SwatchGroup title="Scrims" tokens={tokens.scrims} />
     </div>
   );
 };
