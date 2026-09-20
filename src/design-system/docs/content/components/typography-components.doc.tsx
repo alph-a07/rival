@@ -18,14 +18,13 @@ interface TypographyState {
   labelText: string;
 }
 
-export const typographyComponentsDoc: RegistryEntry = {
-  id: "typography-components",
-  title: "Typography",
-  category: "Components",
-  description:
-    "Semantic wrappers around the design system's fonts. Maps strict weights and high-contrast color variables.",
+export const headingDoc: RegistryEntry = {
+  id: "heading",
+  title: "Heading",
+  category: "Foundations",
+  parent: "typography",
+  description: "Semantic headings using the Clash Display font family.",
   sections: [
-    /* -- HEADING -- */
     {
       type: "playground",
       title: "Heading (Clash Display)",
@@ -72,8 +71,16 @@ export const typographyComponentsDoc: RegistryEntry = {
         },
       ],
     },
+  ],
+};
 
-    /* -- TEXT -- */
+export const textDoc: RegistryEntry = {
+  id: "text",
+  title: "Text",
+  category: "Foundations",
+  parent: "typography",
+  description: "Semantic body text using the Satoshi font family.",
+  sections: [
     {
       type: "playground",
       title: "Text (Satoshi)",
@@ -137,8 +144,16 @@ export const typographyComponentsDoc: RegistryEntry = {
         },
       ],
     },
+  ],
+};
 
-    /* -- MONO -- */
+export const monoDoc: RegistryEntry = {
+  id: "mono",
+  title: "Mono",
+  category: "Foundations",
+  parent: "typography",
+  description: "Monospace text using the JetBrains Mono font family.",
+  sections: [
     {
       type: "playground",
       title: "Mono (JetBrains Mono)",
@@ -197,8 +212,16 @@ export const typographyComponentsDoc: RegistryEntry = {
         },
       ],
     },
+  ],
+};
 
-    /* -- LABEL -- */
+export const labelDoc: RegistryEntry = {
+  id: "label",
+  title: "Label",
+  category: "Foundations",
+  parent: "typography",
+  description: "Form labels styled with the design system's body typography.",
+  sections: [
     {
       type: "playground",
       title: "Label",
