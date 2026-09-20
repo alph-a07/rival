@@ -129,6 +129,16 @@
   font-weight: var(--weight-medium);
 }
 
+/* Use box-shadow for active link in Safari & other Webkit browsers to avoid layout shift on hover. Because Webkit handles borders differently causing the left-border leak at the right edge, we use a box-shadow instead. */
+@supports (font: -apple-system-body) {
+  .navLinkActive,
+  .navLinkActive:hover {
+    border-left-width: 0;
+    padding-left: calc(0.75rem + 3px); /* keeps the text from shifting */
+    box-shadow: inset 3px 0 0 var(--color-primary);
+  }
+}
+
 /* Nested Navigation Entry Styles */
 .navSubList {
   display: flex;
