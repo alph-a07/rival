@@ -1,6 +1,6 @@
 .swatchGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(11.25rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
   gap: 1.5rem;
 }
 
@@ -22,17 +22,27 @@
   gap: 1rem;
 }
 
-@media (--bp-sm) {
-  .effectCard {
-    padding: 0.75rem;
-    gap: 0.625rem;
-  }
+[data-theme="light"] .effectCard.elevation,
+[data-theme="dark"] .effectCard.shadow {
+  display: none;
+}
+
+.stage {
+  width: 100%;
+  min-height: 9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  box-sizing: border-box;
+  background: var(--bg-background);
+  border-radius: var(--radius-sm);
 }
 
 .effectBox {
-  width: 4rem;
-  height: 4rem;
-  background: var(--bg-surface);
+  width: 4.5rem;
+  height: 4.5rem;
+  background: var(--bg-floating);
   border-radius: var(--radius-md);
 }
 
