@@ -1,25 +1,25 @@
 .iconBtnSm {
-  width: 32px;
-  height: 32px;
-  padding: 0;
+  width: calc(var(--icon-size-sm) + var(--space-2) + var(--space-2));
+  height: calc(var(--icon-size-sm) + var(--space-2) + var(--space-2));
+  padding: var(--space-2);
 }
 
 .iconBtnMd {
-  width: 40px;
-  height: 40px;
-  padding: 0;
+  width: calc(var(--icon-size-md) + var(--space-2) + var(--space-2));
+  height: calc(var(--icon-size-md) + var(--space-2) + var(--space-2));
+  padding: var(--space-2);
 }
 
 .iconBtnLg {
-  width: 48px;
-  height: 48px;
-  padding: 0;
+  width: calc(var(--icon-size-lg) + var(--space-2) + var(--space-2));
+  height: calc(var(--icon-size-lg) + var(--space-2) + var(--space-2));
+  padding: var(--space-2);
 }
 
 .btnSecondaryFilled {
   background: var(--bg-floating);
   color: var(--text-main);
-  box-shadow: inset 0 0 0 1px var(--border-surface);
+  box-shadow: inset 0 0 0 var(--border-width-thin) var(--border-surface);
 }
 
 .btnSecondaryFilled:disabled {
@@ -30,7 +30,7 @@
 
 .btnSecondaryFilled:hover:not(:disabled) {
   background: var(--scrim-2);
-  box-shadow: inset 0 0 0 1.5px var(--border-strong);
+  box-shadow: inset 0 0 0 var(--border-width-emphasis) var(--border-strong);
 }
 
 .btnSecondaryFilled:active:not(:disabled) {
@@ -40,14 +40,14 @@
 @media (pointer: coarse) {
   .iconBtnSm,
   .iconBtnMd {
-    width: 44px;
-    height: 44px;
+    width: calc(var(--icon-size-md) + var(--space-5));
+    height: calc(var(--icon-size-md) + var(--space-5));
   }
 }
 
 @media (hover: hover) and (pointer: fine) {
   .btnSecondaryFilled:hover:not(:disabled) {
     background: var(--scrim-2);
-    box-shadow: inset 0 0 0 1.5px var(--border-strong);
+    box-shadow: inset 0 0 0 var(--border-width-emphasis) var(--border-strong);
   }
 }

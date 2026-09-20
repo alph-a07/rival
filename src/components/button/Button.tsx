@@ -2,7 +2,7 @@ import React from "react";
 import base from "./ButtonBase.module.css";
 import styles from "./Button.module.css";
 import { cx } from "@/components/utils";
-import { Icon, type IconWeight } from "@/components/icon/Icon";
+import { Icon, type IconSize, type IconWeight } from "@/components/icon/Icon";
 import type { IconName } from "@/design-system/icons";
 
 type ButtonVariant = "hero" | "primary" | "secondary" | "danger" | "ghost";
@@ -24,10 +24,10 @@ const sizeClass: Record<ButtonSize, string> = {
   lg: styles.btnLg,
 };
 
-const iconSizeBySize: Record<ButtonSize, number> = {
-  sm: 14,
-  md: 16,
-  lg: 18,
+const iconSizeBySize: Record<ButtonSize, IconSize> = {
+  sm: "sm",
+  md: "sm",
+  lg: "md",
 };
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {

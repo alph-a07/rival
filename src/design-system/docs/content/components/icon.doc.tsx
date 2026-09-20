@@ -1,5 +1,11 @@
 import type { DocControl, RegistryEntry } from "@/design-system/docs/types/registry.types";
-import { Icon, type IconWeight, type IconTint, type IconVariant } from "@/components/icon/Icon";
+import {
+  Icon,
+  type IconSize,
+  type IconWeight,
+  type IconTint,
+  type IconVariant,
+} from "@/components/icon/Icon";
 import { iconRegistry, type IconName } from "@/design-system/icons";
 
 const iconNames = Object.keys(iconRegistry) as IconName[];
@@ -9,7 +15,7 @@ interface IconState {
   variant: IconVariant;
   tint: IconTint;
   weight: IconWeight;
-  size: number;
+  size: IconSize;
 }
 
 export const iconDoc: RegistryEntry = {
@@ -57,7 +63,12 @@ export const iconDoc: RegistryEntry = {
             options: ["thin", "regular", "bold"],
             defaultValue: "regular",
           },
-          { name: "size", type: "range", min: 12, max: 64, step: 2, defaultValue: 24 },
+          {
+            name: "size",
+            type: "select",
+            options: ["xs", "sm", "md", "lg", "xl"],
+            defaultValue: "lg",
+          },
         ] as DocControl<IconState>[],
         render: (state: IconState) => (
           <Icon
@@ -65,11 +76,11 @@ export const iconDoc: RegistryEntry = {
             variant={state.variant}
             tint={state.tint}
             weight={state.weight}
-            size={`${state.size / 16}rem`}
+            size={state.size}
           />
         ),
         code: (state: IconState) =>
-          `<Icon name="${state.name}" variant="${state.variant}" tint="${state.tint}" weight="${state.weight}" size="${state.size / 16}rem" />`,
+          `<Icon name="${state.name}" variant="${state.variant}" tint="${state.tint}" weight="${state.weight}" size="${state.size}" />`,
       },
     },
     {

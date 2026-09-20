@@ -1,7 +1,7 @@
 import React, { forwardRef, useRef, useId } from "react";
 import styles from "./Input.module.css";
 import { cx } from "@/components/utils";
-import { Icon } from "@/components/icon/Icon";
+import { Icon, type IconSize } from "@/components/icon/Icon";
 import type { IconName } from "@/design-system/icons";
 
 export type InputSize = "sm" | "md" | "lg";
@@ -18,16 +18,16 @@ export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElem
   helperText?: string;
   leftIcon?: IconName;
   rightIcon?: IconName;
-  iconSize?: number;
+  iconSize?: IconSize;
   fullWidth?: boolean;
   containerClassName?: string;
   inputClassName?: string;
 }
 
-const iconSizeBySize: Record<InputSize, number> = {
-  sm: 14,
-  md: 16,
-  lg: 18,
+const iconSizeBySize: Record<InputSize, IconSize> = {
+  sm: "xs",
+  md: "sm",
+  lg: "md",
 };
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(

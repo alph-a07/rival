@@ -1,4 +1,4 @@
-import { Icon } from "@/components/icon/Icon";
+import { Icon, type IconSize } from "@/components/icon/Icon";
 import type { IconName } from "@/design-system/icons";
 import { createTokenCatalog } from "@/design-system/docs/tokens/tokenCatalog";
 import styles from "./IconTokensPreview.module.css";
@@ -34,7 +34,7 @@ export const IconTokensPreview = () => {
           {tokens.icons.map((token) => (
             <div key={token} className={styles.tokenCard}>
               <span className={styles.glyph} style={{ color: `var(${token})` }}>
-                <Icon name={sampleIconFor(token)} size="var(--icon-size-lg)" tint="inherit" />
+                <Icon name={sampleIconFor(token)} size="lg" tint="inherit" />
               </span>
               <code className={styles.tokenLabel}>{token}</code>
             </div>
@@ -47,7 +47,11 @@ export const IconTokensPreview = () => {
           {tokens.iconSizes.map((token) => (
             <div key={token} className={styles.tokenCard}>
               <span className={styles.glyph} style={{ color: "var(--text-main)" }}>
-                <Icon name="circle_star" size={`var(${token})`} tint="inherit" />
+                <Icon
+                  name="circle_star"
+                  size={token.replace("--icon-size-", "") as IconSize}
+                  tint="inherit"
+                />
               </span>
               <code className={styles.tokenLabel}>{token}</code>
             </div>

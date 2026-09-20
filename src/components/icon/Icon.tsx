@@ -4,6 +4,7 @@ import { cx } from "@/components/utils";
 import styles from "./Icon.module.css";
 
 export type IconWeight = "thin" | "regular" | "bold";
+export type IconSize = "xs" | "sm" | "md" | "lg" | "xl";
 export type IconTint =
   | "inherit"
   | "main"
@@ -56,7 +57,7 @@ const variantClass: Record<IconVariant, string> = {
 
 export interface IconProps extends Omit<React.SVGAttributes<SVGSVGElement>, "name" | "color"> {
   name: IconName;
-  size?: number | string;
+  size?: IconSize;
   weight?: IconWeight;
   tint?: IconTint;
   variant?: IconVariant;
@@ -64,7 +65,7 @@ export interface IconProps extends Omit<React.SVGAttributes<SVGSVGElement>, "nam
 
 export const Icon = ({
   name,
-  size = "1.25rem",
+  size = "md",
   weight = "regular",
   tint = "inherit",
   variant = "standard",
@@ -76,7 +77,7 @@ export const Icon = ({
   return (
     <span className={cx(styles.iconWrapper, variantClass[variant], tintClass[tint], className)}>
       <RenderedIcon
-        size={size}
+        size={`var(--icon-size-${size})`}
         strokeWidth={strokeWidthByWeight[weight]}
         aria-hidden="true"
         {...props}

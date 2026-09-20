@@ -69,6 +69,11 @@
   --radius-xl: 28px;
   --radius-pill: 999px;
 
+  /* Border widths */
+  --border-width-thin: 1px;
+  --border-width-emphasis: 1.5px;
+  --border-width-focus: 2px;
+
   /* Motion: easing. Standard/emphasized are general-purpose; enter/exit
      are directional and should be preferred for anything that appears or
      dismisses (modals, toasts, menus, tooltips) — see motion.css for the

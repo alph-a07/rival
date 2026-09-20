@@ -67,7 +67,7 @@ export const Toast = ({
     >
       <div className={styles.iconWrapper} aria-hidden="true">
         {/* We reuse the tint logic from the Icon component itself */}
-        <Icon name={icon || defaultIcons[variant]} size={18} tint={variant} />
+        <Icon name={icon || defaultIcons[variant]} size="md" tint={variant} />
       </div>
 
       <div className={styles.content}>

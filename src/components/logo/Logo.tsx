@@ -1,4 +1,5 @@
 import React, { forwardRef } from "react";
+import type { IconSize } from "@/components/icon/Icon";
 import styles from "./Logo.module.css";
 import { cx } from "@/components/utils";
 import { useTheme } from "@/theme/ThemeContext";
@@ -10,12 +11,12 @@ import monoBlack from "@/assets/brand/logo/mono/black.svg";
 
 export interface LogoProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: "colored" | "monochrome";
-  size?: number | string;
+  size?: IconSize;
   hasBackground?: boolean;
 }
 
 export const Logo = forwardRef<HTMLDivElement, LogoProps>(
-  ({ variant = "colored", size = 32, hasBackground = false, className, ...props }, ref) => {
+  ({ variant = "colored", size = "xl", hasBackground = false, className, ...props }, ref) => {
     const { theme } = useTheme();
     const isDark = theme === "dark";
 
@@ -29,7 +30,7 @@ export const Logo = forwardRef<HTMLDivElement, LogoProps>(
     return (
       <div
         ref={ref}
-        style={{ width: size, height: size }}
+        style={{ width: `var(--icon-size-${size})`, height: `var(--icon-size-${size})` }}
         className={cx(styles.logo, hasBackground && styles.hasBackground, className)}
         {...props}
       >

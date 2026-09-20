@@ -1,9 +1,10 @@
 import type { DocControl, RegistryEntry } from "@/design-system/docs/types/registry.types";
+import type { IconSize } from "@/components/icon/Icon";
 import { Logo } from "@/components/logo/Logo";
 
 interface LogoState {
   variant: "colored" | "monochrome";
-  size: string;
+  size: IconSize;
   hasBackground: boolean;
 }
 
@@ -25,20 +26,21 @@ export const logoDoc: RegistryEntry = {
             options: ["colored", "monochrome"],
             defaultValue: "colored",
           },
-          { name: "size", type: "range", min: 16, max: 256, step: 8, defaultValue: 96 },
+          {
+            name: "size",
+            type: "select",
+            options: ["xs", "sm", "md", "lg", "xl"],
+            defaultValue: "xl",
+          },
           { name: "hasBackground", type: "boolean", defaultValue: false },
         ] as DocControl<LogoState>[],
         render: (state: LogoState) => (
-          <Logo
-            variant={state.variant}
-            size={Number(state.size)}
-            hasBackground={state.hasBackground}
-          />
+          <Logo variant={state.variant} size={state.size} hasBackground={state.hasBackground} />
         ),
         code: (state: LogoState) => {
           const props = [
             state.variant !== "colored" && `variant="${state.variant}"`,
-            `size={${state.size}}`,
+            `size="${state.size}"`,
             state.hasBackground && `hasBackground`,
           ]
             .filter(Boolean)

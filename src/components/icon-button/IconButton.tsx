@@ -23,12 +23,6 @@ const sizeClass: Record<IconButtonSize, string> = {
   lg: styles.iconBtnLg,
 };
 
-const iconSizeBySize: Record<IconButtonSize, number> = {
-  sm: 16,
-  md: 20,
-  lg: 24,
-};
-
 export interface IconButtonProps extends Omit<
   React.ButtonHTMLAttributes<HTMLButtonElement>,
   "children"
@@ -77,7 +71,7 @@ export const IconButton = ({
         {loading ? (
           <span className={base.btnSpinner} aria-hidden="true" />
         ) : (
-          <Icon name={icon} size={iconSizeBySize[size]} weight={weight} />
+          <Icon name={icon} size={size} weight={weight} />
         )}
       </span>
     </button>

@@ -54,7 +54,7 @@ export const Alert = ({
       {...props}
     >
       <div className={styles.icon} aria-hidden="true">
-        <Icon name={icon || defaultIcons[variant]} size={20} tint={variant} />
+        <Icon name={icon || defaultIcons[variant]} size="md" tint={variant} />
       </div>
       <div className={styles.content}>
         <div className={styles.textBlock}>

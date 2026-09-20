@@ -17,8 +17,8 @@
 
 .hasBackground {
   background-color: var(--bg-surface);
-  border: 1px solid var(--border-surface);
-  border-radius: 20%;
+  border: var(--border-width-thin) solid var(--border-surface);
+  border-radius: var(--radius-sm);
   box-shadow: var(--shadow-elevation-sm);
 }
 

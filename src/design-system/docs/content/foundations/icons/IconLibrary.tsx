@@ -25,7 +25,7 @@ const IconGrid = () => {
           title={`Copy "${name}" to clipboard`}
         >
           {copiedIcon === name && <span className={styles.copiedMessage}>Copied!</span>}
-          <Icon name={name} size={24} tint="main" />
+          <Icon name={name} size="lg" tint="main" />
           <span className={styles.iconLabel}>{name}</span>
         </button>
       ))}

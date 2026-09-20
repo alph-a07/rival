@@ -1,7 +1,7 @@
 import React, { forwardRef } from "react";
 import styles from "./Badge.module.css";
 import { cx } from "@/components/utils";
-import { Icon } from "@/components/icon/Icon";
+import { Icon, type IconSize } from "@/components/icon/Icon";
 import type { IconName } from "@/design-system/icons";
 
 export type BadgeColor =
@@ -36,9 +36,9 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   icon?: IconName;
 }
 
-const iconSizeBySize: Record<BadgeSize, number> = {
-  sm: 12,
-  md: 14,
+const iconSizeBySize: Record<BadgeSize, IconSize> = {
+  sm: "xs",
+  md: "sm",
 };
 
 export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
