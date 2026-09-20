@@ -24,10 +24,10 @@ export type IconTint =
 
 export type IconVariant = "standard" | "secondary-filled";
 
-const strokeWidthByWeight: Record<IconWeight, number> = {
-  thin: 1.5,
-  regular: 2,
-  bold: 2.5,
+const strokeWidthByWeight: Record<IconWeight, string> = {
+  thin: "var(--icon-stroke-width-thin)",
+  regular: "var(--icon-stroke-width-regular)",
+  bold: "var(--icon-stroke-width-bold)",
 };
 
 const tintClass: Record<IconTint, string> = {

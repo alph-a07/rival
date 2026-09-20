@@ -55,7 +55,7 @@ const PREFIX_CATEGORIES: Array<[string, TokenCategory]> = [
   ["--border-", "borders"],
   ["--ring-", "borders"],
   ["--scrim-", "scrims"],
-  ["--icon-stroke-width", "iconStrokes"],
+  ["--icon-stroke-", "iconStrokes"],
   ["--icon-size-", "iconSizes"],
   ["--icon-", "icons"],
   ["--font-size-", "fontSizes"],
